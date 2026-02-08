@@ -532,3 +532,38 @@ select.ww-input{
   background-repeat: no-repeat;
   padding-right: 38px;
 }
+/* Table (Dashboard Valorisateur) */
+.ww-table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  background: rgba(255,255,255,.85);
+  border:1px solid rgba(0,0,0,.06);
+  border-radius:16px;
+  overflow:hidden;
+}
+.ww-table th, .ww-table td{
+  padding:12px 12px;
+  border-bottom:1px solid rgba(0,0,0,.06);
+  text-align:left;
+  font-size:13px;
+}
+.ww-table thead th{
+  background: rgba(22,163,74,.08);
+  font-weight:900;
+}
+.ww-table tbody tr:hover{
+  background: rgba(22,163,74,.06);
+}
+
+/* Mini buttons */
+.ww-btn-mini{
+  width:auto !important;
+  padding:9px 12px !important;
+  border-radius:12px !important;
+  font-size:13px !important;
+}
+.ww-btn-danger{
+  background: linear-gradient(135deg,#ef4444,#b91c1c) !important;
+  box-shadow: 0 12px 20px rgba(239,68,68,.22) !important;
+}

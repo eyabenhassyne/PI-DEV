@@ -1,0 +1,202 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Valorisateur | WasteWise TN{% endblock %}
+
+{% block body %}
+<div class="ww-app">
+
+  {# ===== SIDEBAR ===== #}
+  <aside class="ww-side">
+    <div class="ww-side-head">
+      <div class="ww-side-logo">WW</div>
+      <div>
+        <div class="ww-side-brand">WasteWise <span>TN</span></div>
+        <div class="ww-side-tag">Espace Valorisateur</div>
+      </div>
+    </div>
+
+    {% set userLabel = app.user ? app.user.userIdentifier : 'Invité' %}
+    {% set firstChar = userLabel|first|upper %}
+
+    <div class="ww-side-user">
+      <div class="ww-avatar">{{ firstChar }}</div>
+      <div>
+        <div class="ww-user-email">{{ userLabel }}</div>
+        <div class="ww-user-meta">
+          <span class="ww-pill ww-info">VALORIZER</span>
+
+          {% if attribute(app.user, 'isVerified') is defined and app.user.isVerified %}
+            <span class="ww-pill ww-ok">✔ Vérifié</span>
+          {% else %}
+            <span class="ww-pill ww-warn">⚠ Non vérifié</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <nav class="ww-side-nav">
+      <a class="ww-nav-item active" href="{{ path('app_dashboard_valorizateur') }}">
+        <span class="ww-nav-ic">🏭</span> Dashboard
+      </a>
+
+      <a class="ww-nav-item" href="#liste">
+        <span class="ww-nav-ic">⏳</span> Déchets en attente
+      </a>
+
+     <a class="ww-nav-item" href="{{ path('app_valorizateur_historique') }}">
+  <span class="ww-nav-ic">📁</span> Historique
+</a>
+
+
+      <div class="ww-nav-sep"></div>
+
+      <a class="ww-nav-item danger" href="{{ path('app_logout') }}">
+        <span class="ww-nav-ic">🚪</span> Déconnexion
+      </a>
+    </nav>
+
+    <div class="ww-side-foot">© {{ "now"|date("Y") }} WasteWise TN</div>
+  </aside>
+
+  {# ===== MAIN ===== #}
+  <main class="ww-main">
+
+    {# ✅ FLASH MESSAGES (plus complet) #}
+    {% for msg in app.flashes('success') %}
+      <div class="ww-alert" style="margin-bottom:16px;border-color:#bbf7d0;background:#ecfdf3;color:#166534;">
+        {{ msg }}
+      </div>
+    {% endfor %}
+    {% for msg in app.flashes('error') %}
+      <div class="ww-alert" style="margin-bottom:16px;border-color:#fecaca;background:#fff1f2;color:#991b1b;">
+        {{ msg }}
+      </div>
+    {% endfor %}
+    {% for msg in app.flashes('warning') %}
+      <div class="ww-alert" style="margin-bottom:16px;border-color:#fde68a;background:#fffbeb;color:#92400e;">
+        {{ msg }}
+      </div>
+    {% endfor %}
+    {% for msg in app.flashes('info') %}
+      <div class="ww-alert" style="margin-bottom:16px;border-color:#bfdbfe;background:#eff6ff;color:#1d4ed8;">
+        {{ msg }}
+      </div>
+    {% endfor %}
+
+    <div class="ww-topbar">
+      <div>
+        <div class="ww-h1">🏭 Dashboard Valorisateur</div>
+        <div class="ww-sub">Valider / refuser les déclarations</div>
+      </div>
+
+      <div class="ww-top-actions">
+        {% if countEnAttente|default(0) > 0 %}
+          <a class="ww-top-btn primary" href="#liste">Voir les demandes</a>
+        {% else %}
+          <a class="ww-top-btn" href="#liste" style="opacity:.6; pointer-events:none;">Aucune demande</a>
+        {% endif %}
+      </div>
+    </div>
+
+    {# ✅ KPI #}
+    <div class="ww-grid-3">
+      <div class="ww-stat">
+        <div class="ww-stat-label">En attente</div>
+        <div class="ww-stat-value">{{ countEnAttente|default(0) }}</div>
+        <div class="ww-stat-hint">à traiter</div>
+      </div>
+
+      <div class="ww-stat">
+        <div class="ww-stat-label">Validées</div>
+        <div class="ww-stat-value">{{ countValide|default(0) }}</div>
+        <div class="ww-stat-hint">global</div>
+      </div>
+
+      <div class="ww-stat">
+        <div class="ww-stat-label">Refusées</div>
+        <div class="ww-stat-value">{{ countRefuse|default(0) }}</div>
+        <div class="ww-stat-hint">global</div>
+      </div>
+    </div>
+
+    {# ✅ LISTE EN_ATTENTE #}
+    <section id="liste" class="ww-card2">
+      <div class="ww-card2-title">Déclarations en attente</div>
+
+      {% if enAttente|default([]) is empty %}
+        <div class="ww-note">Aucune déclaration en attente ✅</div>
+      {% else %}
+        <div style="overflow:auto;">
+          <table class="ww-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Quantité (kg)</th>
+                <th>Localisation</th>
+                <th>Citoyen</th>
+                <th>Date</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for d in enAttente %}
+                {# Badge de statut (au cas où) #}
+                {% set tagClass = d.statut == 'VALIDE' ? 'ww-tag-ok' : (d.statut == 'REFUSE' ? 'ww-tag-bad' : 'ww-tag-warn') %}
+
+                <tr>
+                  <td>#{{ d.id }}</td>
+                  <td>
+                    <b>{{ d.type|e }}</b>
+                    <div style="margin-top:6px;">
+                      <span class="ww-tag {{ tagClass }}">{{ d.statut|replace({'_':' '}) }}</span>
+                    </div>
+                  </td>
+                  <td>{{ d.quantiteKg }} kg</td>
+
+                  <td>
+                    {% if d.adresse %}
+                      {{ d.adresse|e }}
+                    {% elseif d.latitude and d.longitude %}
+                      {{ d.latitude }}, {{ d.longitude }}
+                    {% else %}
+                      —
+                    {% endif %}
+                  </td>
+
+                  <td>{{ d.user ? d.user.email : '—' }}</td>
+                  <td>{{ d.createdAt ? d.createdAt|date('d/m/Y H:i') : '—' }}</td>
+
+                  <td style="text-align:right; white-space:nowrap;">
+                    {# ✅ CSRF + confirmation #}
+                    <form method="post"
+                          action="{{ path('val_dechet_valider', {id: d.id}) }}"
+                          style="display:inline;"
+                          onsubmit="return confirm('Valider cette déclaration (#{{ d.id }}) ?');">
+                      <input type="hidden" name="_token" value="{{ csrf_token('dechet_validate_' ~ d.id) }}">
+                      <button class="ww-btn ww-btn-mini" type="submit">Valider</button>
+                    </form>
+
+                    <form method="post"
+                          action="{{ path('val_dechet_refuser', {id: d.id}) }}"
+                          style="display:inline; margin-left:6px;"
+                          onsubmit="return confirm('Refuser cette déclaration (#{{ d.id }}) ?');">
+                      <input type="hidden" name="_token" value="{{ csrf_token('dechet_refuse_' ~ d.id) }}">
+                      <button class="ww-btn ww-btn-mini ww-btn-danger" type="submit">Refuser</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ww-note" style="margin-top:12px;">
+          Astuce : les actions sont sécurisées (CSRF) et demandent confirmation.
+        </div>
+      {% endif %}
+    </section>
+
+  </main>
+</div>
+{% endblock %}

@@ -1,0 +1,150 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historique | Valorisateur - WasteWise TN{% endblock %}
+
+{% block body %}
+<div class="ww-app">
+  <aside class="ww-side">
+    <div class="ww-side-head">
+      <div class="ww-side-logo">WW</div>
+      <div>
+        <div class="ww-side-brand">WasteWise <span>TN</span></div>
+        <div class="ww-side-tag">Espace Valorisateur</div>
+      </div>
+    </div>
+
+    <nav class="ww-side-nav">
+      <a class="ww-nav-item" href="{{ path('app_dashboard_valorizateur') }}">
+        <span class="ww-nav-ic">🏭</span> Dashboard
+      </a>
+      <a class="ww-nav-item active" href="{{ path('app_valorizateur_historique') }}">
+        <span class="ww-nav-ic">📁</span> Historique
+      </a>
+      <div class="ww-nav-sep"></div>
+      <a class="ww-nav-item danger" href="{{ path('app_logout') }}">
+        <span class="ww-nav-ic">🚪</span> Déconnexion
+      </a>
+    </nav>
+
+    <div class="ww-side-foot">© {{ "now"|date("Y") }} WasteWise TN</div>
+  </aside>
+
+  <main class="ww-main">
+    <div class="ww-topbar">
+      <div>
+        <div class="ww-h1">📁 Historique des déclarations traitées</div>
+        <div class="ww-sub">VALIDÉES + REFUSÉES (avec filtres & pagination)</div>
+      </div>
+    </div>
+
+    {# ===== FILTRES ===== #}
+    <section class="ww-card2">
+      <div class="ww-card2-title">Filtres</div>
+
+      <form method="get" class="row" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;align-items:end;">
+        <div>
+          <label style="display:block;font-weight:600;margin-bottom:6px;">Type</label>
+          <input class="form-control" name="type" value="{{ filters.type }}" placeholder="plastique, papier..." />
+        </div>
+
+        <div>
+          <label style="display:block;font-weight:600;margin-bottom:6px;">Statut</label>
+          <select class="form-control" name="statut">
+            <option value="">Tous</option>
+            <option value="{{ STATUT_VALIDE }}" {{ filters.statut == STATUT_VALIDE ? 'selected' : '' }}>VALIDÉ</option>
+            <option value="{{ STATUT_REFUSE }}" {{ filters.statut == STATUT_REFUSE ? 'selected' : '' }}>REFUSÉ</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display:block;font-weight:600;margin-bottom:6px;">Du</label>
+          <input class="form-control" type="date" name="dateFrom" value="{{ filters.dateFrom }}" />
+        </div>
+
+        <div>
+          <label style="display:block;font-weight:600;margin-bottom:6px;">Au</label>
+          <input class="form-control" type="date" name="dateTo" value="{{ filters.dateTo }}" />
+        </div>
+
+        <div>
+          <label style="display:block;font-weight:600;margin-bottom:6px;">Par page</label>
+          <select class="form-control" name="limit">
+            {% for l in [5,10,20,50] %}
+              <option value="{{ l }}" {{ limit == l ? 'selected' : '' }}>{{ l }}</option>
+            {% endfor %}
+          </select>
+
+          <div style="margin-top:10px;display:flex;gap:8px;">
+            <button class="ww-top-btn primary" type="submit">Filtrer</button>
+            <a class="ww-top-btn" href="{{ path('app_valorizateur_historique') }}">Réinitialiser</a>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    {# ===== RESULTATS ===== #}
+    <section class="ww-card2" style="margin-top:14px;">
+      <div class="ww-card2-title">
+        Résultats ({{ total }})
+      </div>
+
+      {% if items is empty %}
+        <div class="ww-note">Aucun résultat.</div>
+      {% else %}
+        <div style="overflow:auto;">
+          <table class="ww-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Quantité</th>
+                <th>Adresse</th>
+                <th>Citoyen</th>
+                <th>Statut</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for d in items %}
+                {% set tagClass = d.statut == 'VALIDE' ? 'ww-tag-ok' : 'ww-tag-bad' %}
+                <tr>
+                  <td>#{{ d.id }}</td>
+                  <td><b>{{ d.type }}</b></td>
+                  <td>{{ d.quantiteKg }} kg</td>
+                  <td>{{ d.adresse ?? '—' }}</td>
+                  <td>{{ d.user ? d.user.email : '—' }}</td>
+                  <td><span class="ww-tag {{ tagClass }}">{{ d.statut|replace({'_':' '}) }}</span></td>
+                  <td>{{ d.createdAt|date('d/m/Y H:i') }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        {# ===== PAGINATION ===== #}
+        {% set q = app.request.query.all %}
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:10px;flex-wrap:wrap;">
+          <div class="ww-note">Page {{ page }} / {{ pages }}</div>
+
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            {% if page > 1 %}
+              {% set qPrev = q|merge({'page': page - 1}) %}
+              <a class="ww-top-btn" href="{{ path('app_valorizateur_historique', qPrev) }}">← Précédent</a>
+            {% else %}
+              <span class="ww-top-btn" style="opacity:.5;pointer-events:none;">← Précédent</span>
+            {% endif %}
+
+            {% if page < pages %}
+              {% set qNext = q|merge({'page': page + 1}) %}
+              <a class="ww-top-btn" href="{{ path('app_valorizateur_historique', qNext) }}">Suivant →</a>
+            {% else %}
+              <span class="ww-top-btn" style="opacity:.5;pointer-events:none;">Suivant →</span>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    </section>
+
+  </main>
+</div>
+{% endblock %}

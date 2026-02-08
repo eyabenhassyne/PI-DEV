@@ -1,0 +1,143 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Admin | WasteWise TN{% endblock %}
+
+{% block body %}
+<div class="ww-app">
+
+  {# ===== SIDEBAR ===== #}
+  <aside class="ww-side">
+    <div class="ww-side-head">
+      <div class="ww-side-logo">WW</div>
+      <div>
+        <div class="ww-side-brand">WasteWise <span>TN</span></div>
+        <div class="ww-side-tag">Administration</div>
+      </div>
+    </div>
+
+    <div class="ww-side-user">
+      <div class="ww-avatar">A</div>
+      <div>
+        <div class="ww-user-email">{{ app.user.email }}</div>
+        <div class="ww-user-meta">
+          <span class="ww-pill ww-info">ADMIN</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="ww-side-nav">
+      <a class="ww-nav-item active" href="{{ path('app_dashboard_admin') }}">
+        <span class="ww-nav-ic">📊</span> Dashboard
+      </a>
+
+      <a class="ww-nav-item" href="#">
+        <span class="ww-nav-ic">👥</span> Utilisateurs
+      </a>
+
+      <a class="ww-nav-item" href="#">
+        <span class="ww-nav-ic">🗑️</span> Déchets
+      </a>
+
+      <div class="ww-nav-sep"></div>
+
+      <a class="ww-nav-item danger" href="{{ path('app_logout') }}">
+        <span class="ww-nav-ic">🚪</span> Déconnexion
+      </a>
+    </nav>
+
+    <div class="ww-side-foot">© {{ "now"|date("Y") }} WasteWise TN</div>
+  </aside>
+
+  {# ===== MAIN ===== #}
+  <main class="ww-main">
+
+    <div class="ww-topbar">
+      <div>
+        <div class="ww-h1">📊 Dashboard Administrateur</div>
+        <div class="ww-sub">Vue globale de la plateforme</div>
+      </div>
+    </div>
+
+    {# ===== STATS ===== #}
+    <div class="ww-grid-3">
+      <div class="ww-stat">
+        <div class="ww-stat-label">Utilisateurs</div>
+        <div class="ww-stat-value">{{ usersTotal }}</div>
+      </div>
+
+      <div class="ww-stat">
+        <div class="ww-stat-label">Déclarations</div>
+        <div class="ww-stat-value">{{ dechetsTotal }}</div>
+      </div>
+
+      <div class="ww-stat">
+        <div class="ww-stat-label">En attente</div>
+        <div class="ww-stat-value">{{ enAttente }}</div>
+      </div>
+    </div>
+
+    <div class="ww-grid-3">
+      <div class="ww-stat">
+        <div class="ww-stat-label">Validées</div>
+        <div class="ww-stat-value">{{ valides }}</div>
+      </div>
+
+      <div class="ww-stat">
+        <div class="ww-stat-label">Refusées</div>
+        <div class="ww-stat-value">{{ refuses }}</div>
+      </div>
+    </div>
+
+    {# ===== DERNIERS USERS ===== #}
+    <section class="ww-card2">
+      <div class="ww-card2-title">Derniers utilisateurs</div>
+
+      <table class="ww-table">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Type</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in lastUsers %}
+            <tr>
+              <td>{{ u.email }}</td>
+              <td>{{ u.type }}</td>
+              <td>{{ u.createdAt|date('d/m/Y') }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    {# ===== DERNIERS DECHETS ===== #}
+    <section class="ww-card2">
+      <div class="ww-card2-title">Dernières déclarations</div>
+
+      <table class="ww-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Quantité</th>
+            <th>Statut</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in lastDechets %}
+            <tr>
+              <td>{{ d.type }}</td>
+              <td>{{ d.quantiteKg }} kg</td>
+              <td>{{ d.statut }}</td>
+              <td>{{ d.createdAt|date('d/m/Y') }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+</div>
+{% endblock %}
