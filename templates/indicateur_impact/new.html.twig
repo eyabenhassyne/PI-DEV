@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un indicateur d'impact{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Ajouter un indicateur d'impact</h1>
+    
+    {{ form_start(form) }}
+        <div class="mb-3">
+            {{ form_label(form.totalKgRecoltes) }}
+            {{ form_widget(form.totalKgRecoltes, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.totalKgRecoltes) }}
+        </div>
+        
+        <div class="mb-3">
+            {{ form_label(form.co2Evite) }}
+            {{ form_widget(form.co2Evite, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.co2Evite) }}
+        </div>
+        
+        <div class="mb-3">
+            {{ form_label(form.dateCalcul) }}
+            {{ form_widget(form.dateCalcul, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.dateCalcul) }}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <a href="{{ path('app_indicateur_impact_index') }}" class="btn btn-secondary">Annuler</a>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

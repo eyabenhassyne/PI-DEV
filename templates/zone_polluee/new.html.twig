@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une zone polluée{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Ajouter une zone polluée</h1>
+    
+    {{ form_start(form) }}
+        <div class="mb-3">
+            {{ form_label(form.nomZone) }}
+            {{ form_widget(form.nomZone, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.nomZone) }}
+        </div>
+        
+        <div class="mb-3">
+            {{ form_label(form.coordonneesGps) }}
+            {{ form_widget(form.coordonneesGps, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.coordonneesGps) }}
+            <small class="form-text text-muted">Format: latitude, longitude (Ex: 36.4025, 10.1817)</small>
+        </div>
+        
+        <div class="mb-3">
+            {{ form_label(form.niveauPollution) }}
+            {{ form_widget(form.niveauPollution, {'attr': {'class': 'form-control', 'min': '1', 'max': '10'}}) }}
+            {{ form_errors(form.niveauPollution) }}
+        </div>
+        
+        <div class="mb-3">
+            {{ form_label(form.indicateur) }}
+            {{ form_widget(form.indicateur, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.indicateur) }}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <a href="{{ path('app_zone_polluee_index') }}" class="btn btn-secondary">Annuler</a>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

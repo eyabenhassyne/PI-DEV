@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de l'indicateur{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Indicateur d'Impact #{{ indicateur.id }}</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <p><strong>Total de déchets récoltés :</strong> {{ indicateur.totalKgRecoltes }} kg</p>
+            <p><strong>CO2 évité :</strong> {{ indicateur.co2Evite }} kg</p>
+            <p><strong>Date de calcul :</strong> {{ indicateur.dateCalcul|date('d/m/Y à H:i') }}</p>
+            
+            <hr>
+            
+            {% if indicateur.zonePollues is not empty %}
+                <p><strong>Zones polluées associées :</strong></p>
+                <ul>
+                    {% for zone in indicateur.zonePollues %}
+                        <li>
+                            <a href="{{ path('app_zone_polluee_show', {'id': zone.id}) }}">
+                                {{ zone.nomZone }} (Pollution: {{ zone.niveauPollution }}/10)
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">Aucune zone polluée associée à cet indicateur</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <a href="{{ path('app_indicateur_impact_index') }}" class="btn btn-secondary mt-3">Retour</a>
+    <a href="{{ path('app_indicateur_impact_edit', {'id': indicateur.id}) }}" class="btn btn-warning mt-3">Modifier</a>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la zone{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>{{ zone.nomZone }}</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <p><strong>Coordonnées GPS :</strong> {{ zone.coordonneesGps }}</p>
+            <p><strong>Niveau de pollution :</strong> 
+                <span class="badge 
+                    {% if zone.niveauPollution <= 3 %}bg-success
+                    {% elseif zone.niveauPollution <= 6 %}bg-warning
+                    {% else %}bg-danger{% endif %}">
+                    {{ zone.niveauPollution }}/10
+                </span>
+            </p>
+            
+            {% if zone.indicateur %}
+                <p><strong>Indicateur associé :</strong></p>
+                <ul>
+                    <li>Déchets récoltés : {{ zone.indicateur.totalKgRecoltes }} kg</li>
+                    <li>CO2 évité : {{ zone.indicateur.co2Evite }} kg</li>
+                    <li>Date de calcul : {{ zone.indicateur.dateCalcul|date('d/m/Y H:i') }}</li>
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+    
+    <a href="{{ path('app_zone_polluee_index') }}" class="btn btn-secondary mt-3">Retour</a>
+    <a href="{{ path('app_zone_polluee_edit', {'id': zone.id}) }}" class="btn btn-warning mt-3">Modifier</a>
+</div>
+{% endblock %}
