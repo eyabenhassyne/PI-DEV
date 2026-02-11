@@ -17,14 +17,28 @@ security:
       lazy: true
       provider: app_user_provider
       entry_point: App\Security\AppAuthenticator
-      custom_authenticator: App\Security\AppAuthenticator
+      custom_authenticators:
+      - App\Security\AppAuthenticator
+      - App\Security\GoogleAuthenticator
+      - App\Security\FacebookAuthenticator
 
       logout:
         path: app_logout
         target: app_login
 
   access_control:
-    - { path: ^/dashboard/admin, roles: ROLE_ADMIN }
-    - { path: ^/dashboard/valorisateur, roles: ROLE_VALORIZER }
-    - { path: ^/dashboard, roles: ROLE_USER }
+    # ✅ ADMIN : protège tout ce qui commence par /admin
+    - { path: ^/admin, roles: ROLE_ADMIN }
+
+    # ✅ VALORIZER
     - { path: ^/dashboard/valorisateur/historique, roles: ROLE_VALORIZER }
+    - { path: ^/dashboard/valorisateur, roles: ROLE_VALORIZER }
+
+    # ✅ CAMPAGNES (actions sensibles)
+    - { path: ^/campagnes/my, roles: ROLE_USER }
+    - { path: ^/campagnes/\d+/join, roles: ROLE_USER }
+    - { path: ^/campagnes/\d+/leave, roles: ROLE_USER }
+
+    # ✅ DASHBOARD (hub + citoyen)
+    - { path: ^/dashboard/admin, roles: ROLE_ADMIN }
+    - { path: ^/dashboard, roles: ROLE_USER }

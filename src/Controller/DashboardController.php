@@ -5,6 +5,9 @@ namespace App\Controller;
 use App\Entity\Dechet;
 use App\Repository\DechetRepository;
 use App\Repository\UserRepository;
+use App\Repository\PartenaireRepository;
+use App\Repository\RecompenseRepository;
+use App\Repository\CampagneRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -27,12 +30,12 @@ class DashboardController extends AbstractController
             return $this->redirectToRoute('app_dashboard_valorizateur');
         }
 
-        // Citoyen (ou Partner si tu veux plus tard)
+        // Citoyen (par défaut)
         return $this->redirectToRoute('app_dashboard_citoyen');
     }
 
     /**
-     * ✅ Dashboard Citoyen réel
+     * ✅ Dashboard Citoyen réel + Impact environnemental
      */
     #[Route('/dashboard/citoyen', name: 'app_dashboard_citoyen', methods: ['GET'])]
     public function citoyen(DechetRepository $dechetRepo): Response
@@ -40,20 +43,29 @@ class DashboardController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
 
-        // Stats du citoyen (ses propres déclarations)
-        $total = $dechetRepo->count(['user' => $user]);
-        $enAttente = $dechetRepo->count(['user' => $user, 'statut' => Dechet::STATUT_EN_ATTENTE]);
-        $valides = $dechetRepo->count(['user' => $user, 'statut' => Dechet::STATUT_VALIDE]);
-        $refuses = $dechetRepo->count(['user' => $user, 'statut' => Dechet::STATUT_REFUSE]);
+        // ✅ Stats du citoyen (ses propres déclarations)
+        $total     = $dechetRepo->countByUser($user);
+        $enAttente = $dechetRepo->countByUserAndStatus($user, Dechet::STATUT_EN_ATTENTE);
+        $valides   = $dechetRepo->countByUserAndStatus($user, Dechet::STATUT_VALIDE);
+        $refuses   = $dechetRepo->countByUserAndStatus($user, Dechet::STATUT_REFUSE);
 
-        $recent = $dechetRepo->findBy(['user' => $user], ['createdAt' => 'DESC'], 5);
+        $recent = $dechetRepo->findRecentByUser($user, 5);
 
+        // ✅ EcoPoints du citoyen
         $ecoPoints = method_exists($user, 'getEcoPoints') ? (int) $user->getEcoPoints() : 0;
 
         $badge = $ecoPoints >= 2000 ? 'Expert'
             : ($ecoPoints >= 1000 ? 'Or'
             : ($ecoPoints >= 500 ? 'Argent' : 'Débutant'));
+
+        // ✅ IMPACT ENVIRONNEMENTAL (uniquement VALIDÉS)
+        $kgTotalValide = $dechetRepo->sumKgValideByUser($user);
+        $kgByType      = $dechetRepo->kgValideByType($user);
+        $monthly       = $dechetRepo->monthlyKgValide($user, 6);
 
         return $this->render('dashboard/citoyen.html.twig', [
             'ecoPoints' => $ecoPoints,
@@ -65,30 +77,49 @@ class DashboardController extends AbstractController
                 'refuses' => $refuses,
             ],
             'recent' => $recent,
+
+            // ✅ DONNÉES IMPACT POUR LE TWIG
+            'impact' => [
+                'kgTotalValide' => $kgTotalValide,
+                'kgByType' => $kgByType,
+                'monthly' => $monthly,
+            ],
         ]);
     }
 
     /**
-     * ✅ Dashboard Admin
+     * ✅ Dashboard Admin (avec Partenaire/Récompense + Campagnes)
      */
- #[Route('/dashboard/admin', name: 'app_dashboard_admin', methods: ['GET'])]
-public function admin(UserRepository $userRepo, DechetRepository $dechetRepo): Response
-{
-    $this->denyAccessUnlessGranted('ROLE_ADMIN');
+    #[Route('/dashboard/admin', name: 'app_dashboard_admin', methods: ['GET'])]
+    public function admin(
+        UserRepository $userRepo,
+        DechetRepository $dechetRepo,
+        PartenaireRepository $partRepo,
+        RecompenseRepository $recompRepo,
+        CampagneRepository $campRepo
+    ): Response {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-    return $this->render('dashboard/admin.html.twig', [
-        'usersTotal'   => $userRepo->count([]),
-        'dechetsTotal' => $dechetRepo->count([]),
+        return $this->render('dashboard/admin.html.twig', [
+            'usersTotal'   => $userRepo->count([]),
+            'dechetsTotal' => $dechetRepo->count([]),
 
-        // ✅ AJOUTÉS (pour ton template)
-        'valides'      => $dechetRepo->count(['statut' => Dechet::STATUT_VALIDE]),
-        'refuses'      => $dechetRepo->count(['statut' => Dechet::STATUT_REFUSE]),
+            // ✅ MODULE PARTENAIRE / RÉCOMPENSE
+            'partenairesTotal' => $partRepo->count([]),
+            'recompensesTotal' => $recompRepo->count([]),
 
-        'enAttente'    => $dechetRepo->count(['statut' => Dechet::STATUT_EN_ATTENTE]),
-        'lastUsers'    => $userRepo->findBy([], ['createdAt' => 'DESC'], 5),
-        'lastDechets'  => $dechetRepo->findBy([], ['createdAt' => 'DESC'], 5),
-    ]);
-}
+            // ✅ MODULE CAMPAGNES
+            'campagnesTotal' => $campRepo->count([]),
+
+            // ✅ pour ton template admin
+            'enAttente'    => $dechetRepo->count(['statut' => Dechet::STATUT_EN_ATTENTE]),
+            'valides'      => $dechetRepo->count(['statut' => Dechet::STATUT_VALIDE]),
+            'refuses'      => $dechetRepo->count(['statut' => Dechet::STATUT_REFUSE]),
+
+            'lastUsers'    => $userRepo->findBy([], ['createdAt' => 'DESC'], 5),
+            'lastDechets'  => $dechetRepo->findBy([], ['createdAt' => 'DESC'], 5),
+        ]);
+    }
 
     /**
      * ✅ Dashboard Valorisateur

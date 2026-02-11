@@ -1,0 +1,80 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Modifier partenaire | WasteWise TN{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid py-4">
+
+  <div class="d-flex align-items-start justify-content-between mb-4">
+    <div>
+      <h3 class="mb-1">✏️ Modifier partenaire</h3>
+      <div class="text-muted">Mettre à jour les informations du partenaire</div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary" href="{{ path('partenaire_show', { id: p.id }) }}">
+        <i class="bi bi-arrow-left"></i> Retour
+      </a>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header fw-bold">
+      Partenaire : {{ p.nomEntreprise }}
+    </div>
+
+    <div class="card-body">
+
+      {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          {{ form_label(form.nomEntreprise, 'Nom de l’entreprise', { label_attr: { class: 'form-label' } }) }}
+          {{ form_widget(form.nomEntreprise, { attr: { class: 'form-control' } }) }}
+          {{ form_errors(form.nomEntreprise) }}
+        </div>
+
+        <div class="col-12 col-md-6">
+          {{ form_label(form.categorie, 'Catégorie', { label_attr: { class: 'form-label' } }) }}
+          {{ form_widget(form.categorie, { attr: { class: 'form-control' } }) }}
+          {{ form_errors(form.categorie) }}
+        </div>
+
+        <div class="col-12">
+          {{ form_label(form.siteWeb, 'Site web (optionnel)', { label_attr: { class: 'form-label' } }) }}
+          {{ form_widget(form.siteWeb, {
+            attr: {
+              class: 'form-control',
+              placeholder: 'https://www.exemple.com'
+            }
+          }) }}
+          {{ form_errors(form.siteWeb) }}
+        </div>
+
+        <div class="col-12">
+          <div class="form-check">
+            {{ form_widget(form.actif, { attr: { class: 'form-check-input' } }) }}
+            {{ form_label(form.actif, 'Partenaire actif (visible et utilisable)', { label_attr: { class: 'form-check-label' } }) }}
+          </div>
+          {{ form_errors(form.actif) }}
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 mt-4">
+        <a class="btn btn-outline-secondary" href="{{ path('partenaire_show', { id: p.id }) }}">
+          Annuler
+        </a>
+        <button class="btn btn-primary" type="submit">
+          <i class="bi bi-save"></i> Mettre à jour
+        </button>
+      </div>
+
+      {{ form_end(form) }}
+
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

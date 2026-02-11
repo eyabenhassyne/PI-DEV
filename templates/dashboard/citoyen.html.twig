@@ -1,163 +1,92 @@
-{% extends 'base.html.twig' %}
+{# templates/citoyen/dashboard.html.twig #}
+{% extends 'citoyen/base.html.twig' %}
 
 {% block title %}Dashboard Citoyen | WasteWise TN{% endblock %}
 
 {% block body %}
-<div class="ww-app">
 
-  {# ===== SIDEBAR ===== #}
-  <aside class="ww-side">
-    <div class="ww-side-head">
-      <div class="ww-side-logo">WW</div>
-      <div>
-        <div class="ww-side-brand">WasteWise <span>TN</span></div>
-        <div class="ww-side-tag">Espace Citoyen</div>
+<div class="container-fluid p-0">
+
+  <div class="d-flex align-items-start justify-content-between mb-4">
+    <div>
+      <h3 class="mb-1">🏠 Dashboard Citoyen</h3>
+      <div class="text-muted">Vue globale de votre activité</div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a class="btn btn-success" href="{{ path('dechet_nouveau') }}">
+        <i class="bi bi-plus-circle"></i> Déclarer
+      </a>
+      <a class="btn btn-outline-secondary" href="{{ path('citoyen_declarations') }}">
+        <i class="bi bi-file-earmark-text"></i> Mes déclarations
+      </a>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-md-6 col-xl-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="text-muted mb-1">EcoPoints</div>
+          <div class="fs-2 fw-bold">{{ ecoPoints|default(0) }}</div>
+          <div class="small text-muted">Après validation</div>
+        </div>
       </div>
     </div>
 
-    {% set userLabel = app.user ? app.user.userIdentifier : 'Invité' %}
-    {% set firstChar = userLabel|first|upper %}
+    <div class="col-12 col-md-6 col-xl-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="text-muted mb-1">Déclarations</div>
+          <div class="fs-2 fw-bold">{{ stats.total|default(0) }}</div>
+          <div class="small text-muted">
+            {{ stats.enAttente|default(0) }} en attente •
+            {{ stats.valides|default(0) }} validées •
+            {{ stats.refuses|default(0) }} refusées
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <div class="ww-side-user">
-      <div class="ww-avatar">{{ firstChar }}</div>
-      <div>
-        <div class="ww-user-email">{{ userLabel }}</div>
+    <div class="col-12 col-md-6 col-xl-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="text-muted mb-1">Badge</div>
+          <div class="fs-2 fw-bold">{{ badge|default('Débutant') }}</div>
+          <div class="small text-muted">Continue 💪</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        <div class="ww-user-meta">
-          <span class="ww-pill ww-info">
-            {{ attribute(app.user, 'type') is defined ? app.user.type : 'USER' }}
-          </span>
-
-          {% if attribute(app.user, 'isVerified') is defined and app.user.isVerified %}
-            <span class="ww-pill ww-ok">✔ Vérifié</span>
+  <div class="card shadow-sm">
+    <div class="card-header fw-bold">Activité récente</div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Type</th>
+            <th>Quantité</th>
+            <th>Statut</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in recent|default([]) %}
+            <tr>
+              <td>{{ d.type ?? '—' }}</td>
+              <td>{{ d.quantiteKg ?? '—' }} kg</td>
+              <td>{{ d.statut ?? '—' }}</td>
+              <td>{{ d.createdAt ? d.createdAt|date('d/m/Y H:i') : '—' }}</td>
+            </tr>
           {% else %}
-            <span class="ww-pill ww-warn">⚠ Non vérifié</span>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
-    <nav class="ww-side-nav">
-      <a class="ww-nav-item active" href="{{ path('app_dashboard') }}">
-        <span class="ww-nav-ic">🏠</span> Dashboard
-      </a>
-
-      <a class="ww-nav-item" href="{{ path('dechet_nouveau') }}">
-        <span class="ww-nav-ic">🗑️</span> Déclarer un déchet
-      </a>
-
-      <a class="ww-nav-item" href="#" onclick="alert('Bientôt disponible'); return false;">
-        <span class="ww-nav-ic">📄</span> Mes déclarations
-      </a>
-
-      <a class="ww-nav-item" href="#" onclick="alert('Bientôt disponible'); return false;">
-        <span class="ww-nav-ic">🎁</span> Récompenses
-      </a>
-
-      <div class="ww-nav-sep"></div>
-
-      <a class="ww-nav-item danger" href="{{ path('app_logout') }}">
-        <span class="ww-nav-ic">🚪</span> Déconnexion
-      </a>
-    </nav>
-
-    <div class="ww-side-foot">© {{ "now"|date("Y") }} WasteWise TN</div>
-  </aside>
-
-  {# ===== MAIN ===== #}
-  <main class="ww-main">
-
-    {# FLASH MESSAGES #}
-    {% for msg in app.flashes('success') %}
-      <div class="ww-alert" style="margin-bottom:16px;border-color:#bbf7d0;background:#ecfdf3;color:#166534;">
-        {{ msg }}
-      </div>
-    {% endfor %}
-    {% for msg in app.flashes('error') %}
-      <div class="ww-alert" style="margin-bottom:16px;border-color:#fecaca;background:#fff1f2;color:#991b1b;">
-        {{ msg }}
-      </div>
-    {% endfor %}
-    {% for msg in app.flashes('info') %}
-      <div class="ww-alert" style="margin-bottom:16px;border-color:#bfdbfe;background:#eff6ff;color:#1d4ed8;">
-        {{ msg }}
-      </div>
-    {% endfor %}
-
-    <div class="ww-topbar">
-      <div>
-        <div class="ww-h1">🏠 Dashboard Citoyen</div>
-        <div class="ww-sub">
-          Bienvenue <b>{{ userLabel }}</b>
-        </div>
-      </div>
-
-      <div class="ww-top-actions">
-        <a class="ww-top-btn primary" href="{{ path('dechet_nouveau') }}">+ Nouvelle déclaration</a>
-      </div>
-    </div>
-
-    {# ===== STATS ===== #}
-    <div class="ww-grid-3">
-      <div class="ww-stat">
-        <div class="ww-stat-label">EcoPoints</div>
-        <div class="ww-stat-value">{{ ecoPoints|default(0) }}</div>
-        <div class="ww-stat-hint">Solde actuel</div>
-      </div>
-
-      <div class="ww-stat">
-        <div class="ww-stat-label">Déclarations</div>
-        <div class="ww-stat-value">{{ stats.total|default(0) }}</div>
-        <div class="ww-stat-hint">
-          {{ stats.enAttente|default(0) }} en attente • {{ stats.valides|default(0) }} validées
-        </div>
-      </div>
-
-      <div class="ww-stat">
-        <div class="ww-stat-label">Badge</div>
-        <div class="ww-stat-value">{{ badge|default('Débutant') }}</div>
-        <div class="ww-stat-hint">
-          {% if ecoPoints|default(0) >= 2000 %}
-            Niveau Expert
-          {% elseif ecoPoints|default(0) >= 1000 %}
-            Excellent progrès
-          {% elseif ecoPoints|default(0) >= 500 %}
-            Bon rythme
-          {% else %}
-            Continue comme ça 💪
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
-    {# ===== ACTIVITÉ RÉCENTE ===== #}
-    <section class="ww-card2">
-      <div class="ww-card2-title">Activité récente</div>
-
-      {% if recent|default([]) is empty %}
-        <div class="ww-note">Aucune déclaration pour le moment.</div>
-      {% else %}
-        <div class="ww-activity">
-          {% for d in recent %}
-            {% set tagClass =
-              d.statut == 'VALIDE' ? 'ww-tag-ok' :
-              (d.statut == 'REFUSE' ? 'ww-tag-bad' : 'ww-tag-warn')
-            %}
-            <div class="ww-activity-item">
-              <span class="ww-tag {{ tagClass }}">{{ d.statut|replace({'_':' '}) }}</span>
-              <div>
-                <div class="ww-activity-title">{{ d.type }}</div>
-                <div class="ww-activity-sub">
-                  {{ d.quantiteKg }} kg •
-                  {{ d.createdAt|date('d/m/Y H:i') }}
-                </div>
-              </div>
-            </div>
+            <tr><td colspan="4" class="text-muted">Aucune déclaration récente.</td></tr>
           {% endfor %}
-        </div>
-      {% endif %}
-    </section>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-  </main>
 </div>
+
 {% endblock %}

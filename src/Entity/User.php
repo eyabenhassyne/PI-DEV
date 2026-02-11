@@ -32,6 +32,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank(message: "L'email est obligatoire.")]
     #[Assert\Email(message: "Email invalide.")]
+    #[Assert\Length(max: 180, maxMessage: "L'email ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $email = null;
 
     /**
@@ -40,25 +41,64 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
+    // ✅ contrôle côté serveur (au moins 8 caractères)
     #[ORM\Column]
+    #[Assert\NotBlank(message: "Le mot de passe est obligatoire.")]
+    #[Assert\Length(
+        min: 8,
+        max: 255,
+        minMessage: "Le mot de passe doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le mot de passe ne doit pas dépasser {{ limit }} caractères."
+    )]
     private ?string $password = null;
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank(message: "Le nom est obligatoire.")]
-    #[Assert\Length(min: 2, max: 100)]
+    #[Assert\Length(
+        min: 2,
+        max: 100,
+        minMessage: "Le nom doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le nom ne doit pas dépasser {{ limit }} caractères."
+    )]
+    #[Assert\Regex(
+        pattern: "/^[\p{L}\s'-]+$/u",
+        message: "Le nom ne doit contenir que des lettres, espaces, apostrophes ou tirets."
+    )]
     private ?string $nom = null;
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank(message: "Le prénom est obligatoire.")]
-    #[Assert\Length(min: 2, max: 100)]
+    #[Assert\Length(
+        min: 2,
+        max: 100,
+        minMessage: "Le prénom doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le prénom ne doit pas dépasser {{ limit }} caractères."
+    )]
+    #[Assert\Regex(
+        pattern: "/^[\p{L}\s'-]+$/u",
+        message: "Le prénom ne doit contenir que des lettres, espaces, apostrophes ou tirets."
+    )]
     private ?string $prenom = null;
 
     #[ORM\Column(length: 20, nullable: true)]
-    #[Assert\Length(min: 8, max: 20)]
+    #[Assert\Length(
+        min: 8,
+        max: 20,
+        minMessage: "Le téléphone doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le téléphone ne doit pas dépasser {{ limit }} caractères."
+    )]
+    #[Assert\Regex(
+        pattern: "/^\+?[0-9\s\-]+$/",
+        message: "Téléphone invalide (chiffres, espaces, tirets, + autorisés)."
+    )]
     private ?string $telephone = null;
 
     #[ORM\Column(length: 20)]
-    #[Assert\Choice(choices: [self::TYPE_CITIZEN, self::TYPE_VALORIZER, self::TYPE_PARTNER, self::TYPE_ADMIN])]
+    #[Assert\NotBlank(message: "Le type d'utilisateur est obligatoire.")]
+    #[Assert\Choice(
+        choices: [self::TYPE_CITIZEN, self::TYPE_VALORIZER, self::TYPE_PARTNER, self::TYPE_ADMIN],
+        message: "Type invalide."
+    )]
     private string $type = self::TYPE_CITIZEN;
 
     #[ORM\Column]
@@ -67,9 +107,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(options: ['default' => false])]
     private bool $isVerified = false;
 
-    // ✅ AJOUT : 1 user -> plusieurs déchets
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Dechet::class, orphanRemoval: true)]
+    #[ORM\Column(options: ['default' => 0])]
+    #[Assert\PositiveOrZero(message: "Les EcoPoints ne peuvent pas être négatifs.")]
+    private int $ecoPoints = 0;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Dechet::class)]
     private Collection $dechets;
+
+    #[ORM\OneToMany(mappedBy: 'validatedBy', targetEntity: Dechet::class)]
+    private Collection $validatedDechets;
 
     public function __construct()
     {
@@ -77,15 +123,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->type = self::TYPE_CITIZEN;
         $this->roles = ['ROLE_USER'];
         $this->isVerified = false;
+        $this->ecoPoints = 0;
 
-        // ✅ initialisation collection
         $this->dechets = new ArrayCollection();
+        $this->validatedDechets = new ArrayCollection();
     }
 
     public function getId(): ?int { return $this->id; }
 
     public function getEmail(): ?string { return $this->email; }
-    public function setEmail(string $email): static { $this->email = $email; return $this; }
+
+    public function setEmail(string $email): static
+    {
+        // ✅ normalisation serveur
+        $this->email = mb_strtolower(trim($email));
+        return $this;
+    }
 
     public function getUserIdentifier(): string { return (string) $this->email; }
 
@@ -103,16 +156,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     public function getPassword(): ?string { return $this->password; }
-    public function setPassword(string $password): static { $this->password = $password; return $this; }
+
+    public function setPassword(string $password): static
+    {
+        // ⚠️ Ici tu stockes le HASH (pas le password clair).
+        // Le contrôle (min 8) sert surtout côté form avant hash, mais acceptable PIDEV.
+        $this->password = $password;
+        return $this;
+    }
 
     public function getNom(): ?string { return $this->nom; }
-    public function setNom(string $nom): static { $this->nom = $nom; return $this; }
+    public function setNom(string $nom): static { $this->nom = trim($nom); return $this; }
 
     public function getPrenom(): ?string { return $this->prenom; }
-    public function setPrenom(string $prenom): static { $this->prenom = $prenom; return $this; }
+    public function setPrenom(string $prenom): static { $this->prenom = trim($prenom); return $this; }
 
     public function getTelephone(): ?string { return $this->telephone; }
-    public function setTelephone(?string $telephone): static { $this->telephone = $telephone; return $this; }
+    public function setTelephone(?string $telephone): static
+    {
+        $this->telephone = $telephone !== null ? trim($telephone) : null;
+        return $this;
+    }
 
     public function getType(): string { return $this->type; }
 
@@ -140,11 +204,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function isVerified(): bool { return $this->isVerified; }
     public function setIsVerified(bool $isVerified): static { $this->isVerified = $isVerified; return $this; }
 
-    // ✅ getters/add/remove pour la relation
-    public function getDechets(): Collection
+    public function getEcoPoints(): int { return $this->ecoPoints; }
+
+    public function setEcoPoints(int $ecoPoints): static
     {
-        return $this->dechets;
+        $this->ecoPoints = max(0, $ecoPoints);
+        return $this;
     }
+
+    public function addEcoPoints(int $points): static
+    {
+        $this->ecoPoints = max(0, $this->ecoPoints + max(0, $points));
+        return $this;
+    }
+
+    public function getDechets(): Collection { return $this->dechets; }
 
     public function addDechet(Dechet $dechet): static
     {
@@ -164,6 +238,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
         return $this;
     }
+
+    public function getValidatedDechets(): Collection { return $this->validatedDechets; }
 
     public function eraseCredentials(): void {}
 }

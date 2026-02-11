@@ -1,0 +1,26 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Nouvelle campagne | Admin{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid py-4">
+
+  <div class="d-flex align-items-start justify-content-between mb-4">
+    <div>
+      <h3 class="mb-1">➕ Nouvelle campagne</h3>
+      <div class="text-muted">Créer une campagne</div>
+    </div>
+
+    <div>
+      <a class="btn btn-outline-primary" href="{{ path('admin_campagne_index') }}">
+        <i class="bi bi-arrow-left"></i> Retour
+      </a>
+    </div>
+  </div>
+
+  {% include 'admin/campagne/_form.html.twig' with { form: form, title: 'Formulaire campagne' } %}
+
+</div>
+
+{% endblock %}

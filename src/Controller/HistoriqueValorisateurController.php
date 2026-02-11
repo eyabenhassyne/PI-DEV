@@ -36,7 +36,7 @@ class HistoriqueValorisateurController extends AbstractController
             $limit
         );
 
-        return $this->render('dashboard/valorisateur_historique.html.twig', [
+        return $this->render('valorisateur/valorisateur_historique.html.twig', [
             'items' => $data['items'],
             'total' => $data['total'],
             'page'  => $data['page'],

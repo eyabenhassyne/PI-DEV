@@ -1,0 +1,106 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Campagnes | Admin{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid py-4">
+
+  <div class="d-flex align-items-start justify-content-between mb-4">
+    <div>
+      <h3 class="mb-1">📣 Campagnes</h3>
+      <div class="text-muted">Gestion des campagnes (CRUD)</div>
+    </div>
+
+    <div>
+      <a class="btn btn-primary" href="{{ path('admin_campagne_new') }}">
+        <i class="bi bi-plus-lg"></i> Nouvelle campagne
+      </a>
+    </div>
+  </div>
+
+  {# ✅ Flash messages #}
+  {% for label, messages in app.flashes %}
+    {% for msg in messages %}
+      <div class="alert alert-{{ label == 'error' ? 'danger' : label }} shadow-sm">
+        {{ msg }}
+      </div>
+    {% endfor %}
+  {% endfor %}
+
+  <div class="card shadow-sm">
+    <div class="card-header fw-bold">Liste des campagnes</div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th style="width:90px;">ID</th>
+            <th>Titre</th>
+            <th>Période</th>
+            <th style="width:140px;">Statut</th>
+            <th style="width:220px;">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+        {% for c in items %}
+          <tr>
+            <td>#{{ c.id }}</td>
+
+            <td class="fw-bold">{{ c.titre }}</td>
+
+            <td>
+              {{ c.dateDebut ? c.dateDebut|date('d/m/Y') : '—' }}
+              →
+              {{ c.dateFin ? c.dateFin|date('d/m/Y') : '—' }}
+            </td>
+
+            <td>
+              {% if c.statut == 'ACTIVE' %}
+                <span class="badge bg-success">ACTIVE</span>
+              {% elseif c.statut == 'BROUILLON' %}
+                <span class="badge bg-warning text-dark">BROUILLON</span>
+              {% else %}
+                <span class="badge bg-secondary">TERMINEE</span>
+              {% endif %}
+            </td>
+
+            <td>
+              <div class="d-flex gap-2">
+                <a class="btn btn-sm btn-outline-secondary"
+                   href="{{ path('admin_campagne_show', { id: c.id }) }}">
+                  <i class="bi bi-eye"></i>
+                </a>
+
+                <a class="btn btn-sm btn-outline-primary"
+                   href="{{ path('admin_campagne_edit', { id: c.id }) }}">
+                  <i class="bi bi-pencil"></i>
+                </a>
+
+                <form method="post"
+                      action="{{ path('admin_campagne_delete', { id: c.id }) }}"
+                      onsubmit="return confirm('Supprimer cette campagne ?');">
+                  <input type="hidden" name="_token" value="{{ csrf_token('delete_campagne_' ~ c.id) }}">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+
+        {% else %}
+          <tr>
+            <td colspan="5" class="text-muted">Aucune campagne.</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+
+      </table>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

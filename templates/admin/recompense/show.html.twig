@@ -1,0 +1,124 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Détail récompense | WasteWise TN{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid py-4">
+
+  <div class="d-flex align-items-start justify-content-between mb-4">
+    <div>
+      <h3 class="mb-1">👁️ Détail récompense</h3>
+      <div class="text-muted">
+        <b>{{ r.titre }}</b> — Partenaire : <b>{{ r.partenaire.nomEntreprise }}</b>
+      </div>
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-outline-secondary" href="{{ path('partenaire_show', { id: r.partenaire.id }) }}">
+        <i class="bi bi-arrow-left"></i> Partenaire
+      </a>
+
+      <a class="btn btn-outline-primary" href="{{ path('recompense_index') }}">
+        <i class="bi bi-list"></i> Liste
+      </a>
+
+      <a class="btn btn-primary" href="{{ path('recompense_edit', { id: r.id }) }}">
+        <i class="bi bi-pencil"></i> Modifier
+      </a>
+    </div>
+  </div>
+
+  {# ✅ Flash messages #}
+  {% for label, messages in app.flashes %}
+    {% for m in messages %}
+      <div class="alert alert-{{ label == 'error' ? 'danger' : label }} shadow-sm">
+        {{ m }}
+      </div>
+    {% endfor %}
+  {% endfor %}
+
+  <div class="card shadow-sm">
+    <div class="card-header fw-bold">Informations</div>
+
+    <div class="card-body">
+
+      <div class="row g-3">
+        <div class="col-12 col-lg-4">
+          <div class="border rounded-3 p-3 h-100">
+            <div class="text-muted small mb-1">Partenaire</div>
+            <div class="fw-bold">{{ r.partenaire.nomEntreprise }}</div>
+            <div class="text-muted small">Récompense liée au partenaire</div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+          <div class="border rounded-3 p-3 h-100">
+            <div class="text-muted small mb-1">Points nécessaires</div>
+            <div class="fs-3 fw-bold">{{ r.pointsNecessaires ?? 0 }}</div>
+            <div class="text-muted small">EcoPoints requis</div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+          <div class="border rounded-3 p-3 h-100">
+            <div class="text-muted small mb-1">Stock</div>
+
+            <div class="fs-5 fw-bold">
+              {% if r.stock is null %}
+                <span class="badge bg-secondary">—</span>
+              {% elseif r.stock <= 0 %}
+                <span class="badge bg-danger">Rupture</span>
+              {% elseif r.stock < 5 %}
+                <span class="badge bg-warning text-dark">Faible ({{ r.stock }})</span>
+              {% else %}
+                <span class="badge bg-success">{{ r.stock }}</span>
+              {% endif %}
+            </div>
+
+            <div class="text-muted small">0 = indisponible</div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="my-4">
+
+      <div>
+        <div class="text-muted small mb-2">Description</div>
+        <div class="border rounded-3 p-3 bg-light">
+          {% if r.description %}
+            {{ r.description }}
+          {% else %}
+            <span class="text-muted">Aucune description.</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-4">
+        <div class="text-muted small">
+          Astuce : mettez stock = 0 pour tester l’état “Rupture”.
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+          <a class="btn btn-outline-primary" href="{{ path('recompense_edit', { id: r.id }) }}">
+            <i class="bi bi-pencil"></i> Modifier
+          </a>
+
+          <form method="post"
+                action="{{ path('recompense_delete', { id: r.id }) }}"
+                onsubmit="return confirm('Supprimer cette récompense ?');"
+                class="d-inline">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete_recompense_' ~ r.id) }}">
+            <button class="btn btn-outline-danger" type="submit">
+              <i class="bi bi-trash"></i> Supprimer
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

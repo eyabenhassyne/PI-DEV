@@ -1,0 +1,171 @@
+{# templates/citoyen/declarations.html.twig #}
+{% extends 'citoyen/base.html.twig' %}
+
+{% block title %}Mes déclarations | WasteWise TN{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid p-0">
+
+  {# HEADER #}
+  <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-3">
+    <div>
+      <h3 class="mb-1">📄 Mes déclarations</h3>
+      <div class="text-muted">Consultez et filtrez toutes vos déclarations.</div>
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-success" href="{{ path('dechet_nouveau') }}">
+        <i class="bi bi-plus-circle"></i> Nouvelle déclaration
+      </a>
+      <a class="btn btn-outline-secondary" href="{{ path('app_dashboard_citoyen') }}">
+        <i class="bi bi-arrow-left"></i> Dashboard
+      </a>
+    </div>
+  </div>
+
+  {# FILTRES #}
+  <div class="card shadow-sm mb-3">
+    <div class="card-header fw-bold">Filtres</div>
+    <div class="card-body">
+
+      <form method="get">
+        <div class="row g-3">
+
+          <div class="col-12 col-md-4">
+            <label class="form-label">Type</label>
+            <select class="form-select" name="type">
+              <option value="">-- Tous --</option>
+              {% set types = ['Plastique', 'Papier', 'Métal', 'Verre', 'Organique', 'Autre'] %}
+              {% for t in types %}
+                <option value="{{ t }}" {{ filters.type == t ? 'selected' : '' }}>
+                  {{ t }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label class="form-label">Statut</label>
+            <select class="form-select" name="statut">
+              <option value="">Tous</option>
+              {% for s in statuts %}
+                <option value="{{ s }}" {{ filters.statut == s ? 'selected' : '' }}>
+                  {{ s|replace({'_':' '}) }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label class="form-label">Période</label>
+            <div class="d-flex gap-2">
+              <input class="form-control" type="date" name="dateFrom" value="{{ filters.dateFrom }}">
+              <input class="form-control" type="date" name="dateTo" value="{{ filters.dateTo }}">
+            </div>
+
+            <div class="mt-2 d-flex gap-2 flex-wrap">
+              <button class="btn btn-success btn-sm" type="submit">
+                <i class="bi bi-funnel"></i> Filtrer
+              </button>
+              <a class="btn btn-outline-secondary btn-sm" href="{{ path('citoyen_declarations') }}">
+                Réinitialiser
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  {# LISTE #}
+  <div class="card shadow-sm">
+    <div class="card-header fw-bold">Liste des déclarations</div>
+
+    {% if pagination.items is empty %}
+      <div class="card-body text-muted">Aucune déclaration trouvée.</div>
+    {% else %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Statut</th>
+              <th>Type</th>
+              <th>Quantité</th>
+              <th>Date</th>
+              <th>EcoPoints</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for d in pagination.items %}
+              {% set badgeClass =
+                d.statut == 'VALIDE' ? 'text-bg-success' :
+                (d.statut == 'REFUSE' ? 'text-bg-danger' : 'text-bg-warning')
+              %}
+
+              <tr>
+                <td>
+                  <span class="badge {{ badgeClass }}">
+                    {{ d.statut|replace({'_':' '}) }}
+                  </span>
+                </td>
+
+                <td class="fw-semibold">{{ d.type }}</td>
+
+                <td>{{ d.quantiteKg }} kg</td>
+
+                <td>{{ d.createdAt|date('d/m/Y H:i') }}</td>
+
+                <td>
+                  <div class="small text-muted">
+                    {% if d.estimationEcoPoints is not null %}
+                      Estimation : <b class="text-dark">{{ d.estimationEcoPoints }} pts</b>
+                    {% else %}
+                      Estimation : —
+                    {% endif %}
+                  </div>
+
+                  {% if d.statut == 'VALIDE' %}
+                    <div class="small">
+                      Attribués :
+                      {% if d.ecoPointsAttribues is not null and d.ecoPointsAttribues > 0 %}
+                        <b class="text-success">{{ d.ecoPointsAttribues }} pts</b>
+                      {% else %}
+                        <span class="text-muted">—</span>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {# PAGINATION #}
+      {% if pagination.pages > 1 %}
+        {% set q = app.request.query.all %}
+        <div class="card-body border-top">
+          <nav>
+            <ul class="pagination mb-0 flex-wrap">
+
+              {% for p in 1..pagination.pages %}
+                {% set q2 = q|merge({'page': p}) %}
+                <li class="page-item {{ p == pagination.page ? 'active' : '' }}">
+                  <a class="page-link" href="{{ path('citoyen_declarations', q2) }}">{{ p }}</a>
+                </li>
+              {% endfor %}
+
+            </ul>
+          </nav>
+        </div>
+      {% endif %}
+
+    {% endif %}
+  </div>
+
+</div>
+
+{% endblock %}

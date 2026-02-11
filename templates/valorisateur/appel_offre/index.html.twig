@@ -1,0 +1,141 @@
+{% extends 'valorisateur/base_valorizateur.html.twig' %}
+
+{% block title %}Appels d’offres | WasteWise TN{% endblock %}
+
+{% block body %}
+
+  <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mb-3">
+    <div>
+      <h3 class="mb-1">📣 Appels d’offres</h3>
+      <div class="text-muted">Liste • recherche • tri</div>
+    </div>
+
+    <a class="btn btn-success" href="{{ path('val_appel_new') }}">
+      <i class="bi bi-plus-circle"></i> Créer
+    </a>
+  </div>
+
+  {# ===== FILTRES ===== #}
+  <div class="card shadow-sm mb-3">
+    <div class="card-header fw-bold">Recherche</div>
+    <div class="card-body">
+      <form method="get" class="row g-2 align-items-end">
+
+        <div class="col-12 col-lg-5">
+          <label class="form-label fw-semibold">Mot clé</label>
+          <input class="form-control" name="q" value="{{ q|default('') }}" placeholder="Titre ou description..." />
+        </div>
+
+        <div class="col-12 col-md-4 col-lg-3">
+          <label class="form-label fw-semibold">Trier par</label>
+          <select class="form-select" name="sort">
+            <option value="createdAt" {{ sort == 'createdAt' ? 'selected' : '' }}>Création</option>
+            <option value="titre" {{ sort == 'titre' ? 'selected' : '' }}>Titre</option>
+            <option value="statut" {{ sort == 'statut' ? 'selected' : '' }}>Statut</option>
+            <option value="dateDebut" {{ sort == 'dateDebut' ? 'selected' : '' }}>Date début</option>
+            <option value="dateFin" {{ sort == 'dateFin' ? 'selected' : '' }}>Date fin</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-3 col-lg-2">
+          <label class="form-label fw-semibold">Ordre</label>
+          <select class="form-select" name="dir">
+            <option value="DESC" {{ dir == 'DESC' ? 'selected' : '' }}>DESC</option>
+            <option value="ASC" {{ dir == 'ASC' ? 'selected' : '' }}>ASC</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-lg-2 d-flex gap-2">
+          <button class="btn btn-primary w-100" type="submit">
+            <i class="bi bi-funnel"></i> Filtrer
+          </button>
+          <a class="btn btn-outline-secondary w-100" href="{{ path('val_appel_index') }}">
+            Reset
+          </a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  {# Flash messages (si tu n'utilises pas déjà ceux du base) #}
+  {% for msg in app.flashes('success') %}
+    <div class="alert alert-success shadow-sm">{{ msg }}</div>
+  {% endfor %}
+  {% for msg in app.flashes('error') %}
+    <div class="alert alert-danger shadow-sm">{{ msg }}</div>
+  {% endfor %}
+
+  {# ===== LISTE ===== #}
+  <div class="card shadow-sm">
+    <div class="card-header fw-bold">Liste</div>
+
+    {% if appels is empty %}
+      <div class="card-body text-muted">Aucun appel trouvé.</div>
+    {% else %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Titre</th>
+              <th>Statut</th>
+              <th>Date début</th>
+              <th>Date fin</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in appels %}
+
+              {% set badgeClass =
+                a.statut == 'PUBLIE' ? 'bg-success' :
+                (a.statut == 'BROUILLON' ? 'bg-secondary' : 'bg-warning text-dark')
+              %}
+
+              <tr>
+                <td>
+                  <div class="fw-semibold">{{ a.titre }}</div>
+                  <div class="text-muted small">ID: {{ a.id }}</div>
+                </td>
+
+                <td>
+                  <span class="badge {{ badgeClass }}">{{ a.statut }}</span>
+                </td>
+
+                <td>{{ a.dateDebut ? a.dateDebut|date('Y-m-d') : '—' }}</td>
+                <td>{{ a.dateFin ? a.dateFin|date('Y-m-d') : '—' }}</td>
+
+                <td class="text-end">
+                  <div class="d-inline-flex gap-2 flex-wrap justify-content-end">
+
+                    <a class="btn btn-outline-primary btn-sm"
+                       href="{{ path('val_appel_show', {id: a.id}) }}">
+                      <i class="bi bi-eye"></i> Voir
+                    </a>
+
+                    <a class="btn btn-outline-secondary btn-sm"
+                       href="{{ path('val_appel_edit', {id: a.id}) }}">
+                      <i class="bi bi-pencil"></i> Modifier
+                    </a>
+
+                    <form method="post"
+                          action="{{ path('val_appel_delete', {id: a.id}) }}"
+                          onsubmit="return confirm('Supprimer cet appel ?');"
+                          class="d-inline m-0">
+                      <input type="hidden" name="_token" value="{{ csrf_token('delete_appel_' ~ a.id) }}">
+                      <button class="btn btn-outline-danger btn-sm" type="submit">
+                        <i class="bi bi-trash"></i> Supprimer
+                      </button>
+                    </form>
+
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </div>
+
+{% endblock %}

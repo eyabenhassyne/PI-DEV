@@ -2,168 +2,28 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
+  <title>{% block title %}WasteWise TN{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>{% block title %}WasteWise TN{% endblock %}</title>
+  {# Bootstrap CSS #}
+  <link href="{{ asset('vendor/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
+  {# Bootstrap Icons #}
+  <link href="{{ asset('vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
 
-  <link rel="stylesheet" href="{{ asset('css/wastewise.css') }}">
+  {# Ton CSS #}
+  <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+
   {% block stylesheets %}{% endblock %}
-
-  <style>
-    body{
-      margin:0;
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
-      background:#f6faf8;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    main{ flex:1; padding:22px 0; }
-    .ww-container{ width:min(1100px, 92vw); margin:0 auto; }
-
-    header{
-      position:sticky;
-      top:0;
-      z-index:100;
-      background:#ffffff;
-      border-bottom:1px solid rgba(0,0,0,.08);
-    }
-    .ww-header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      padding:12px 0;
-    }
-    .ww-brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      text-decoration:none;
-      color:inherit;
-      font-weight:900;
-      font-size:18px;
-    }
-    .ww-logo{
-      width:38px;
-      height:38px;
-      border-radius:12px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:#0f172a;
-      color:#fff;
-      font-weight:900;
-    }
-    .ww-nav{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .ww-nav a{
-      text-decoration:none;
-      padding:8px 12px;
-      border-radius:12px;
-      font-weight:700;
-      font-size:14px;
-      color:#0f172a;
-      background:#f1f5f9;
-    }
-    .ww-nav a:hover{ background:#e2e8f0; }
-
-    .ww-user{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      font-weight:700;
-      font-size:14px;
-      color:#0f172a;
-    }
-    .ww-avatar{
-      width:32px;
-      height:32px;
-      border-radius:50%;
-      background:#cbd5f5;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:900;
-    }
-
-    footer{
-      background:#ffffff;
-      border-top:1px solid rgba(0,0,0,.08);
-    }
-    .ww-footer{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-      padding:14px 0;
-      font-size:13px;
-      color:#475569;
-    }
-    .ww-footer a{
-      color:#475569;
-      text-decoration:none;
-      font-weight:700;
-    }
-    .ww-footer a:hover{ text-decoration:underline; }
-  </style>
 </head>
 
-<body>
+<body class="bg-light">
 
-  {# ✅ Header seulement dans le dashboard #}
-  {% set currentRoute = app.request.attributes.get('_route') %}
-{% set showHeader = currentRoute in ['app_dashboard', 'dechet_nouveau'] %}
+  {# ⚠️ ici on ne met PAS container-fluid, PAS navbar.
+     Chaque espace (citoyen/admin/valorisateur) gère son layout. #}
 
-  {% if showHeader %}
-  <header>
-    <div class="ww-container ww-header">
+  {% block body %}{% endblock %}
 
-      <a href="{{ path('app_dashboard') }}" class="ww-brand">
-        <div class="ww-logo">WW</div>
-        WasteWise <span style="opacity:.7;">TN</span>
-      </a>
-
-      <nav class="ww-nav">
-        <a href="{{ path('app_dashboard') }}">Dashboard</a>
-        <a href="{{ path('dechet_nouveau') }}">Déclarer</a>
-        <a href="{{ path('app_logout') }}">Déconnexion</a>
-      </nav>
-
-      {% if app.user %}
-        {% set mail = app.user.userIdentifier %}
-        <div class="ww-user">
-          <div class="ww-avatar">{{ mail|first|upper }}</div>
-          {{ mail }}
-        </div>
-      {% endif %}
-
-    </div>
-  </header>
-  {% endif %}
-
-  <main>
-    <div class="ww-container">
-      {% block body %}{% endblock %}
-    </div>
-  </main>
-
-  <footer>
-    <div class="ww-container ww-footer">
-      <div>© {{ "now"|date("Y") }} <b>WasteWise TN</b></div>
-      <div>
-        <a href="#">À propos</a> ·
-        <a href="#">Contact</a> ·
-        <a href="#">Mentions légales</a>
-      </div>
-    </div>
-  </footer>
-
+  <script src="{{ asset('vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
   {% block javascripts %}{% endblock %}
 </body>
 </html>
