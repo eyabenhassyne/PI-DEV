@@ -1,0 +1,35 @@
+{# templates/admin/_sidebar.html.twig #}
+<li class="nav-item">
+  <a class="nav-link {{ route == 'app_dashboard_admin' ? 'active' : '' }}"
+     href="{{ path('app_dashboard_admin') }}">
+    <i class="fa-solid fa-chart-line"></i> Dashboard
+  </a>
+</li>
+
+<li class="nav-item">
+  <a class="nav-link {{ route starts with 'app_user_' ? 'active' : '' }}"
+     href="{{ path('app_user_index') }}">
+    <i class="fa-solid fa-users"></i> Utilisateurs
+  </a>
+</li>
+
+<li class="nav-item">
+  <a class="nav-link {{ route starts with 'partenaire_' ? 'active' : '' }}"
+     href="{{ path('partenaire_index') }}">
+    <i class="fa-solid fa-building"></i> Partenaires
+  </a>
+</li>
+
+<li class="nav-item">
+  <a class="nav-link {{ route starts with 'recompense_' ? 'active' : '' }}"
+     href="{{ path('recompense_index') }}">
+    <i class="fa-solid fa-gift"></i> Récompenses
+  </a>
+</li>
+
+<li class="nav-item">
+  <a class="nav-link {{ route starts with 'admin_campagne_' ? 'active' : '' }}"
+     href="{{ path('admin_campagne_index') }}">
+    <i class="fa-solid fa-bullhorn"></i> Campagnes
+  </a>
+</li>

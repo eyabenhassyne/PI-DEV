@@ -1,3 +1,4 @@
+{# templates/admin/base_admin.html.twig #}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -5,44 +6,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Admin | WasteWise{% endblock %}</title>
 
-  {# ===== Bootstrap CSS ===== #}
-  <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/dist/css/bootstrap.min.css') }}">
-
-  {# ===== Bootstrap Icons ===== #}
-  <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}">
-
-  {# ===== Font Awesome ===== #}
-  <link rel="stylesheet" href="{{ asset('assets/vendor/font-awesome/css/all.min.css') }}">
-
-  {# ===== Overlay Scrollbar ===== #}
-  <link rel="stylesheet" href="{{ asset('assets/vendor/overlay-scrollbar/css/OverlayScrollbars.min.css') }}">
-
-  {# ===== Ton style personnalisé ===== #}
-  <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
   <style>
-    .main-wrapper {
-      display: flex;
-      min-height: 100vh;
+    body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; background:#f4f6f5; }
+    .layout{ display:flex; min-height:100vh; }
+
+    /* Sidebar */
+    .sidebar{
+      width:260px; background:#2f6b4f; color:#fff; padding:24px 18px;
+      display:flex; flex-direction:column; position:sticky; top:0; height:100vh;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px; border-radius:14px; background:rgba(255,255,255,.08);
+      margin-bottom:18px;
+    }
+    .brand .logo{
+      width:42px; height:42px; border-radius:12px;
+      background:rgba(255,255,255,.18); display:grid; place-items:center;
+      font-weight:900;
     }
 
-    .sidebar {
-      width: 280px;
-      flex: 0 0 280px;
-      border-right: 1px solid rgba(0,0,0,.08);
-      background: #fff;
+    .sidebar .nav-link{
+      color:rgba(255,255,255,.88);
+      padding:12px 14px; border-radius:12px; margin-bottom:8px;
+      transition:.25s; display:flex; align-items:center; gap:10px;
+    }
+    .sidebar .nav-link:hover{ background:rgba(255,255,255,.14); color:#fff; transform:translateX(4px); }
+    .sidebar .nav-link.active{ background:rgba(255,255,255,.22); font-weight:800; }
+
+    /* Main */
+    .main-area{ flex:1; display:flex; flex-direction:column; min-width:0; }
+    .top-header{
+      background:#fff; padding:16px 26px; border-bottom:1px solid #e7e7e7;
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+    }
+    .main-content{ padding:26px; }
+
+    .hero{
+      background:linear-gradient(90deg,#2f6b4f,#8bd22f);
+      color:#fff; padding:34px; border-radius:20px; margin-bottom:22px;
+      box-shadow:0 14px 40px rgba(0,0,0,.08);
     }
 
-    .page-wrapper {
-      flex: 1 1 auto;
-      min-width: 0;
-      background: #f8fafc;
+    .stat-card{
+      background:#fff; border-radius:18px; padding:22px;
+      box-shadow:0 5px 15px rgba(0,0,0,.08); transition:.25s;
+      border:1px solid rgba(0,0,0,.04);
+    }
+    .stat-card:hover{ transform:translateY(-5px); }
+
+    .big-card{
+      background:#fff; border-radius:18px; padding:26px;
+      box-shadow:0 5px 20px rgba(0,0,0,.08);
+      border:1px solid rgba(0,0,0,.04);
     }
 
-    .page-header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
+    @media (max-width: 992px){
+      .sidebar{ width:220px; }
+    }
+    @media (max-width: 768px){
+      .layout{ flex-direction:column; }
+      .sidebar{ width:auto; height:auto; position:relative; }
     }
   </style>
 
@@ -50,102 +81,55 @@
 </head>
 
 <body>
-
 {% set route = app.request.attributes.get('_route') %}
 
-<div class="main-wrapper">
+<div class="layout">
 
-  {# ===== SIDEBAR ===== #}
+  <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="p-3">
-      <a href="{{ path('app_dashboard_admin') }}" class="d-flex align-items-center gap-2 text-decoration-none">
-        <span class="fw-bold text-primary">WasteWise TN</span>
-      </a>
-      <div class="small text-muted">Administration</div>
+    <div class="brand">
+      <div class="logo"><i class="fa-solid fa-leaf"></i></div>
+      <div>
+        <div style="font-weight:900; line-height:1;">WasteWise</div>
+        <small style="opacity:.85;">Admin panel</small>
+      </div>
     </div>
 
-    <div class="px-2 pb-3">
-      <ul class="nav flex-column gap-1">
+    <ul class="nav flex-column">
+      {% block sidebar %}{% endblock %}
+    </ul>
 
-        <li class="nav-item">
-          <a class="nav-link {{ route == 'app_dashboard_admin' ? 'active fw-bold' : '' }}"
-             href="{{ path('app_dashboard_admin') }}">
-            <i class="bi bi-speedometer2 me-2"></i> Dashboard
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link {{ route starts with 'app_user_' ? 'active fw-bold' : '' }}"
-             href="{{ path('app_user_index') }}">
-            <i class="bi bi-people me-2"></i> Utilisateurs
-          </a>
-        </li>
-
-        {# ===== Déchets supprimé ici ===== #}
-
-        <li class="nav-item">
-          <a class="nav-link {{ route starts with 'partenaire_' ? 'active fw-bold' : '' }}"
-             href="{{ path('partenaire_index') }}">
-            <i class="bi bi-buildings me-2"></i> Partenaires
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link {{ route starts with 'recompense_' ? 'active fw-bold' : '' }}"
-             href="{{ path('recompense_index') }}">
-            <i class="bi bi-gift me-2"></i> Récompenses
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link {{ route starts with 'admin_campagne_' ? 'active fw-bold' : '' }}"
-             href="{{ path('admin_campagne_index') }}">
-            <i class="bi bi-megaphone me-2"></i> Campagnes
-          </a>
-        </li>
-
-        <li class="nav-item mt-2">
-          <a class="nav-link text-danger" href="{{ path('app_logout') }}">
-            <i class="bi bi-box-arrow-right me-2"></i> Déconnexion
-          </a>
-        </li>
-
-      </ul>
+    <div class="mt-auto pt-3">
+      <a class="nav-link text-warning" href="{{ path('app_logout') }}">
+        <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+      </a>
     </div>
   </aside>
 
-  {# ===== PAGE CONTENT ===== #}
-  <div class="page-wrapper">
-
-    <header class="page-header bg-white border-bottom px-4 py-3 d-flex align-items-center justify-content-between">
-      <div class="fw-bold">Admin</div>
+  <!-- MAIN -->
+  <div class="main-area">
+    <header class="top-header">
+      <div>
+        <h5 class="mb-0">{% block page_title %}Dashboard{% endblock %}</h5>
+        <small class="text-muted">WasteWise TN • Administration</small>
+      </div>
 
       {% if app.user %}
-        <div class="d-flex align-items-center gap-2">
-          <i class="bi bi-person-circle"></i>
-          <span class="small text-muted">{{ app.user.userIdentifier }}</span>
+        <div class="text-end">
+          <strong>{{ app.user.userIdentifier }}</strong><br>
+          <small class="text-muted">Admin</small>
         </div>
       {% endif %}
     </header>
 
-    <main class="px-4 py-4">
+    <main class="main-content">
       {% block body %}{% endblock %}
     </main>
-
   </div>
 
 </div>
 
-{# ===== Bootstrap JS ===== #}
-<script src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
-
-{# ===== Overlay Scrollbar JS ===== #}
-<script src="{{ asset('assets/vendor/overlay-scrollbar/js/OverlayScrollbars.min.js') }}"></script>
-
-{# ===== Script principal ===== #}
-<script src="{{ asset('assets/js/script.js') }}"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 {% block javascripts %}{% endblock %}
-
 </body>
 </html>

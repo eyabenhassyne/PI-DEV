@@ -5,56 +5,63 @@
 
 {% block body %}
 
-<div class="container-fluid p-0">
-
-  {# HEADER #}
-  <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-3">
-    <div>
-      <h3 class="mb-1">📣 {{ appel.titre }}</h3>
-      <div class="text-muted">
-        Du {{ appel.dateDebut ? appel.dateDebut|date('d/m/Y') : '—' }}
-        au {{ appel.dateFin ? appel.dateFin|date('d/m/Y') : '—' }}
-      </div>
-    </div>
-
-    <div class="d-flex align-items-center gap-2 flex-wrap">
-      {# Badge statut : BROUILLON / PUBLIE / FERME #}
-      {% set st = appel.statut|default('BROUILLON') %}
-      {% set badgeClass =
-        st == 'PUBLIE' ? 'text-bg-success' :
-        (st == 'FERME' ? 'text-bg-secondary' : 'text-bg-warning')
-      %}
-
-      <span class="badge {{ badgeClass }}">{{ st }}</span>
-
-      <a class="btn btn-outline-secondary" href="{{ path('cit_appel_index') }}">
-        <i class="bi bi-arrow-left"></i> Retour
-      </a>
+{# ===== HEADER ===== #}
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+  <div>
+    <h2 class="mb-0 ww-title">📣 {{ appel.titre }}</h2>
+    <div class="ww-subtitle">
+      Du {{ appel.dateDebut ? appel.dateDebut|date('d/m/Y') : '—' }}
+      au {{ appel.dateFin ? appel.dateFin|date('d/m/Y') : '—' }}
     </div>
   </div>
 
-  {# FLASH MESSAGES (tous types) #}
-  {% for label, messages in app.flashes %}
-    {% for message in messages %}
-      <div class="alert alert-{{ label == 'danger' ? 'danger' : (label == 'error' ? 'danger' : label) }} shadow-sm">
-        {{ message }}
-      </div>
-    {% endfor %}
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+    {# Badge statut : BROUILLON / PUBLIE / FERME #}
+    {% set st = appel.statut|default('BROUILLON') %}
+
+    {% if st == 'PUBLIE' %}
+      <span class="ww-badge"><i class="bi bi-check-circle"></i> PUBLIE</span>
+    {% elseif st == 'FERME' %}
+      <span class="ww-badge"><i class="bi bi-lock"></i> FERME</span>
+    {% else %}
+      <span class="ww-badge"><i class="bi bi-pencil-square"></i> BROUILLON</span>
+    {% endif %}
+
+    <a class="btn btn-outline-secondary" href="{{ path('cit_appel_index') }}">
+      <i class="bi bi-arrow-left"></i> Retour
+    </a>
+  </div>
+</div>
+
+{# (optionnel) Flash messages: ton base.html.twig les affiche déjà,
+   donc tu peux supprimer ce bloc si tu veux éviter le double affichage. #}
+{% for label, messages in app.flashes %}
+  {% for message in messages %}
+    {% set bs = (label == 'error' or label == 'danger') ? 'danger' : label %}
+    <div class="alert alert-{{ bs }} shadow-sm mb-3">
+      {{ message }}
+    </div>
   {% endfor %}
+{% endfor %}
 
-  {# CARD DESCRIPTION #}
-  <div class="card shadow-sm">
-    <div class="card-header fw-bold">Description</div>
-    <div class="card-body">
+{# ===== DESCRIPTION ===== #}
+<div class="ww-card">
+  <div class="ww-card-h">Description</div>
 
-      <p class="text-muted mb-3" style="line-height:1.7;">
-        {{ appel.description ?: '—' }}
-      </p>
+  <div class="ww-card-b">
+    <div class="text-muted" style="line-height:1.7;">
+      {{ appel.description ?: '—' }}
+    </div>
 
-      <div class="d-flex justify-content-end gap-2 flex-wrap">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-4">
+      <div class="text-muted small">
+        Vérifie les dates et le statut avant de postuler.
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
         {% if appel.isOuvert() %}
           <a class="btn btn-success"
-             href="{{ path('cit_appel_proposer', {id: appel.id}) }}">
+             href="{{ path('cit_appel_proposer', { id: appel.id }) }}">
             <i class="bi bi-send"></i> Envoyer une proposition
           </a>
         {% else %}
@@ -63,10 +70,9 @@
           </button>
         {% endif %}
       </div>
-
     </div>
-  </div>
 
+  </div>
 </div>
 
 {% endblock %}

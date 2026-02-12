@@ -4,6 +4,7 @@
 
 {% block body %}
 
+  {# ===== HEADER ===== #}
   <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mb-3">
     <div>
       <h3 class="mb-1">📣 Appels d’offres</h3>
@@ -15,21 +16,38 @@
     </a>
   </div>
 
+  {# ===== FLASH (inutile si déjà dans base_valorizateur) ===== #}
+  {% for label, messages in app.flashes %}
+    {% for message in messages %}
+      {% set bs = label == 'error' ? 'danger' : label %}
+      <div class="alert alert-{{ bs }} shadow-sm">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endfor %}
+
   {# ===== FILTRES ===== #}
   <div class="card shadow-sm mb-3">
-    <div class="card-header fw-bold">Recherche</div>
+    <div class="card-header fw-bold d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <span>Recherche</span>
+      <span class="text-muted small">
+        <i class="bi bi-info-circle"></i> Utilise un mot clé + tri
+      </span>
+    </div>
+
     <div class="card-body">
       <form method="get" class="row g-2 align-items-end">
 
         <div class="col-12 col-lg-5">
-          <label class="form-label fw-semibold">Mot clé</label>
-          <input class="form-control" name="q" value="{{ q|default('') }}" placeholder="Titre ou description..." />
+          <label class="form-label fw-semibold" for="q">Mot clé</label>
+          <input id="q" class="form-control" name="q" value="{{ q|default('') }}"
+                 placeholder="Titre ou description..." />
         </div>
 
         <div class="col-12 col-md-4 col-lg-3">
-          <label class="form-label fw-semibold">Trier par</label>
-          <select class="form-select" name="sort">
-            <option value="createdAt" {{ sort == 'createdAt' ? 'selected' : '' }}>Création</option>
+          <label class="form-label fw-semibold" for="sort">Trier par</label>
+          <select id="sort" class="form-select" name="sort">
+            <option value="createdAt" {{ (sort|default('createdAt')) == 'createdAt' ? 'selected' : '' }}>Création</option>
             <option value="titre" {{ sort == 'titre' ? 'selected' : '' }}>Titre</option>
             <option value="statut" {{ sort == 'statut' ? 'selected' : '' }}>Statut</option>
             <option value="dateDebut" {{ sort == 'dateDebut' ? 'selected' : '' }}>Date début</option>
@@ -38,9 +56,9 @@
         </div>
 
         <div class="col-12 col-md-3 col-lg-2">
-          <label class="form-label fw-semibold">Ordre</label>
-          <select class="form-select" name="dir">
-            <option value="DESC" {{ dir == 'DESC' ? 'selected' : '' }}>DESC</option>
+          <label class="form-label fw-semibold" for="dir">Ordre</label>
+          <select id="dir" class="form-select" name="dir">
+            <option value="DESC" {{ (dir|default('DESC')) == 'DESC' ? 'selected' : '' }}>DESC</option>
             <option value="ASC" {{ dir == 'ASC' ? 'selected' : '' }}>ASC</option>
           </select>
         </div>
@@ -49,8 +67,10 @@
           <button class="btn btn-primary w-100" type="submit">
             <i class="bi bi-funnel"></i> Filtrer
           </button>
+
+          {# Reset : route simple (sans query string) #}
           <a class="btn btn-outline-secondary w-100" href="{{ path('val_appel_index') }}">
-            Reset
+            <i class="bi bi-x-circle"></i> Reset
           </a>
         </div>
 
@@ -58,17 +78,14 @@
     </div>
   </div>
 
-  {# Flash messages (si tu n'utilises pas déjà ceux du base) #}
-  {% for msg in app.flashes('success') %}
-    <div class="alert alert-success shadow-sm">{{ msg }}</div>
-  {% endfor %}
-  {% for msg in app.flashes('error') %}
-    <div class="alert alert-danger shadow-sm">{{ msg }}</div>
-  {% endfor %}
-
   {# ===== LISTE ===== #}
   <div class="card shadow-sm">
-    <div class="card-header fw-bold">Liste</div>
+    <div class="card-header fw-bold d-flex align-items-center justify-content-between">
+      <span>Liste</span>
+      <span class="badge bg-light text-dark border">
+        Total : {{ appels|length }}
+      </span>
+    </div>
 
     {% if appels is empty %}
       <div class="card-body text-muted">Aucun appel trouvé.</div>
@@ -84,38 +101,39 @@
               <th class="text-end">Actions</th>
             </tr>
           </thead>
+
           <tbody>
             {% for a in appels %}
-
+              {% set st = a.statut|default('BROUILLON') %}
               {% set badgeClass =
-                a.statut == 'PUBLIE' ? 'bg-success' :
-                (a.statut == 'BROUILLON' ? 'bg-secondary' : 'bg-warning text-dark')
+                st == 'PUBLIE' ? 'text-bg-success' :
+                (st == 'BROUILLON' ? 'text-bg-secondary' :
+                (st == 'FERME' ? 'text-bg-danger' : 'text-bg-warning'))
               %}
 
               <tr>
                 <td>
                   <div class="fw-semibold">{{ a.titre }}</div>
-                  <div class="text-muted small">ID: {{ a.id }}</div>
+                  <div class="text-muted small">#{{ a.id }}</div>
                 </td>
 
                 <td>
-                  <span class="badge {{ badgeClass }}">{{ a.statut }}</span>
+                  <span class="badge {{ badgeClass }}">{{ st }}</span>
                 </td>
 
-                <td>{{ a.dateDebut ? a.dateDebut|date('Y-m-d') : '—' }}</td>
-                <td>{{ a.dateFin ? a.dateFin|date('Y-m-d') : '—' }}</td>
+                <td>{{ a.dateDebut ? a.dateDebut|date('d/m/Y') : '—' }}</td>
+                <td>{{ a.dateFin ? a.dateFin|date('d/m/Y') : '—' }}</td>
 
                 <td class="text-end">
-                  <div class="d-inline-flex gap-2 flex-wrap justify-content-end">
-
-                    <a class="btn btn-outline-primary btn-sm"
-                       href="{{ path('val_appel_show', {id: a.id}) }}">
-                      <i class="bi bi-eye"></i> Voir
+                  <div class="btn-group" role="group" aria-label="Actions">
+                    <a class="btn btn-outline-secondary btn-sm"
+                       href="{{ path('val_appel_show', {id: a.id}) }}" title="Voir">
+                      <i class="bi bi-eye"></i>
                     </a>
 
-                    <a class="btn btn-outline-secondary btn-sm"
-                       href="{{ path('val_appel_edit', {id: a.id}) }}">
-                      <i class="bi bi-pencil"></i> Modifier
+                    <a class="btn btn-outline-primary btn-sm"
+                       href="{{ path('val_appel_edit', {id: a.id}) }}" title="Modifier">
+                      <i class="bi bi-pencil"></i>
                     </a>
 
                     <form method="post"
@@ -123,16 +141,16 @@
                           onsubmit="return confirm('Supprimer cet appel ?');"
                           class="d-inline m-0">
                       <input type="hidden" name="_token" value="{{ csrf_token('delete_appel_' ~ a.id) }}">
-                      <button class="btn btn-outline-danger btn-sm" type="submit">
-                        <i class="bi bi-trash"></i> Supprimer
+                      <button class="btn btn-outline-danger btn-sm" type="submit" title="Supprimer">
+                        <i class="bi bi-trash"></i>
                       </button>
                     </form>
-
                   </div>
                 </td>
               </tr>
             {% endfor %}
           </tbody>
+
         </table>
       </div>
     {% endif %}

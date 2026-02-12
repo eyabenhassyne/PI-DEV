@@ -1,6 +1,11 @@
 {% extends 'admin/base_admin.html.twig' %}
 
 {% block title %}Modifier utilisateur | WasteWise{% endblock %}
+{% block page_title %}Utilisateurs{% endblock %}
+
+{% block sidebar %}
+  {% include 'admin/_sidebar.html.twig' %}
+{% endblock %}
 
 {% block body %}
 
@@ -25,7 +30,6 @@
 
 <div class="row g-3">
   <div class="col-lg-8">
-
     <div class="card shadow-sm border-0">
       <div class="card-header bg-white d-flex align-items-center justify-content-between">
         <div class="fw-bold">Formulaire</div>
@@ -35,14 +39,13 @@
       </div>
 
       <div class="card-body">
-        {{ include('user/_form.html.twig', { button_label: 'Mettre à jour' }) }}
+        {# ✅ chemin corrigé #}
+        {{ include('admin/user/_form.html.twig', { button_label: 'Mettre à jour' }) }}
       </div>
     </div>
-
   </div>
 
   <div class="col-lg-4">
-
     <div class="card shadow-sm border-0">
       <div class="card-header bg-white fw-bold">
         Actions rapides
@@ -59,11 +62,11 @@
 
         <div class="border-top pt-3">
           <div class="text-muted small mb-2">Suppression</div>
-          {{ include('user/_delete_form.html.twig') }}
+          {# ✅ chemin corrigé #}
+          {{ include('admin/user/_delete_form.html.twig', { user: user }) }}
         </div>
       </div>
     </div>
-
   </div>
 </div>
 

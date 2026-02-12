@@ -1,75 +1,65 @@
-{{ form_start(form, { attr: { class: 'row g-3' } }) }}
+{# templates/admin/user/_form.html.twig #}
+
+{{ form_start(form, { attr: { class: 'row g-3', novalidate: 'novalidate' } }) }}
 
   {# === Email === #}
   <div class="col-md-6">
-    <label class="form-label">Email</label>
-    {{ form_widget(form.email, {
-        attr: { class: 'form-control', placeholder: 'exemple@email.com' }
-    }) }}
-    <div class="text-danger small">
-      {{ form_errors(form.email) }}
-    </div>
+    {{ form_label(form.email, 'Email', { label_attr: { class: 'form-label' } }) }}
+    {{ form_widget(form.email, { attr: { class: 'form-control', placeholder: 'exemple@email.com' } }) }}
+    <div class="text-danger small">{{ form_errors(form.email) }}</div>
   </div>
 
   {# === Password === #}
-  <div class="col-md-6">
-    <label class="form-label">Mot de passe</label>
-    {{ form_widget(form.password, {
-        attr: { class: 'form-control', placeholder: '••••••••' }
-    }) }}
-    <div class="text-danger small">
-      {{ form_errors(form.password) }}
+  {% if form.password is defined %}
+    <div class="col-md-6">
+      {{ form_label(form.password, 'Mot de passe', { label_attr: { class: 'form-label' } }) }}
+      {{ form_widget(form.password, { attr: { class: 'form-control', placeholder: '••••••••' } }) }}
+      <div class="text-danger small">{{ form_errors(form.password) }}</div>
+
+      {# ✅ Affiche le message uniquement si c'est une modification #}
+      {% if user is defined and user.id %}
+        <div class="form-text text-muted">
+          Laisse vide si tu ne veux pas changer le mot de passe.
+        </div>
+      {% endif %}
     </div>
-  </div>
+  {% endif %}
 
   {# === Nom === #}
   <div class="col-md-6">
-    <label class="form-label">Nom</label>
-    {{ form_widget(form.nom, {
-        attr: { class: 'form-control', placeholder: 'Nom' }
-    }) }}
-    <div class="text-danger small">
-      {{ form_errors(form.nom) }}
-    </div>
+    {{ form_label(form.nom, 'Nom', { label_attr: { class: 'form-label' } }) }}
+    {{ form_widget(form.nom, { attr: { class: 'form-control', placeholder: 'Nom' } }) }}
+    <div class="text-danger small">{{ form_errors(form.nom) }}</div>
   </div>
 
   {# === Prénom === #}
   <div class="col-md-6">
-    <label class="form-label">Prénom</label>
-    {{ form_widget(form.prenom, {
-        attr: { class: 'form-control', placeholder: 'Prénom' }
-    }) }}
-    <div class="text-danger small">
-      {{ form_errors(form.prenom) }}
-    </div>
+    {{ form_label(form.prenom, 'Prénom', { label_attr: { class: 'form-label' } }) }}
+    {{ form_widget(form.prenom, { attr: { class: 'form-control', placeholder: 'Prénom' } }) }}
+    <div class="text-danger small">{{ form_errors(form.prenom) }}</div>
   </div>
 
   {# === Téléphone === #}
   <div class="col-md-6">
-    <label class="form-label">Téléphone</label>
-    {{ form_widget(form.telephone, {
-        attr: { class: 'form-control', placeholder: 'Ex: 20 000 000' }
-    }) }}
-    <div class="text-danger small">
-      {{ form_errors(form.telephone) }}
-    </div>
+    {{ form_label(form.telephone, 'Téléphone', { label_attr: { class: 'form-label' } }) }}
+    {{ form_widget(form.telephone, { attr: { class: 'form-control', placeholder: 'Ex: 20 000 000' } }) }}
+    <div class="text-danger small">{{ form_errors(form.telephone) }}</div>
   </div>
 
   {# === Type === #}
   <div class="col-md-6">
-    <label class="form-label">Type utilisateur</label>
-    {{ form_widget(form.type, {
-        attr: { class: 'form-select' }
-    }) }}
-    <div class="text-danger small">
-      {{ form_errors(form.type) }}
-    </div>
+    {{ form_label(form.type, 'Type utilisateur', { label_attr: { class: 'form-label' } }) }}
+    {{ form_widget(form.type, { attr: { class: 'form-select' } }) }}
+    <div class="text-danger small">{{ form_errors(form.type) }}</div>
   </div>
 
+  {# ✅ CSRF / champs cachés #}
+  {{ form_rest(form) }}
+
   {# === Boutons === #}
-  <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+  <div class="col-12 d-flex justify-content-end gap-2 mt-2">
     <a href="{{ path('app_user_index') }}" class="btn btn-outline-secondary">
-      Annuler
+      <i class="bi bi-x-circle"></i> Annuler
     </a>
 
     <button type="submit" class="btn btn-primary">

@@ -44,15 +44,16 @@ class RegistrationFormType extends AbstractType
                     new Length(min: 8, max: 20),
                 ],
             ])
+
+            // ✅ TYPE: sans PARTENAIRE (et sans ADMIN)
             ->add('type', ChoiceType::class, [
                 'choices' => [
-                    'Citoyen' => User::TYPE_CITIZEN,
+                    'Citoyen'      => User::TYPE_CITIZEN,
                     'Valorisateur' => User::TYPE_VALORIZER,
-                    'Partenaire' => User::TYPE_PARTNER,
-                    'Admin' => User::TYPE_ADMIN,
                 ],
                 'data' => User::TYPE_CITIZEN,
             ])
+
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
                 'constraints' => [
@@ -68,7 +69,7 @@ class RegistrationFormType extends AbstractType
                 'constraints' => [
                     new NotBlank(message: 'Veuillez saisir un mot de passe.'),
                     new Length(
-                        min: 6,
+                        min: 8,
                         max: 4096,
                         minMessage: 'Votre mot de passe doit contenir au moins {{ limit }} caractères.'
                     ),

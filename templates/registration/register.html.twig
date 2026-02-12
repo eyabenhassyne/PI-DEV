@@ -20,14 +20,11 @@
 
       {# ================= FORMULAIRE DROITE ================= #}
       <div class="col-lg-6">
-
         <div class="auth-card-advanced">
 
           <div class="text-center mb-4">
             <h2 class="auth-title">Créer un compte</h2>
-            <p class="auth-subtitle">
-              Rejoins la communauté écologique WasteWise 🌿
-            </p>
+            <p class="auth-subtitle">Rejoins la communauté écologique WasteWise 🌿</p>
           </div>
 
           {% if not registrationForm.vars.valid %}
@@ -42,7 +39,7 @@
           <div class="mb-3">
             <label class="form-label fw-semibold">Email *</label>
             {{ form_widget(registrationForm.email, {
-              attr: { class: 'form-control auth-input', placeholder: 'ex: khalil@mail.com' }
+              attr: { class: 'form-control auth-input', placeholder: 'ex: khalil@mail.com', autocomplete: 'email' }
             }) }}
             <div class="text-danger small mt-1">{{ form_errors(registrationForm.email) }}</div>
           </div>
@@ -51,100 +48,105 @@
           <div class="mb-3">
             <label class="form-label fw-semibold">Mot de passe *</label>
             {{ form_widget(registrationForm.plainPassword, {
-              attr: { class: 'form-control auth-input', placeholder: '********' }
+              attr: { class: 'form-control auth-input', placeholder: '********', autocomplete: 'new-password' }
             }) }}
             <div class="text-danger small mt-1">{{ form_errors(registrationForm.plainPassword) }}</div>
           </div>
 
           {# CONFIRM PASSWORD (si existe) #}
           {% if registrationForm.confirmPassword is defined %}
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Confirmer le mot de passe *</label>
-            {{ form_widget(registrationForm.confirmPassword, {
-              attr: { class: 'form-control auth-input', placeholder: '********' }
-            }) }}
-            <div class="text-danger small mt-1">{{ form_errors(registrationForm.confirmPassword) }}</div>
-          </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Confirmer le mot de passe *</label>
+              {{ form_widget(registrationForm.confirmPassword, {
+                attr: { class: 'form-control auth-input', placeholder: '********', autocomplete: 'new-password' }
+              }) }}
+              <div class="text-danger small mt-1">{{ form_errors(registrationForm.confirmPassword) }}</div>
+            </div>
           {% endif %}
 
           {# NOM / PRENOM (si existent) #}
           {% if registrationForm.prenom is defined or registrationForm.nom is defined %}
-          <div class="row">
-            {% if registrationForm.prenom is defined %}
-            <div class="col-md-6 mb-3">
-              <label class="form-label fw-semibold">Prénom</label>
-              {{ form_widget(registrationForm.prenom, {
-                attr: { class: 'form-control auth-input' }
-              }) }}
-              <div class="text-danger small mt-1">{{ form_errors(registrationForm.prenom) }}</div>
-            </div>
-            {% endif %}
+            <div class="row">
+              {% if registrationForm.prenom is defined %}
+                <div class="col-md-6 mb-3">
+                  <label class="form-label fw-semibold">Prénom</label>
+                  {{ form_widget(registrationForm.prenom, {
+                    attr: { class: 'form-control auth-input', autocomplete: 'given-name' }
+                  }) }}
+                  <div class="text-danger small mt-1">{{ form_errors(registrationForm.prenom) }}</div>
+                </div>
+              {% endif %}
 
-            {% if registrationForm.nom is defined %}
-            <div class="col-md-6 mb-3">
-              <label class="form-label fw-semibold">Nom</label>
-              {{ form_widget(registrationForm.nom, {
-                attr: { class: 'form-control auth-input' }
-              }) }}
-              <div class="text-danger small mt-1">{{ form_errors(registrationForm.nom) }}</div>
+              {% if registrationForm.nom is defined %}
+                <div class="col-md-6 mb-3">
+                  <label class="form-label fw-semibold">Nom</label>
+                  {{ form_widget(registrationForm.nom, {
+                    attr: { class: 'form-control auth-input', autocomplete: 'family-name' }
+                  }) }}
+                  <div class="text-danger small mt-1">{{ form_errors(registrationForm.nom) }}</div>
+                </div>
+              {% endif %}
             </div>
-            {% endif %}
-          </div>
           {% endif %}
 
-          {# ================= ROLE + TELEPHONE JUSTE AVANT BUTTON ================= #}
-          <div class="row g-3 mt-2">
-
-            {% if registrationForm.type is defined %}
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Type de compte *</label>
-              {{ form_widget(registrationForm.type, {
-                attr: { class: 'form-select auth-input' }
-              }) }}
-              <div class="text-danger small mt-1">{{ form_errors(registrationForm.type) }}</div>
-            </div>
-            {% endif %}
-
-            {% if registrationForm.telephone is defined %}
-            <div class="col-md-6">
+          {# TELEPHONE (sans type/role) #}
+          {% if registrationForm.telephone is defined %}
+            <div class="mt-2">
               <label class="form-label fw-semibold">Téléphone *</label>
               {{ form_widget(registrationForm.telephone, {
-                attr: { class: 'form-control auth-input', placeholder: '+216 26 212 423' }
+                attr: { class: 'form-control auth-input', placeholder: '+216 26 212 423', autocomplete: 'tel' }
               }) }}
               <div class="text-danger small mt-1">{{ form_errors(registrationForm.telephone) }}</div>
             </div>
-            {% endif %}
-
-          </div>
+          {% endif %}
 
           {# CONDITIONS #}
           {% if registrationForm.agreeTerms is defined %}
-          <div class="form-check mt-4">
-            {{ form_widget(registrationForm.agreeTerms, { attr: { class: 'form-check-input' } }) }}
-            <label class="form-check-label">
-              J’accepte les conditions d’utilisation
-            </label>
-          </div>
+            <div class="form-check mt-4">
+              {{ form_widget(registrationForm.agreeTerms, { attr: { class: 'form-check-input', id: 'agreeTerms' } }) }}
+              <label class="form-check-label" for="agreeTerms">
+                J’accepte les conditions d’utilisation
+              </label>
+              <div class="text-danger small mt-1">{{ form_errors(registrationForm.agreeTerms) }}</div>
+            </div>
           {% endif %}
 
           {# BOUTON #}
           <div class="d-grid mt-4">
-            <button class="btn auth-btn-advanced">
+            <button class="btn auth-btn-advanced" type="submit">
               Créer mon compte
             </button>
           </div>
 
           {{ form_end(registrationForm) }}
 
+          {# ===== SEPARATEUR ===== #}
+          <div class="position-relative my-4 text-center">
+            <hr>
+            <span class="auth-divider">Ou s’inscrire avec</span>
+          </div>
+
+          {# ===== GOOGLE + FACEBOOK ===== #}
+          <div class="row g-2">
+            <div class="col-12 col-md-6 d-grid">
+              <a href="{{ path('connect_google_start') }}" class="btn btn-google">
+                <i class="fab fa-google me-2"></i> Google
+              </a>
+            </div>
+
+            <div class="col-12 col-md-6 d-grid">
+              <a href="{{ path('connect_facebook_start') }}" class="btn btn-facebook">
+                <i class="fab fa-facebook-f me-2"></i> Facebook
+              </a>
+            </div>
+          </div>
+
           <div class="text-center mt-4">
             Déjà un compte ?
-            <a href="{{ path('app_login') }}" class="auth-link">
-              Se connecter
-            </a>
+            <a href="{{ path('app_login') }}" class="auth-link">Se connecter</a>
           </div>
 
         </div>
-
       </div>
 
     </div>

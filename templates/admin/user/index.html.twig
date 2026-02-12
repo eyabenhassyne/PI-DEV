@@ -1,6 +1,11 @@
 {% extends 'admin/base_admin.html.twig' %}
 
 {% block title %}Utilisateurs | WasteWise{% endblock %}
+{% block page_title %}Utilisateurs{% endblock %}
+
+{% block sidebar %}
+  {% include 'admin/_sidebar.html.twig' %}
+{% endblock %}
 
 {% block body %}
 
@@ -15,7 +20,6 @@
   </a>
 </div>
 
-{# ---- barre recherche (optionnelle) ---- #}
 <form method="get" class="card shadow-sm border-0 mb-3">
   <div class="card-body">
     <div class="row g-2 align-items-center">
@@ -24,13 +28,14 @@
           <span class="input-group-text"><i class="bi bi-search"></i></span>
           <input type="text"
                  name="q"
-                 value="{{ app.request.query.get('q') }}"
+                 value="{{ q|default('') }}"
                  class="form-control"
                  placeholder="Rechercher (email, nom, prénom...)">
         </div>
       </div>
+
       <div class="col-md-6 d-flex gap-2 justify-content-md-end">
-        <button class="btn btn-outline-primary">
+        <button type="submit" class="btn btn-outline-primary">
           <i class="bi bi-funnel"></i> Filtrer
         </button>
         <a href="{{ path('app_user_index') }}" class="btn btn-outline-secondary">
@@ -44,9 +49,7 @@
 <div class="card shadow-sm border-0">
   <div class="card-header bg-white d-flex align-items-center justify-content-between">
     <div class="fw-bold">Liste des utilisateurs</div>
-    <span class="badge bg-light text-dark border">
-      Total: {{ users|length }}
-    </span>
+    <span class="badge bg-light text-dark border">Total: {{ users|length }}</span>
   </div>
 
   <div class="card-body p-0">
@@ -56,12 +59,12 @@
           <tr>
             <th style="width:70px;">ID</th>
             <th>Email</th>
-            <th>Nom</th>
+            <th>Nom complet</th>
             <th>Téléphone</th>
             <th>Type</th>
             <th>Rôles</th>
             <th>Créé le</th>
-            <th class="text-end" style="width:170px;">Actions</th>
+            <th class="text-end" style="width:210px;">Actions</th>
           </tr>
         </thead>
 
@@ -76,7 +79,6 @@
             </td>
 
             <td>{{ user.prenom }} {{ user.nom }}</td>
-
             <td>{{ user.telephone ?: '—' }}</td>
 
             <td>
@@ -111,17 +113,20 @@
             <td class="text-end">
               <div class="btn-group" role="group">
                 <a class="btn btn-outline-secondary btn-sm"
-                   href="{{ path('app_user_show', {'id': user.id}) }}"
-                   title="Consulter">
+                   href="{{ path('app_user_show', {'id': user.id}) }}" title="Consulter">
                   <i class="bi bi-eye"></i>
                 </a>
 
                 <a class="btn btn-outline-primary btn-sm"
-                   href="{{ path('app_user_edit', {'id': user.id}) }}"
-                   title="Modifier">
+                   href="{{ path('app_user_edit', {'id': user.id}) }}" title="Modifier">
                   <i class="bi bi-pencil-square"></i>
                 </a>
               </div>
+
+              {# ✅ Supprimer (si tu veux l'avoir dans la liste) #}
+              <span class="ms-2">
+                {{ include('admin/user/_delete_form.html.twig', { user: user }) }}
+              </span>
             </td>
           </tr>
         {% else %}

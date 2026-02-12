@@ -23,7 +23,7 @@ final class UserController extends AbstractController
         $q = trim((string) $request->query->get('q', ''));
 
         $users = $q !== ''
-            ? $userRepository->search($q)   // ✅ assure-toi que cette méthode existe
+            ? $userRepository->search($q)
             : $userRepository->findBy([], ['id' => 'DESC']);
 
         return $this->render('admin/user/index.html.twig', [
@@ -42,23 +42,16 @@ final class UserController extends AbstractController
 
         $user = new User();
 
-        $form = $this->createForm(UserType::class, $user, [
-            'is_edit' => false,
-        ]);
+        $form = $this->createForm(UserType::class, $user, ['is_edit' => false]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $plainPassword = (string) $form->get('password')->getData();
-
-            if ($plainPassword === '') {
-                $this->addFlash('danger', 'Le mot de passe est obligatoire.');
-                return $this->render('admin/user/new.html.twig', [
-                    'user' => $user,
-                    'form' => $form->createView(),
-                ]);
-            }
-
             $user->setPassword($hasher->hashPassword($user, $plainPassword));
+
+            // ✅ rôles auto selon type
+            $this->applyRolesFromType($user);
 
             $em->persist($user);
             $em->flush();
@@ -92,21 +85,19 @@ final class UserController extends AbstractController
     ): Response {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        $oldPasswordHash = $user->getPassword();
-
-        $form = $this->createForm(UserType::class, $user, [
-            'is_edit' => true,
-        ]);
+        $form = $this->createForm(UserType::class, $user, ['is_edit' => true]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $plainPassword = (string) $form->get('password')->getData();
 
+            // ✅ ne change password que si rempli
+            $plainPassword = (string) $form->get('password')->getData();
             if ($plainPassword !== '') {
                 $user->setPassword($hasher->hashPassword($user, $plainPassword));
-            } else {
-                $user->setPassword($oldPasswordHash);
             }
+
+            // ✅ rôles auto si type modifié
+            $this->applyRolesFromType($user);
 
             $em->flush();
 
@@ -136,5 +127,23 @@ final class UserController extends AbstractController
         }
 
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    private function applyRolesFromType(User $user): void
+    {
+        $type = $user->getType();
+
+        if ($type === User::TYPE_ADMIN) {
+            $user->setRoles(['ROLE_ADMIN']);
+            return;
+        }
+
+        if ($type === User::TYPE_VALORIZER) {
+            $user->setRoles(['ROLE_VALORIZER']);
+            return;
+        }
+
+        // citoyen
+        $user->setRoles(['ROLE_USER']);
     }
 }

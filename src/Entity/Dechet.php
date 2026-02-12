@@ -32,10 +32,7 @@ class Dechet
     #[ORM\Column]
     #[Assert\NotNull(message: "La quantité est obligatoire.")]
     #[Assert\Positive(message: "La quantité doit être supérieure à 0.")]
-    #[Assert\LessThanOrEqual(
-        value: 10000,
-        message: "La quantité est trop grande (max {{ compared_value }} kg)."
-    )]
+    #[Assert\LessThanOrEqual(value: 10000, message: "La quantité est trop grande (max {{ compared_value }} kg).")]
     private ?float $quantiteKg = null;
 
     #[ORM\Column(length: 20)]
@@ -51,19 +48,11 @@ class Dechet
     private ?string $adresse = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\Range(
-        min: -90,
-        max: 90,
-        notInRangeMessage: "Latitude invalide (entre -90 et 90)."
-    )]
+    #[Assert\Range(min: -90, max: 90, notInRangeMessage: "Latitude invalide (entre -90 et 90).")]
     private ?float $latitude = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\Range(
-        min: -180,
-        max: 180,
-        notInRangeMessage: "Longitude invalide (entre -180 et 180)."
-    )]
+    #[Assert\Range(min: -180, max: 180, notInRangeMessage: "Longitude invalide (entre -180 et 180).")]
     private ?float $longitude = null;
 
     #[ORM\Column]
@@ -84,6 +73,7 @@ class Dechet
     #[ORM\JoinColumn(nullable: true)]
     private ?User $validatedBy = null;
 
+    // ✅ IMPORTANT : inversedBy="dechets" => User doit avoir $dechets
     #[ORM\ManyToOne(inversedBy: 'dechets')]
     #[ORM\JoinColumn(nullable: true)]
     private ?User $user = null;
@@ -94,19 +84,17 @@ class Dechet
         $this->statut = self::STATUT_EN_ATTENTE;
     }
 
-    // ✅ validation métier (serveur)
     public function validateBusinessRules(ExecutionContextInterface $context): void
     {
-        // 1) si coordonnées partiellement remplies => erreur
         $lat = $this->latitude;
         $lng = $this->longitude;
+
         if (($lat !== null && $lng === null) || ($lat === null && $lng !== null)) {
             $context->buildViolation("Si tu saisis la position, tu dois renseigner latitude ET longitude.")
                 ->atPath('latitude')
                 ->addViolation();
         }
 
-        // 2) Si statut validé/refusé => validatedBy et validatedAt obligatoires
         if (in_array($this->statut, [self::STATUT_VALIDE, self::STATUT_REFUSE], true)) {
             if ($this->validatedBy === null) {
                 $context->buildViolation("Un déchet validé/refusé doit avoir un valorisateur (validatedBy).")
@@ -120,14 +108,12 @@ class Dechet
             }
         }
 
-        // 3) Si statut validé => ecoPointsAttribues obligatoire
         if ($this->statut === self::STATUT_VALIDE && $this->ecoPointsAttribues === null) {
             $context->buildViolation("Les EcoPoints attribués sont obligatoires si le statut est VALIDE.")
                 ->atPath('ecoPointsAttribues')
                 ->addViolation();
         }
 
-        // 4) Si refusé => ecoPointsAttribues doit être null (ou 0)
         if ($this->statut === self::STATUT_REFUSE && ($this->ecoPointsAttribues ?? 0) > 0) {
             $context->buildViolation("En cas de REFUS, les EcoPoints attribués doivent être à 0 (ou vides).")
                 ->atPath('ecoPointsAttribues')
@@ -135,7 +121,6 @@ class Dechet
         }
     }
 
-    // ✅ GET/SET (avec trim utile)
     public function getId(): ?int { return $this->id; }
 
     public function getType(): ?string { return $this->type; }
@@ -159,9 +144,6 @@ class Dechet
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
     public function setCreatedAt(\DateTimeImmutable $createdAt): self { $this->createdAt = $createdAt; return $this; }
 
-    public function getUser(): ?User { return $this->user; }
-    public function setUser(?User $user): self { $this->user = $user; return $this; }
-
     public function getEstimationEcoPoints(): ?int { return $this->estimationEcoPoints; }
     public function setEstimationEcoPoints(?int $v): self { $this->estimationEcoPoints = $v; return $this; }
 
@@ -173,4 +155,7 @@ class Dechet
 
     public function getValidatedBy(): ?User { return $this->validatedBy; }
     public function setValidatedBy(?User $v): self { $this->validatedBy = $v; return $this; }
+
+    public function getUser(): ?User { return $this->user; }
+    public function setUser(?User $user): self { $this->user = $user; return $this; }
 }

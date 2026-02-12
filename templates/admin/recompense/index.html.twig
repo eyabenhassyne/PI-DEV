@@ -1,36 +1,41 @@
 {% extends 'admin/base_admin.html.twig' %}
 
 {% block title %}Récompenses | WasteWise TN{% endblock %}
+{% block page_title %}Récompenses{% endblock %}
+
+{% block sidebar %}
+  {% include 'admin/_sidebar.html.twig' %}
+{% endblock %}
 
 {% block body %}
 
-<div class="container-fluid py-4">
-
-  <div class="d-flex align-items-start justify-content-between mb-4">
-    <div>
-      <h3 class="mb-1">🎁 Récompenses</h3>
-      <div class="text-muted">Toutes les récompenses proposées par les partenaires</div>
-    </div>
-
-    <div>
-      <a class="btn btn-primary" href="{{ path('recompense_new') }}">
-        <i class="bi bi-plus-lg"></i> Nouvelle récompense
-      </a>
-    </div>
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+  <div>
+    <h2 class="mb-0">🎁 Récompenses</h2>
+    <div class="text-muted small">Toutes les récompenses proposées par les partenaires</div>
   </div>
 
-  {# ✅ Flash messages #}
-  {% for label, messages in app.flashes %}
-    {% for m in messages %}
-      <div class="alert alert-{{ label == 'error' ? 'danger' : label }} shadow-sm">
-        {{ m }}
-      </div>
-    {% endfor %}
+  <a class="btn btn-primary" href="{{ path('recompense_new') }}">
+    <i class="bi bi-plus-lg"></i> Nouvelle récompense
+  </a>
+</div>
+
+{# ✅ Flash messages #}
+{% for label, messages in app.flashes %}
+  {% for m in messages %}
+    <div class="alert alert-{{ label == 'error' ? 'danger' : label }} shadow-sm">
+      {{ m }}
+    </div>
   {% endfor %}
+{% endfor %}
 
-  <div class="card shadow-sm">
-    <div class="card-header fw-bold">Liste des récompenses</div>
+<div class="card shadow-sm border-0">
+  <div class="card-header bg-white d-flex align-items-center justify-content-between">
+    <div class="fw-bold">Liste des récompenses</div>
+    <span class="badge bg-light text-dark border">Total: {{ items|length }}</span>
+  </div>
 
+  <div class="card-body p-0">
     <div class="table-responsive">
       <table class="table table-hover align-middle mb-0">
         <thead class="table-light">
@@ -39,7 +44,7 @@
             <th>Partenaire</th>
             <th style="width:140px;">Points</th>
             <th style="width:140px;">Stock</th>
-            <th style="width:180px;" class="text-end">Actions</th>
+            <th class="text-end" style="width:200px;">Actions</th>
           </tr>
         </thead>
 
@@ -47,18 +52,22 @@
         {% for r in items %}
           <tr>
             <td>
-              <div class="fw-bold">{{ r.titre }}</div>
+              <div class="fw-semibold">{{ r.titre }}</div>
               {% if r.description %}
                 <div class="small text-muted">
-                  {{ r.description|slice(0, 60) }}{% if r.description|length > 60 %}…{% endif %}
+                  {{ r.description|slice(0, 70) }}{% if r.description|length > 70 %}…{% endif %}
                 </div>
               {% endif %}
             </td>
 
             <td>
-              <span class="badge bg-info text-dark">
-                {{ r.partenaire ? r.partenaire.nomEntreprise : '—' }}
-              </span>
+              {% if r.partenaire %}
+                <span class="badge bg-info text-dark">
+                  <i class="bi bi-building"></i> {{ r.partenaire.nomEntreprise }}
+                </span>
+              {% else %}
+                <span class="badge bg-secondary">—</span>
+              {% endif %}
             </td>
 
             <td>
@@ -80,20 +89,26 @@
             </td>
 
             <td class="text-end" style="white-space:nowrap;">
-              <a class="btn btn-sm btn-outline-secondary"
-                 href="{{ path('recompense_show', { id: r.id }) }}">
-                <i class="bi bi-eye"></i> Voir
-              </a>
+              <div class="btn-group" role="group">
+                <a class="btn btn-sm btn-outline-secondary"
+                   href="{{ path('recompense_show', { id: r.id }) }}"
+                   title="Voir">
+                  <i class="bi bi-eye"></i>
+                </a>
 
-              <a class="btn btn-sm btn-outline-primary"
-                 href="{{ path('recompense_edit', { id: r.id }) }}">
-                <i class="bi bi-pencil"></i> Modifier
-              </a>
+                <a class="btn btn-sm btn-outline-primary"
+                   href="{{ path('recompense_edit', { id: r.id }) }}"
+                   title="Modifier">
+                  <i class="bi bi-pencil"></i>
+                </a>
+              </div>
             </td>
           </tr>
         {% else %}
           <tr>
-            <td colspan="5" class="text-muted">Aucune récompense enregistrée.</td>
+            <td colspan="5" class="text-center py-4 text-muted">
+              <i class="bi bi-info-circle"></i> Aucune récompense enregistrée.
+            </td>
           </tr>
         {% endfor %}
         </tbody>
@@ -101,7 +116,6 @@
       </table>
     </div>
   </div>
-
 </div>
 
 {% endblock %}
