@@ -1,0 +1,127 @@
+{% extends 'layouts/dashboard_base.html.twig' %}
+
+{% block page_title %}WasteWise TN - Dashboard Partenaire{% endblock %}
+
+{% block sidebar %}
+<li class="nav-item">
+    <a class="nav-link active" href="{{ path('partenaire_dashboard') }}">
+        <i class="fa-solid fa-house"></i> Accueil
+    </a>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link" href="#">
+        <i class="fa-solid fa-truck"></i> Collectes assignées
+    </a>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link" href="#">
+        <i class="fa-solid fa-map-location-dot"></i> Zones de collecte
+    </a>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link" href="#">
+        <i class="fa-solid fa-calendar-check"></i> Planning
+    </a>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link" href="#">
+        <i class="fa-solid fa-gear"></i> Paramètres
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<div class="hero">
+    <h2>Bienvenue Partenaire</h2>
+    <p>Suivez vos collectes et contribuez à la gestion intelligente des déchets.</p>
+</div>
+
+<!-- Stats -->
+<div class="row g-4 mb-4">
+
+    <div class="col-md-3">
+        <div class="stat-card d-flex justify-content-between align-items-center">
+            <div>
+                <p class="text-muted">Collectes totales</p>
+                <h3>35</h3>
+            </div>
+            <div class="stat-icon">
+                <i class="fa-solid fa-truck"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card d-flex justify-content-between align-items-center">
+            <div>
+                <p class="text-muted">Effectuées</p>
+                <h3>20</h3>
+            </div>
+            <div class="stat-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card d-flex justify-content-between align-items-center">
+            <div>
+                <p class="text-muted">En attente</p>
+                <h3>10</h3>
+            </div>
+            <div class="stat-icon">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card d-flex justify-content-between align-items-center">
+            <div>
+                <p class="text-muted">Zones couvertes</p>
+                <h3>6</h3>
+            </div>
+            <div class="stat-icon">
+                <i class="fa-solid fa-map"></i>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Bottom cards -->
+<div class="row g-4">
+
+    <div class="col-md-6">
+        <div class="big-card">
+            <h4>Voir les collectes assignées</h4>
+            <p class="text-muted">
+                Consultez la liste des collectes qui vous ont été attribuées.
+            </p>
+            <button class="btn-green">
+                Voir les collectes →
+            </button>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="big-card">
+            <h4>Gérer vos zones</h4>
+            <p class="text-muted">
+                Modifiez et consultez vos zones de collecte disponibles.
+            </p>
+            <button class="btn-outline-custom">
+                Voir les zones →
+            </button>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

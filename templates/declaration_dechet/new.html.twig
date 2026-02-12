@@ -1,0 +1,335 @@
+{% extends 'layouts/dashboard_base.html.twig' %}
+
+{% block title %}Déclarer un déchet - WasteWise{% endblock %}
+
+{% block page_title %}Déclarer un déchet{% endblock %}
+
+{% block sidebar %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ path('citoyen_dashboard') }}">
+        <i class="fa-solid fa-house"></i> Accueil
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ path('declaration_dechet_new') }}">
+        <i class="fa-solid fa-file"></i> Déclarer un déchet
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ path('citoyen_declarations') }}">
+        <i class="fa-solid fa-check-circle"></i> Mes déclarations
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ path('citoyen_statistiques') }}">
+        <i class="fa-solid fa-chart-line"></i> Statistiques
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ path('citoyen_parametres') }}">
+        <i class="fa-solid fa-gear"></i> Paramètres
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <div class="card shadow-lg p-4 rounded-4">
+
+        <h3 class="mb-4">
+            <i class="fa-solid fa-trash text-success me-2"></i>
+            Déclarer un nouveau déchet
+        </h3>
+
+        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+
+        <div class="mb-3">
+            {{ form_label(form.typeDechet) }}
+            {{ form_widget(form.typeDechet, {'attr': {'class': 'form-control'}}) }}
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                {{ form_label(form.quantite) }}
+                {{ form_widget(form.quantite, {'attr': {'class': 'form-control', 'id': 'quantiteInput', 'type': 'number', 'min': '1', 'required': 'required'}}) }}
+                <div class="error-message" id="quantiteError"></div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                {{ form_label(form.unite) }}
+                {{ form_widget(form.unite, {'attr': {'class': 'form-control', 'id': 'uniteInput', 'required': 'required'}}) }}
+                <div class="error-message" id="uniteError">Champ obligatoire</div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.description) }}
+            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'id': 'descriptionInput', 'minlength': '10', 'required': 'required'}}) }}
+            <div class="char-counter" id="charCounter">0 / 10 caractères minimum</div>
+            <div class="error-message" id="descriptionError"></div>
+        </div>
+
+        <!-- MAP -->
+        <div class="mb-4">
+            <label class="form-label fw-bold">Localisation *</label>
+            <div id="map" style="height:350px; border-radius:12px; border:1px solid #ddd;"></div>
+        </div>
+
+        {{ form_widget(form.latitude) }}
+        {{ form_widget(form.longitude) }}
+
+        <!-- IMAGE -->
+        <div class="mb-3">
+            {{ form_label(form.photoFile) }}
+            {{ form_widget(form.photoFile, {
+                'attr': {
+                    'class': 'form-control',
+                    'id': 'photoInput',
+                    'accept': 'image/*',
+                    'required': 'required'
+                }
+            }) }}
+            <div class="file-error" id="photoError"></div>
+        </div>
+
+        <div class="mb-4 text-center">
+            <img id="previewImage"
+                 style="max-width:300px; display:none; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1);" />
+        </div>
+
+        <div class="d-flex gap-3">
+            <button class="btn btn-success px-4 rounded-pill">
+                Déclarer le déchet
+            </button>
+
+            <a href="{{ path('citoyen_dashboard') }}"
+               class="btn btn-outline-secondary rounded-pill">
+                Annuler
+            </a>
+        </div>
+
+        {{ form_end(form) }}
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const map = L.map('map').setView([36.8065, 10.1815], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        let marker;
+
+        // Géolocalisation automatique
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+
+                map.setView([lat, lng], 15);
+
+                marker = L.marker([lat, lng]).addTo(map);
+
+                document.querySelector('[name="declaration_dechet[latitude]"]').value = lat;
+                document.querySelector('[name="declaration_dechet[longitude]"]').value = lng;
+
+            });
+        }
+
+        // Click pour changer position
+        map.on('click', function (e) {
+
+            const lat = e.latlng.lat;
+            const lng = e.latlng.lng;
+
+            if (marker) {
+                map.removeLayer(marker);
+            }
+
+            marker = L.marker([lat, lng]).addTo(map);
+
+            document.querySelector('[name="declaration_dechet[latitude]"]').value = lat;
+            document.querySelector('[name="declaration_dechet[longitude]"]').value = lng;
+        });
+
+        // ==================== VALIDATION ====================
+
+        // Validation Quantité
+        const quantiteInput = document.getElementById('quantiteInput');
+        const quantiteError = document.getElementById('quantiteError');
+
+        if (quantiteInput) {
+            quantiteInput.addEventListener('blur', function () {
+                validateQuantite();
+            });
+
+            quantiteInput.addEventListener('input', function () {
+                if (this.value) {
+                    validateQuantite();
+                }
+            });
+        }
+
+        function validateQuantite() {
+            const value = quantiteInput.value.trim();
+            
+            if (!value) {
+                quantiteInput.classList.add('is-invalid');
+                quantiteInput.classList.remove('is-valid');
+                quantiteError.textContent = 'Champ obligatoire';
+                quantiteError.classList.add('show');
+                return false;
+            }
+
+            const numValue = parseInt(value);
+            if (isNaN(numValue) || numValue <= 0 || !Number.isInteger(numValue)) {
+                quantiteInput.classList.add('is-invalid');
+                quantiteInput.classList.remove('is-valid');
+                quantiteError.textContent = 'La quantité doit être un nombre entier positif';
+                quantiteError.classList.add('show');
+                return false;
+            }
+
+            quantiteInput.classList.remove('is-invalid');
+            quantiteInput.classList.add('is-valid');
+            quantiteError.classList.remove('show');
+            return true;
+        }
+
+        // Validation Description
+        const descriptionInput = document.getElementById('descriptionInput');
+        const charCounter = document.getElementById('charCounter');
+        const descriptionError = document.getElementById('descriptionError');
+
+        if (descriptionInput) {
+            descriptionInput.addEventListener('input', function () {
+                updateDescriptionCounter();
+            });
+
+            descriptionInput.addEventListener('blur', function () {
+                validateDescription();
+            });
+        }
+
+        function updateDescriptionCounter() {
+            const length = descriptionInput.value.length;
+            const minLength = 10;
+
+            charCounter.textContent = `${length} / ${minLength} caractères minimum`;
+
+            if (length < minLength && length > 0) {
+                charCounter.classList.add('invalid');
+                descriptionInput.classList.add('is-invalid');
+                descriptionInput.classList.remove('is-valid');
+            } else if (length >= minLength) {
+                charCounter.classList.remove('invalid');
+                descriptionInput.classList.remove('is-invalid');
+                descriptionInput.classList.add('is-valid');
+            } else {
+                charCounter.classList.remove('invalid');
+                descriptionInput.classList.remove('is-invalid');
+                descriptionInput.classList.remove('is-valid');
+            }
+        }
+
+        function validateDescription() {
+            const value = descriptionInput.value.trim();
+
+            if (!value) {
+                descriptionInput.classList.add('is-invalid');
+                descriptionInput.classList.remove('is-valid');
+                descriptionError.textContent = 'Champ obligatoire';
+                descriptionError.classList.add('show');
+                return false;
+            }
+
+            if (value.length < 10) {
+                descriptionInput.classList.add('is-invalid');
+                descriptionInput.classList.remove('is-valid');
+                descriptionError.textContent = 'La description doit avoir au minimum 10 caractères';
+                descriptionError.classList.add('show');
+                return false;
+            }
+
+            descriptionInput.classList.remove('is-invalid');
+            descriptionInput.classList.add('is-valid');
+            descriptionError.classList.remove('show');
+            return true;
+        }
+
+        // Validation Photo
+        const photoInput = document.getElementById('photoInput');
+        const photoError = document.getElementById('photoError');
+        const preview = document.getElementById('previewImage');
+
+        const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+
+        if (photoInput) {
+            photoInput.addEventListener('change', function (e) {
+                validatePhoto();
+                loadPhotoPreview();
+            });
+        }
+
+        function validatePhoto() {
+            const file = photoInput.files[0];
+
+            if (!file) {
+                photoInput.classList.add('is-invalid');
+                photoInput.classList.remove('is-valid');
+                photoError.textContent = 'Veuillez sélectionner une image';
+                photoError.classList.add('show');
+                return false;
+            }
+
+            if (!allowedImageTypes.includes(file.type)) {
+                photoInput.classList.add('is-invalid');
+                photoInput.classList.remove('is-valid');
+                photoError.textContent = 'Le fichier doit être une image (JPEG, PNG, GIF, WebP, SVG)';
+                photoError.classList.add('show');
+                return false;
+            }
+
+            // Vérifier la taille (max 5MB)
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSize) {
+                photoInput.classList.add('is-invalid');
+                photoInput.classList.remove('is-valid');
+                photoError.textContent = 'La taille de l\'image ne doit pas dépasser 5MB';
+                photoError.classList.add('show');
+                return false;
+            }
+
+            photoInput.classList.remove('is-invalid');
+            photoInput.classList.add('is-valid');
+            photoError.classList.remove('show');
+            return true;
+        }
+
+        function loadPhotoPreview() {
+            const file = photoInput.files[0];
+
+            if (file && allowedImageTypes.includes(file.type)) {
+                const reader = new FileReader();
+
+                reader.onload = function (event) {
+                    preview.src = event.target.result;
+                    preview.style.display = "block";
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = "none";
+            }
+        }
+
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends 'layouts/dashboard_base.html.twig' %}
+
+{% block page_title %}WasteWise TN - Dashboard{% endblock %}
+
+{% block sidebar %}
+<li class="nav-item">
+    <a class="nav-link active" href="{{ path('citoyen_dashboard') }}">
+        <i class="fa-solid fa-house"></i> Accueil
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ path('declaration_dechet_new') }}">
+        <i class="fa-solid fa-file"></i> Déclarer un déchet
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ path('citoyen_declarations') }}">
+        <i class="fa-solid fa-check-circle"></i> Mes déclarations
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ path('citoyen_statistiques') }}">
+        <i class="fa-solid fa-chart-line"></i> Statistiques
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ path('citoyen_parametres') }}">
+        <i class="fa-solid fa-gear"></i> Paramètres
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<div class="hero">
+    <h2>Bienvenue dans votre dashboard</h2>
+    <p>Déclarez vos déchets et contribuez à un environnement plus durable.</p>
+</div>
+
+<!-- Stats -->
+<div class="row g-4 mb-4">
+
+    <div class="col-md-3">
+        <div class="stat-card d-flex justify-content-between align-items-center">
+            <div>
+                <p class="text-muted">Déclarations totales</p>
+                <h3>12</h3>
+            </div>
+            <div class="stat-icon">
+                <i class="fa-solid fa-leaf"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card d-flex justify-content-between align-items-center">
+            <div>
+                <p class="text-muted">Validées</p>
+                <h3>8</h3>
+            </div>
+            <div class="stat-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card d-flex justify-content-between align-items-center">
+            <div>
+                <p class="text-muted">En attente</p>
+                <h3>3</h3>
+            </div>
+            <div class="stat-icon">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card d-flex justify-content-between align-items-center">
+            <div>
+                <p class="text-muted">Points gagnés</p>
+                <h3>240</h3>
+            </div>
+            <div class="stat-icon">
+                <i class="fa-solid fa-arrow-trend-up"></i>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Bottom cards -->
+<div class="row g-4">
+
+    <div class="col-md-6">
+        <div class="big-card">
+            <h4>Déclarer un nouveau déchet</h4>
+            <p class="text-muted">
+                Contribuez à l’environnement en déclarant vos déchets.
+            </p>
+
+            <a href="{{ path('declaration_dechet_new') }}" class="btn-green d-inline-block w-100 text-center">
+                Déclarer maintenant →
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="big-card">
+            <h4>Suivre votre progression</h4>
+            <p class="text-muted">
+                Consultez vos statistiques et vos points gagnés.
+            </p>
+
+            <a href="{{ path('citoyen_statistiques') }}" class="btn-outline-custom d-inline-block w-100 text-center">
+                Voir les statistiques →
+            </a>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

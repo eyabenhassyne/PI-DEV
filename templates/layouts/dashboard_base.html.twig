@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="d-flex">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h3 class="mb-4">
+            <i class="fa-solid fa-leaf"></i> WasteWise
+        </h3>
+
+        <ul class="nav flex-column">
+            {% block sidebar %}{% endblock %}
+        </ul>
+    </div>
+
+    <!-- Main Area -->
+    <div class="flex-fill">
+
+        <!-- Top Header -->
+        <div class="top-header d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">{% block page_title %}Dashboard{% endblock %}</h4>
+            <div>
+                <strong>Utilisateur Demo</strong><br>
+                <small class="text-muted">Citoyen</small>
+            </div>
+        </div>
+
+        <div class="main-content">
+            {% block content %}{% endblock %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
