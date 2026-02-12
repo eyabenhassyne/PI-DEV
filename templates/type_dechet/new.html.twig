@@ -1,0 +1,317 @@
+{% extends 'layouts/dashboard_base.html.twig' %}
+
+{% block page_title %}Admin - Ajouter type de déchet{% endblock %}
+
+{% block sidebar %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ path('admin_dashboard') }}">
+        <i class="fa-solid fa-chart-line me-2"></i> Tableau de bord
+    </a>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link active" href="{{ path('app_typedechet_index') }}">
+        <i class="fa-solid fa-recycle me-2"></i> Types de déchets
+    </a>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link" href="#">
+        <i class="fa-solid fa-file me-2"></i> Déclarations
+    </a>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link" href="#">
+        <i class="fa-solid fa-users me-2"></i> Utilisateurs
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <div class="card shadow-lg p-4 rounded-4">
+
+        <h3 class="mb-4">
+            <i class="fa-solid fa-plus text-success me-2"></i>
+            Ajouter un type de déchet
+        </h3>
+
+        {{ form_start(form, {'attr': {'id': 'typeForm', 'novalidate': 'novalidate'}}) }}
+
+        <!-- LIBELLE -->
+        <div class="mb-3">
+            <label class="form-label">Libellé *</label>
+
+            <select class="form-control" id="libelleSelect" name="type_dechet[libelle]">
+                <option value="">-- Sélectionner un type --</option>
+                <option value="Plastique">Plastique</option>
+                <option value="Verre">Verre</option>
+                <option value="Papier / Carton">Papier / Carton</option>
+                <option value="Métal">Métal</option>
+                <option value="Déchets électroniques">Déchets électroniques</option>
+                <option value="Textile">Textile</option>
+                <option value="Bois">Bois</option>
+                <option value="Batteries">Batteries</option>
+                <option value="Huiles usées">Huiles usées</option>
+                <option value="Déchets organiques">Déchets organiques</option>
+                <option value="Déchets médicaux">Déchets médicaux</option>
+                <option value="Déchets dangereux">Déchets dangereux</option>
+                <option value="Déchets industriels">Déchets industriels</option>
+                <option value="Déchets ménagers">Déchets ménagers</option>
+            </select>
+
+            <div class="error-message" id="libelleError"></div>
+        </div>
+
+        <!-- VALEUR -->
+        <div class="mb-3">
+            <label class="form-label">Valeur points/kg *</label>
+
+            <input type="text" class="form-control" id="valeurInput" name="type_dechet[valeurPointsKg]" placeholder="Ex: 5">
+
+            <div class="error-message" id="valeurError"></div>
+        </div>
+
+        <!-- DESCRIPTION -->
+        <div class="mb-3">
+            <label class="form-label">Description tri *</label>
+
+            <textarea class="form-control" id="descriptionInput" name="type_dechet[descriptionTri]" rows="4"
+                      placeholder="Ex: Bac jaune, nettoyer avant tri..."></textarea>
+
+            <div class="char-counter invalid" id="charCounter">
+                0 / 10 caractères minimum
+            </div>
+
+            <div class="error-message" id="descriptionError"></div>
+        </div>
+
+        <div class="d-flex gap-3 mt-3">
+            <button type="submit" class="btn btn-success rounded-pill px-4">
+                Enregistrer
+            </button>
+
+            <a href="{{ path('app_typedechet_index') }}"
+               class="btn btn-outline-secondary rounded-pill">
+                Annuler
+            </a>
+        </div>
+
+        {{ form_end(form, { 'render_rest': false }) }}
+
+    </div>
+</div>
+
+<style>
+.error-message {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 6px;
+    display: none;
+}
+
+.error-message.show {
+    display: block;
+}
+
+.is-invalid {
+    border: 2px solid #dc3545 !important;
+}
+
+.char-counter {
+    font-size: 0.85rem;
+    margin-top: 6px;
+    color: #6c757d;
+}
+
+.char-counter.invalid {
+    color: #dc3545;
+    font-weight: bold;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const form = document.getElementById("typeForm");
+
+    const libelle = document.getElementById("libelleSelect");
+    const valeur = document.getElementById("valeurInput");
+    const description = document.getElementById("descriptionInput");
+
+    const libelleError = document.getElementById("libelleError");
+    const valeurError = document.getElementById("valeurError");
+    const descriptionError = document.getElementById("descriptionError");
+
+    const charCounter = document.getElementById("charCounter");
+
+    function showError(input, errorDiv, message) {
+        input.classList.add("is-invalid");
+        errorDiv.textContent = message;
+        errorDiv.classList.add("show");
+    }
+
+    function clearError(input, errorDiv) {
+        input.classList.remove("is-invalid");
+        errorDiv.textContent = "";
+        errorDiv.classList.remove("show");
+    }
+
+    /* =========================
+       LIBELLE
+    ========================== */
+
+    libelle.addEventListener("blur", function() {
+        if (libelle.value.trim() === "") {
+            showError(libelle, libelleError, "Champ obligatoire");
+        } else {
+            clearError(libelle, libelleError);
+        }
+    });
+
+    libelle.addEventListener("change", function() {
+        if (libelle.value.trim() !== "") {
+            clearError(libelle, libelleError);
+        }
+    });
+
+    /* =========================
+       VALEUR (SUP > 0)
+    ========================== */
+
+    // Bloquer lettres direct (controle dynamique)
+    valeur.addEventListener("keypress", function(e) {
+        const char = String.fromCharCode(e.which);
+
+        if (!/[0-9]/.test(char)) {
+            e.preventDefault();
+            showError(valeur, valeurError, "Uniquement des nombres autorisés.");
+        }
+    });
+
+    // Empêcher coller n'importe quoi
+    valeur.addEventListener("input", function() {
+
+        valeur.value = valeur.value.replace(/[^0-9]/g, '');
+
+        if (valeur.value.trim() === "") {
+            showError(valeur, valeurError, "Champ obligatoire");
+            return;
+        }
+
+        const number = parseInt(valeur.value);
+
+        if (isNaN(number)) {
+            showError(valeur, valeurError, "Veuillez entrer un nombre valide.");
+            return;
+        }
+
+        if (number <= 0) {
+            showError(valeur, valeurError, "La valeur doit être supérieure à 0.");
+            return;
+        }
+
+        clearError(valeur, valeurError);
+    });
+
+    valeur.addEventListener("blur", function() {
+
+        if (valeur.value.trim() === "") {
+            showError(valeur, valeurError, "Champ obligatoire");
+            return;
+        }
+
+        const number = parseInt(valeur.value);
+
+        if (isNaN(number)) {
+            showError(valeur, valeurError, "Veuillez entrer un nombre valide.");
+            return;
+        }
+
+        if (number <= 0) {
+            showError(valeur, valeurError, "La valeur doit être supérieure à 0.");
+            return;
+        }
+
+        clearError(valeur, valeurError);
+    });
+
+    /* =========================
+       DESCRIPTION + COMPTEUR LIVE
+    ========================== */
+
+    description.addEventListener("input", function() {
+
+        const length = description.value.length;
+
+        // compteur dynamique
+        charCounter.textContent = length + " / 10 caractères minimum";
+
+        if (length < 10) {
+            charCounter.classList.add("invalid");
+        } else {
+            charCounter.classList.remove("invalid");
+            clearError(description, descriptionError);
+        }
+    });
+
+    description.addEventListener("blur", function() {
+
+        if (description.value.trim() === "") {
+            showError(description, descriptionError, "Champ obligatoire");
+        }
+        else if (description.value.length < 10) {
+            showError(description, descriptionError, "Minimum 10 caractères requis");
+        }
+        else {
+            clearError(description, descriptionError);
+        }
+    });
+
+    /* =========================
+       SUBMIT GLOBAL
+    ========================== */
+
+    form.addEventListener("submit", function(e) {
+
+        let valid = true;
+
+        // Libelle obligatoire
+        if (libelle.value.trim() === "") {
+            showError(libelle, libelleError, "Champ obligatoire");
+            valid = false;
+        }
+
+        // Valeur obligatoire et > 0
+        const number = parseInt(valeur.value);
+
+        if (valeur.value.trim() === "" || isNaN(number)) {
+            showError(valeur, valeurError, "Champ obligatoire");
+            valid = false;
+        }
+        else if (number <= 0) {
+            showError(valeur, valeurError, "La valeur doit être supérieure à 0.");
+            valid = false;
+        }
+
+        // Description obligatoire min 10
+        if (description.value.trim() === "") {
+            showError(description, descriptionError, "Champ obligatoire");
+            valid = false;
+        }
+        else if (description.value.length < 10) {
+            showError(description, descriptionError, "Minimum 10 caractères requis");
+            valid = false;
+        }
+
+        if (!valid) {
+            e.preventDefault();
+        }
+    });
+
+});
+</script>
+
+{% endblock %}

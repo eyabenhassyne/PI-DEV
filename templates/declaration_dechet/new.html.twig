@@ -52,22 +52,22 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 {{ form_label(form.quantite) }}
-                {{ form_widget(form.quantite, {'attr': {'class': 'form-control', 'id': 'quantiteInput', 'type': 'number', 'min': '1', 'required': 'required'}}) }}
-                <div class="error-message" id="quantiteError"></div>
+                {{ form_widget(form.quantite, {'attr': {'class': 'form-control', 'type': 'number', 'min': '1', 'step': '1'}}) }}
+                {{ form_errors(form.quantite) }}
             </div>
 
             <div class="col-md-6 mb-3">
                 {{ form_label(form.unite) }}
-                {{ form_widget(form.unite, {'attr': {'class': 'form-control', 'id': 'uniteInput', 'required': 'required'}}) }}
-                <div class="error-message" id="uniteError">Champ obligatoire</div>
+                {{ form_widget(form.unite, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.unite) }}
             </div>
         </div>
 
         <div class="mb-3">
             {{ form_label(form.description) }}
-            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'id': 'descriptionInput', 'minlength': '10', 'required': 'required'}}) }}
+            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'id': 'descriptionInput'}}) }}
             <div class="char-counter" id="charCounter">0 / 10 caractères minimum</div>
-            <div class="error-message" id="descriptionError"></div>
+            {{ form_errors(form.description) }}
         </div>
 
         <!-- MAP -->
@@ -86,11 +86,10 @@
                 'attr': {
                     'class': 'form-control',
                     'id': 'photoInput',
-                    'accept': 'image/*',
-                    'required': 'required'
+                    'accept': 'image/*'
                 }
             }) }}
-            <div class="file-error" id="photoError"></div>
+            {{ form_errors(form.photoFile) }}
         </div>
 
         <div class="mb-4 text-center">
@@ -117,216 +116,95 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
 
+        // ==================== LEAFLET MAP ====================
         const map = L.map('map').setView([36.8065, 10.1815], 13);
-
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
         let marker;
-
-        // Géolocalisation automatique
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
-
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
-
                 map.setView([lat, lng], 15);
-
                 marker = L.marker([lat, lng]).addTo(map);
-
                 document.querySelector('[name="declaration_dechet[latitude]"]').value = lat;
                 document.querySelector('[name="declaration_dechet[longitude]"]').value = lng;
-
             });
         }
 
-        // Click pour changer position
         map.on('click', function (e) {
-
             const lat = e.latlng.lat;
             const lng = e.latlng.lng;
-
-            if (marker) {
-                map.removeLayer(marker);
-            }
-
+            if (marker) map.removeLayer(marker);
             marker = L.marker([lat, lng]).addTo(map);
-
             document.querySelector('[name="declaration_dechet[latitude]"]').value = lat;
             document.querySelector('[name="declaration_dechet[longitude]"]').value = lng;
         });
 
-        // ==================== VALIDATION ====================
+        // ==================== VALIDATION DESCRIPTION ====================
+        // Chercher par le name Symfony plutôt que par l'ID
+        const descriptionInput = document.querySelector('[name="declaration_dechet[description]"]');
+        const charCounter = document.getElementById('charCounter');
+        
+        console.log('Description input trouvé:', descriptionInput);
 
-        // Validation Quantité
-        const quantiteInput = document.getElementById('quantiteInput');
-        const quantiteError = document.getElementById('quantiteError');
-
-        if (quantiteInput) {
-            quantiteInput.addEventListener('blur', function () {
-                validateQuantite();
-            });
-
-            quantiteInput.addEventListener('input', function () {
-                if (this.value) {
-                    validateQuantite();
+        if (descriptionInput && charCounter) {
+            descriptionInput.addEventListener('input', function() {
+                const len = this.value.length;
+                console.log('Longueur:', len);
+                
+                charCounter.textContent = len + ' / 10 caractères minimum';
+                
+                if (len < 10 && len > 0) {
+                    charCounter.style.color = '#dc3545';
+                    charCounter.style.fontWeight = 'bold';
+                    this.style.borderColor = '#dc3545';
+                } else if (len >= 10) {
+                    charCounter.style.color = '#28a745';
+                    charCounter.style.fontWeight = 'normal';
+                    this.style.borderColor = '#28a745';
+                } else {
+                    charCounter.style.color = '#6c757d';
+                    this.style.borderColor = '';
                 }
             });
         }
 
-        function validateQuantite() {
-            const value = quantiteInput.value.trim();
-            
-            if (!value) {
-                quantiteInput.classList.add('is-invalid');
-                quantiteInput.classList.remove('is-valid');
-                quantiteError.textContent = 'Champ obligatoire';
-                quantiteError.classList.add('show');
-                return false;
-            }
-
-            const numValue = parseInt(value);
-            if (isNaN(numValue) || numValue <= 0 || !Number.isInteger(numValue)) {
-                quantiteInput.classList.add('is-invalid');
-                quantiteInput.classList.remove('is-valid');
-                quantiteError.textContent = 'La quantité doit être un nombre entier positif';
-                quantiteError.classList.add('show');
-                return false;
-            }
-
-            quantiteInput.classList.remove('is-invalid');
-            quantiteInput.classList.add('is-valid');
-            quantiteError.classList.remove('show');
-            return true;
-        }
-
-        // Validation Description
-        const descriptionInput = document.getElementById('descriptionInput');
-        const charCounter = document.getElementById('charCounter');
-        const descriptionError = document.getElementById('descriptionError');
-
-        if (descriptionInput) {
-            descriptionInput.addEventListener('input', function () {
-                updateDescriptionCounter();
-            });
-
-            descriptionInput.addEventListener('blur', function () {
-                validateDescription();
-            });
-        }
-
-        function updateDescriptionCounter() {
-            const length = descriptionInput.value.length;
-            const minLength = 10;
-
-            charCounter.textContent = `${length} / ${minLength} caractères minimum`;
-
-            if (length < minLength && length > 0) {
-                charCounter.classList.add('invalid');
-                descriptionInput.classList.add('is-invalid');
-                descriptionInput.classList.remove('is-valid');
-            } else if (length >= minLength) {
-                charCounter.classList.remove('invalid');
-                descriptionInput.classList.remove('is-invalid');
-                descriptionInput.classList.add('is-valid');
-            } else {
-                charCounter.classList.remove('invalid');
-                descriptionInput.classList.remove('is-invalid');
-                descriptionInput.classList.remove('is-valid');
-            }
-        }
-
-        function validateDescription() {
-            const value = descriptionInput.value.trim();
-
-            if (!value) {
-                descriptionInput.classList.add('is-invalid');
-                descriptionInput.classList.remove('is-valid');
-                descriptionError.textContent = 'Champ obligatoire';
-                descriptionError.classList.add('show');
-                return false;
-            }
-
-            if (value.length < 10) {
-                descriptionInput.classList.add('is-invalid');
-                descriptionInput.classList.remove('is-valid');
-                descriptionError.textContent = 'La description doit avoir au minimum 10 caractères';
-                descriptionError.classList.add('show');
-                return false;
-            }
-
-            descriptionInput.classList.remove('is-invalid');
-            descriptionInput.classList.add('is-valid');
-            descriptionError.classList.remove('show');
-            return true;
-        }
-
-        // Validation Photo
-        const photoInput = document.getElementById('photoInput');
-        const photoError = document.getElementById('photoError');
+        // ==================== VALIDATION PHOTO ====================
+        const photoInput = document.querySelector('[name="declaration_dechet[photoFile]"]');
         const preview = document.getElementById('previewImage');
+        
+        console.log('Photo input trouvé:', photoInput);
+        console.log('Preview trouvé:', preview);
 
-        const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+        if (photoInput && preview) {
+            photoInput.addEventListener('change', function() {
+                const file = this.files[0];
+                console.log('Fichier sélectionné:', file);
+                
+                if (!file) {
+                    preview.style.display = 'none';
+                    return;
+                }
 
-        if (photoInput) {
-            photoInput.addEventListener('change', function (e) {
-                validatePhoto();
-                loadPhotoPreview();
-            });
-        }
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Format autorisé: JPEG, PNG, GIF, WebP');
+                    this.value = '';
+                    preview.style.display = 'none';
+                    return;
+                }
 
-        function validatePhoto() {
-            const file = photoInput.files[0];
-
-            if (!file) {
-                photoInput.classList.add('is-invalid');
-                photoInput.classList.remove('is-valid');
-                photoError.textContent = 'Veuillez sélectionner une image';
-                photoError.classList.add('show');
-                return false;
-            }
-
-            if (!allowedImageTypes.includes(file.type)) {
-                photoInput.classList.add('is-invalid');
-                photoInput.classList.remove('is-valid');
-                photoError.textContent = 'Le fichier doit être une image (JPEG, PNG, GIF, WebP, SVG)';
-                photoError.classList.add('show');
-                return false;
-            }
-
-            // Vérifier la taille (max 5MB)
-            const maxSize = 5 * 1024 * 1024; // 5MB
-            if (file.size > maxSize) {
-                photoInput.classList.add('is-invalid');
-                photoInput.classList.remove('is-valid');
-                photoError.textContent = 'La taille de l\'image ne doit pas dépasser 5MB';
-                photoError.classList.add('show');
-                return false;
-            }
-
-            photoInput.classList.remove('is-invalid');
-            photoInput.classList.add('is-valid');
-            photoError.classList.remove('show');
-            return true;
-        }
-
-        function loadPhotoPreview() {
-            const file = photoInput.files[0];
-
-            if (file && allowedImageTypes.includes(file.type)) {
                 const reader = new FileReader();
-
-                reader.onload = function (event) {
-                    preview.src = event.target.result;
-                    preview.style.display = "block";
+                reader.onload = (e) => {
+                    console.log('Image chargée');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
                 };
-
                 reader.readAsDataURL(file);
-            } else {
-                preview.style.display = "none";
-            }
+            });
         }
 
     });

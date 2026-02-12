@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class DeclarationDechetType extends AbstractType
 {
@@ -27,7 +28,16 @@ class DeclarationDechetType extends AbstractType
 
             ->add('quantite', NumberType::class, [
                 'label' => 'Quantité *',
-                'attr' => ['placeholder' => 'Ex: 5']
+                'attr' => [
+                    'placeholder' => 'Ex: 5',
+                    'min' => '1',
+                    'required' => 'required'
+                ],
+                'constraints' => [
+                    new Assert\NotBlank(['message' => 'La quantité est obligatoire']),
+                    new Assert\Positive(['message' => 'La quantité doit être un nombre positif']),
+                    new Assert\Type(['type' => 'numeric', 'message' => 'La quantité doit être un nombre'])
+                ]
             ])
 
             ->add('unite', ChoiceType::class, [
@@ -45,14 +55,38 @@ class DeclarationDechetType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'rows' => 4,
-                    'placeholder' => 'Décrivez l’état du déchet, ses caractéristiques...'
+                    'placeholder' => 'Décrivez l\'état du déchet, ses caractéristiques...',
+                    'minlength' => '10'
+                ],
+                'constraints' => [
+                    new Assert\Length([
+                        'min' => 10,
+                        'minMessage' => 'La description doit contenir au minimum 10 caractères',
+                        'max' => 5000,
+                        'maxMessage' => 'La description ne doit pas dépasser 5000 caractères'
+                    ])
                 ]
             ])
 
             ->add('photoFile', FileType::class, [
                 'mapped' => false,
                 'required' => false,
-                'label' => 'Photo du déchet *'
+                'label' => 'Photo du déchet *',
+                'attr' => [
+                    'accept' => 'image/*'
+                ],
+                'constraints' => [
+                    new Assert\File([
+                        'maxSize' => '5M',
+                        'mimeTypes' => [
+                            'image/jpeg',
+                            'image/png',
+                            'image/gif',
+                            'image/webp'
+                        ],
+                        'mimeTypesMessage' => 'Format autorisé: JPEG, PNG, GIF, WebP'
+                    ])
+                ]
             ])
 
             ->add('latitude', NumberType::class, [

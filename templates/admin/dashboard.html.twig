@@ -1,71 +1,81 @@
 {% extends 'layouts/dashboard_base.html.twig' %}
 
-{% block title %}Admin{% endblock %}
-
-{% block header %}
-<h2><i class="fa-solid fa-crown"></i> Dashboard Administrateur</h2>
-<p>Vue globale du système de gestion des déchets.</p>
-{% endblock %}
+{% block page_title %}Admin - Dashboard{% endblock %}
 
 {% block sidebar %}
+
 <li class="nav-item">
-    <a class="nav-link" href="{{ path('admin_dashboard') }}">
-        <i class="fa-solid fa-chart-line"></i> Tableau de bord
+    <a class="nav-link active" href="{{ path('admin_dashboard') }}">
+        <i class="fa-solid fa-chart-line me-2"></i> Tableau de bord
     </a>
 </li>
+
 <li class="nav-item">
-    <a class="nav-link" href="#">
-        <i class="fa-solid fa-recycle"></i> Types de déchets
+    <a class="nav-link" href="{{ path('app_typedechet_index') }}">
+        <i class="fa-solid fa-recycle me-2"></i> Types de déchets
     </a>
 </li>
-<li class="nav-item">
-    <a class="nav-link" href="#">
-        <i class="fa-solid fa-file"></i> Déclarations
-    </a>
-</li>
+
 <li class="nav-item">
     <a class="nav-link" href="#">
-        <i class="fa-solid fa-users"></i> Utilisateurs
+        <i class="fa-solid fa-file me-2"></i> Déclarations
     </a>
 </li>
+
+<li class="nav-item">
+    <a class="nav-link" href="#">
+        <i class="fa-solid fa-users me-2"></i> Utilisateurs
+    </a>
+</li>
+
 {% endblock %}
 
 {% block content %}
-<div class="row g-4">
-    <div class="col-md-4">
-        <div class="card-dashboard">
-            <div class="d-flex justify-content-between align-items-center">
+
+<div class="container mt-4">
+    <h3 class="fw-bold">Bienvenue Admin 👋</h3>
+    <p class="text-muted">Utilisez le menu à gauche pour gérer l'application.</p>
+
+    <div class="row g-4 mt-4">
+
+        <div class="col-md-4">
+            <div class="stat-card d-flex justify-content-between align-items-center">
                 <div>
-                    <h5>Total Déclarations</h5>
+                    <p class="text-muted mb-1">Total Déclarations</p>
                     <h3>120</h3>
                 </div>
-                <i class="fa-solid fa-file-lines stat-icon"></i>
+                <div class="stat-icon">
+                    <i class="fa-solid fa-file"></i>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card-dashboard">
-            <div class="d-flex justify-content-between align-items-center">
+        <div class="col-md-4">
+            <div class="stat-card d-flex justify-content-between align-items-center">
                 <div>
-                    <h5>Citoyens actifs</h5>
+                    <p class="text-muted mb-1">Citoyens actifs</p>
                     <h3>85</h3>
                 </div>
-                <i class="fa-solid fa-user stat-icon"></i>
+                <div class="stat-icon">
+                    <i class="fa-solid fa-user"></i>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card-dashboard">
-            <div class="d-flex justify-content-between align-items-center">
+        <div class="col-md-4">
+            <div class="stat-card d-flex justify-content-between align-items-center">
                 <div>
-                    <h5>Partenaires</h5>
+                    <p class="text-muted mb-1">Partenaires</p>
                     <h3>22</h3>
                 </div>
-                <i class="fa-solid fa-handshake stat-icon"></i>
+                <div class="stat-icon">
+                    <i class="fa-solid fa-handshake"></i>
+                </div>
             </div>
         </div>
+
     </div>
+
 </div>
+
 {% endblock %}

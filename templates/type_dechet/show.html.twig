@@ -1,0 +1,37 @@
+{% extends 'layouts/dashboard_base.html.twig' %}
+
+{% block page_title %}Détails type déchet{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow-lg rounded-4 p-4">
+
+        <h3 class="mb-4">
+            <i class="fa-solid fa-eye text-success me-2"></i>
+            Détails du type de déchet
+        </h3>
+
+        <p><strong>ID :</strong> {{ type_dechet.id }}</p>
+        <p><strong>Libellé :</strong> {{ type_dechet.libelle }}</p>
+        <p><strong>Valeur points/kg :</strong> {{ type_dechet.valeurPointsKg }}</p>
+        <p><strong>Description tri :</strong> {{ type_dechet.descriptionTri }}</p>
+
+        <div class="d-flex gap-3 mt-4">
+
+            <a href="{{ path('app_typedechet_index') }}" class="btn btn-outline-secondary rounded-pill px-4">
+                Retour
+            </a>
+
+            <a href="{{ path('app_typedechet_edit', {'id': type_dechet.id}) }}" class="btn btn-primary rounded-pill px-4">
+                Modifier
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
