@@ -14,7 +14,17 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class DeclarationDechetController extends AbstractController
 {
-#[Route('/citoyen/declaration/new', name: 'declaration_dechet_new')]
+    #[Route('/citoyen/declarations', name: 'citoyen_declarations')]
+    public function index(EntityManagerInterface $em): Response
+    {
+        $declarations = $em->getRepository(DeclarationDechet::class)->findBy([], ['createdAt' => 'DESC']);
+
+        return $this->render('declaration_dechet/index.html.twig', [
+            'declarations' => $declarations,
+        ]);
+    }
+
+    #[Route('/citoyen/declaration/new', name: 'declaration_dechet_new')]
     public function new(
         Request $request,
         EntityManagerInterface $em,
@@ -54,7 +64,9 @@ class DeclarationDechetController extends AbstractController
             $em->persist($declaration);
             $em->flush();
 
-            return $this->redirectToRoute('citoyen_dashboard');
+            $this->addFlash('success', 'Votre déclaration a été enregistrée avec succès.');
+
+            return $this->redirectToRoute('citoyen_declarations');
         }
 
         return $this->render('declaration_dechet/new.html.twig', [

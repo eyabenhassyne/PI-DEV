@@ -19,7 +19,7 @@ class TypeDechet
     private ?string $libelle = null;
 
     #[ORM\Column]
-    private ?float $valeurPointsKG = null;
+    private ?float $valeurPointsKg = null;
 
     #[ORM\Column(length: 255)]
     private ?string $descriptionTri = null;
@@ -48,14 +48,14 @@ class TypeDechet
         return $this;
     }
 
-    public function getValeurPointsKG(): ?float
+    public function getValeurPointsKg(): ?float
     {
-        return $this->valeurPointsKG;
+        return $this->valeurPointsKg;
     }
 
-    public function setValeurPointsKG(float $valeurPointsKG): static
+    public function setValeurPointsKg(float $valeurPointsKg): static
     {
-        $this->valeurPointsKG = $valeurPointsKG;
+        $this->valeurPointsKg = $valeurPointsKg;
         return $this;
     }
 

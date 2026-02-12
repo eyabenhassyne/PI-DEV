@@ -14,14 +14,8 @@ class DeclarationDechet
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $idDeclaration = null;
-
     #[ORM\Column(length: 255)]
     private ?string $Description = null;
-
-    #[ORM\Column]
-    private ?int $Localisation = null;
 
     #[ORM\Column(length: 255)]
     private ?string $statut = null;
@@ -30,7 +24,7 @@ class DeclarationDechet
     #[ORM\JoinColumn(nullable: false)]
     private ?TypeDechet $TypeDechet = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $photo = null;
 
     #[ORM\Column]
@@ -53,18 +47,6 @@ class DeclarationDechet
         return $this->id;
     }
 
-    public function getIdDeclaration(): ?int
-    {
-        return $this->idDeclaration;
-    }
-
-    public function setIdDeclaration(int $idDeclaration): static
-    {
-        $this->idDeclaration = $idDeclaration;
-
-        return $this;
-    }
-
     public function getDescription(): ?string
     {
         return $this->Description;
@@ -73,18 +55,6 @@ class DeclarationDechet
     public function setDescription(string $Description): static
     {
         $this->Description = $Description;
-
-        return $this;
-    }
-
-    public function getLocalisation(): ?int
-    {
-        return $this->Localisation;
-    }
-
-    public function setLocalisation(int $Localisation): static
-    {
-        $this->Localisation = $Localisation;
 
         return $this;
     }

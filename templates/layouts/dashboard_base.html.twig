@@ -5,13 +5,30 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <h3 class="mb-4">
-            <i class="fa-solid fa-leaf"></i> WasteWise
-        </h3>
+        <div class="sidebar-header">
+            <h3>
+                <i class="fa-solid fa-leaf me-2"></i> WasteWise
+            </h3>
+        </div>
 
-        <ul class="nav flex-column">
-            {% block sidebar %}{% endblock %}
-        </ul>
+        <div class="sidebar-menu">
+            <div class="menu-label">Menu Principal</div>
+            <ul class="nav flex-column">
+                {% block sidebar %}{% endblock %}
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-success p-2 me-2">
+                    <i class="fa-solid fa-user text-white"></i>
+                </div>
+                <div class="overflow-hidden">
+                    <p class="mb-0 text-white small fw-bold text-truncate">Utilisateur Demo</p>
+                    <p class="mb-0 text-muted extra-small">Administrateur</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Main Area -->
@@ -19,7 +36,15 @@
 
         <!-- Top Header -->
         <div class="top-header d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">{% block page_title %}Dashboard{% endblock %}</h4>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{{ path('app_home') }}" class="text-decoration-none text-muted"><i class="fa-solid fa-house small"></i> Home</a></li>
+                    {% block breadcrumb %}
+                        <li class="breadcrumb-item active" aria-current="page">Admin</li>
+                        <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                    {% endblock %}
+                </ol>
+            </nav>
 
             <div class="text-end">
                 <strong>Utilisateur Demo</strong><br>

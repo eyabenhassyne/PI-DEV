@@ -4,22 +4,33 @@
 
 {% block page_title %}Déclarer un déchet{% endblock %}
 
+{% block breadcrumb %}
+    <li class="breadcrumb-item text-muted">Citoyen</li>
+    <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">Déclarer un déchet</li>
+{% endblock %}
+
 {% block sidebar %}
 <li class="nav-item">
     <a class="nav-link" href="{{ path('citoyen_dashboard') }}">
         <i class="fa-solid fa-house"></i> Accueil
     </a>
 </li>
+
+<div class="menu-label">Mes Actions</div>
+
 <li class="nav-item">
     <a class="nav-link active" href="{{ path('declaration_dechet_new') }}">
-        <i class="fa-solid fa-file"></i> Déclarer un déchet
+        <i class="fa-solid fa-plus-circle"></i> Déclarer un déchet
     </a>
 </li>
 <li class="nav-item">
     <a class="nav-link" href="{{ path('citoyen_declarations') }}">
-        <i class="fa-solid fa-check-circle"></i> Mes déclarations
+        <i class="fa-solid fa-clipboard-list"></i> Mes déclarations
     </a>
 </li>
+
+<div class="menu-label">Suivi & Compte</div>
+
 <li class="nav-item">
     <a class="nav-link" href="{{ path('citoyen_statistiques') }}">
         <i class="fa-solid fa-chart-line"></i> Statistiques
@@ -32,182 +43,379 @@
 </li>
 {% endblock %}
 
+{% block stylesheets %}
+<style>
+    .bg-success { background: linear-gradient(135deg, #198754 0%, #146c43 100%) !important; }
+    .border-dashed { border-style: dashed !important; border-width: 2px !important; }
+    .upload-zone { transition: all 0.3s ease; cursor: pointer; border-color: #dee2e6; min-height: 200px; display: flex; align-items: center; justify-content: center; }
+    .upload-zone:hover { border-color: #198754; background-color: #f8fdfa !important; }
+    .upload-zone.dragover { border-color: #198754; background-color: #e9f5ee !important; }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #198754;
+        box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.1);
+    }
+
+    .input-group-text { border-color: #dee2e6; }
+    
+    .menu-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: #adb5bd;
+        margin: 1.5rem 0 0.5rem 1.25rem;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-white { background: white; border: 1px solid #dee2e6; }
+    .btn-white:hover { background: #f8f9fa; }
+
+    #map { z-index: 1; border-radius: 1rem; }
+    .cursor-pointer { cursor: pointer; }
+</style>
+{% endblock %}
+
 {% block content %}
 
-<div class="container mt-4">
-    <div class="card shadow-lg p-4 rounded-4">
+<div class="container mt-4 pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-success py-3">
+                    <h4 class="card-title mb-0 text-white d-flex align-items-center">
+                        <i class="fa-solid fa-trash-can me-2"></i>
+                        Déclarer un nouveau déchet
+                    </h4>
+                </div>
 
-        <h3 class="mb-4">
-            <i class="fa-solid fa-trash text-success me-2"></i>
-            Déclarer un nouveau déchet
-        </h3>
+                <div class="card-body p-4 p-md-5">
+                    <p class="text-muted mb-5">
+                        <i class="fa-solid fa-circle-info text-success me-1"></i>
+                        Remplissez ce formulaire pour signaler des déchets à collecter. Votre action contribue à une Tunisie plus propre !
+                    </p>
 
-        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+                    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data', 'id': 'declarationForm', 'novalidate': 'novalidate'}}) }}
 
-        <div class="mb-3">
-            {{ form_label(form.typeDechet) }}
-            {{ form_widget(form.typeDechet, {'attr': {'class': 'form-control'}}) }}
-        </div>
+                    <div class="row g-4">
+                        <!-- TYPE DE DÉCHET -->
+                        <div class="col-md-12 mb-2">
+                            <label class="form-label fw-bold text-dark">
+                                <i class="fa-solid fa-recycle me-1 text-success"></i> Type de déchet <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group shadow-sm rounded">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-list-ul text-muted"></i></span>
+                                {{ form_widget(form.typeDechet, {'attr': {'class': 'form-select border-start-0 ps-0'}}) }}
+                            </div>
+                            <div class="error-feedback text-danger small mt-1"></div>
+                        </div>
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                {{ form_label(form.quantite) }}
-                {{ form_widget(form.quantite, {'attr': {'class': 'form-control', 'type': 'number', 'min': '1', 'step': '1'}}) }}
-                {{ form_errors(form.quantite) }}
+                        <!-- QUANTITÉ ET UNITÉ -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark">
+                                <i class="fa-solid fa-weight-hanging me-1 text-success"></i> Quantité <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group shadow-sm rounded">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-hashtag text-muted"></i></span>
+                                {{ form_widget(form.quantite, {'attr': {'class': 'form-control border-start-0 ps-0', 'placeholder': 'Ex: 5'}}) }}
+                            </div>
+                            <div class="error-feedback text-danger small mt-1"></div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark">
+                                <i class="fa-solid fa-ruler me-1 text-success"></i> Unité <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group shadow-sm rounded">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-scale-balanced text-muted"></i></span>
+                                {{ form_widget(form.unite, {'attr': {'class': 'form-select border-start-0 ps-0'}}) }}
+                            </div>
+                            <div class="error-feedback text-danger small mt-1"></div>
+                        </div>
+
+                        <!-- DESCRIPTION -->
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold text-dark">
+                                <i class="fa-solid fa-align-left me-1 text-success"></i> Description détaillée <span class="text-danger">*</span>
+                            </label>
+                            <div class="shadow-sm rounded">
+                                {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '4', 'placeholder': 'Décrivez le déchet, son état, ou des instructions pour le collecteur...'}}) }}
+                            </div>
+                            <div class="d-flex justify-content-between mt-1">
+                                <div class="error-feedback text-danger small"></div>
+                                <div class="char-counter small text-muted" id="charCounter">0 / 10 caractères minimum</div>
+                            </div>
+                        </div>
+
+                        <!-- LOCALISATION (MAP) -->
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold text-dark">
+                                <i class="fa-solid fa-location-dot me-1 text-success"></i> Emplacement précis <span class="text-danger">*</span>
+                            </label>
+                            <p class="text-muted small mb-3">Cliquez sur la carte pour définir le point exact de collecte.</p>
+                            <div class="position-relative shadow-sm rounded-4 overflow-hidden border">
+                                <div id="map" style="height: 380px;"></div>
+                                <div class="position-absolute bottom-0 end-0 m-3 z-3">
+                                    <button type="button" id="recenterBtn" class="btn btn-white btn-sm shadow-sm border rounded-pill px-3">
+                                        <i class="fa-solid fa-crosshairs me-1 text-success"></i> Ma position
+                                    </button>
+                                </div>
+                            </div>
+                            {{ form_widget(form.latitude) }}
+                            {{ form_widget(form.longitude) }}
+                            <div class="error-feedback text-danger small mt-1" id="locationError"></div>
+                        </div>
+
+                        <!-- PHOTO -->
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold text-dark">
+                                <i class="fa-solid fa-camera me-1 text-success"></i> Photo du déchet <span class="text-muted small">(Optionnel)</span>
+                            </label>
+                            <div class="upload-zone p-4 border-2 border-dashed rounded-4 text-center bg-light position-relative" id="dropZone">
+                                {{ form_widget(form.photoFile, {
+                                    'attr': {
+                                        'id': 'photoInput',
+                                        'class': 'position-absolute opacity-0 w-100 h-100 start-0 top-0 cursor-pointer',
+                                        'style': 'z-index: 10;',
+                                        'accept': 'image/*'
+                                    }
+                                }) }}
+                                <div id="uploadPlaceholder">
+                                    <i class="fa-solid fa-cloud-arrow-up fa-3x text-success mb-3 opacity-50"></i>
+                                    <h6 class="fw-bold mb-1">Cliquez ou glissez une photo ici</h6>
+                                    <p class="text-muted small mb-0">Formats acceptés : JPG, PNG, WebP (Max 5Mo)</p>
+                                </div>
+                                <div id="previewContainer" class="d-none" style="position: relative; z-index: 20;">
+                                    <img id="previewImage" class="img-fluid rounded-3 shadow-sm mb-3" style="max-height: 250px;">
+                                    <br>
+                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3" id="removePhoto">
+                                        <i class="fa-solid fa-trash me-1"></i> Changer la photo
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="error-feedback text-danger small mt-1"></div>
+                        </div>
+
+                        <!-- SUBMIT BUTTONS -->
+                        <div class="col-md-12 mt-4">
+                            <div class="d-grid d-md-flex gap-3 justify-content-md-end">
+                                <a href="{{ path('citoyen_dashboard') }}" class="btn btn-light rounded-pill px-5 order-2 order-md-1">
+                                    Annuler
+                                </a>
+                                <button type="submit" class="btn btn-success btn-lg rounded-pill px-5 shadow-sm order-1 order-md-2">
+                                    <i class="fa-solid fa-paper-plane me-2"></i> Envoyer la déclaration
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
             </div>
-
-            <div class="col-md-6 mb-3">
-                {{ form_label(form.unite) }}
-                {{ form_widget(form.unite, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.unite) }}
-            </div>
         </div>
-
-        <div class="mb-3">
-            {{ form_label(form.description) }}
-            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'id': 'descriptionInput'}}) }}
-            <div class="char-counter" id="charCounter">0 / 10 caractères minimum</div>
-            {{ form_errors(form.description) }}
-        </div>
-
-        <!-- MAP -->
-        <div class="mb-4">
-            <label class="form-label fw-bold">Localisation *</label>
-            <div id="map" style="height:350px; border-radius:12px; border:1px solid #ddd;"></div>
-        </div>
-
-        {{ form_widget(form.latitude) }}
-        {{ form_widget(form.longitude) }}
-
-        <!-- IMAGE -->
-        <div class="mb-3">
-            {{ form_label(form.photoFile) }}
-            {{ form_widget(form.photoFile, {
-                'attr': {
-                    'class': 'form-control',
-                    'id': 'photoInput',
-                    'accept': 'image/*'
-                }
-            }) }}
-            {{ form_errors(form.photoFile) }}
-        </div>
-
-        <div class="mb-4 text-center">
-            <img id="previewImage"
-                 style="max-width:300px; display:none; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1);" />
-        </div>
-
-        <div class="d-flex gap-3">
-            <button class="btn btn-success px-4 rounded-pill">
-                Déclarer le déchet
-            </button>
-
-            <a href="{{ path('citoyen_dashboard') }}"
-               class="btn btn-outline-secondary rounded-pill">
-                Annuler
-            </a>
-        </div>
-
-        {{ form_end(form) }}
-
     </div>
 </div>
+{% endblock %}
 
+{% block javascripts %}
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        // ==================== ELEMENTS ====================
+        const form = document.getElementById('declarationForm');
+        const photoInput = document.getElementById('photoInput');
+        const dropZone = document.getElementById('dropZone');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImage = document.getElementById('previewImage');
+        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+        const removePhotoBtn = document.getElementById('removePhoto');
+        const descriptionInput = document.querySelector('[name="declaration_dechet[description]"]');
+        const charCounter = document.getElementById('charCounter');
+        const recenterBtn = document.getElementById('recenterBtn');
 
         // ==================== LEAFLET MAP ====================
+        // Fix Leaflet marker icons paths
+        delete L.Icon.Default.prototype._getIconUrl;
+        L.Icon.Default.mergeOptions({
+            iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+            iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+            shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        });
+
         const map = L.map('map').setView([36.8065, 10.1815], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
         let marker;
+        const latInput = document.querySelector('[name="declaration_dechet[latitude]"]');
+        const lngInput = document.querySelector('[name="declaration_dechet[longitude]"]');
+
+        function setLocation(lat, lng) {
+            if (marker) map.removeLayer(marker);
+            marker = L.marker([lat, lng]).addTo(map);
+            latInput.value = lat;
+            lngInput.value = lng;
+            document.getElementById('locationError').textContent = '';
+        }
+
+        // Géolocalisation initiale
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
                 map.setView([lat, lng], 15);
-                marker = L.marker([lat, lng]).addTo(map);
-                document.querySelector('[name="declaration_dechet[latitude]"]').value = lat;
-                document.querySelector('[name="declaration_dechet[longitude]"]').value = lng;
+                setLocation(lat, lng);
             });
         }
 
         map.on('click', function (e) {
-            const lat = e.latlng.lat;
-            const lng = e.latlng.lng;
-            if (marker) map.removeLayer(marker);
-            marker = L.marker([lat, lng]).addTo(map);
-            document.querySelector('[name="declaration_dechet[latitude]"]').value = lat;
-            document.querySelector('[name="declaration_dechet[longitude]"]').value = lng;
+            setLocation(e.latlng.lat, e.latlng.lng);
         });
 
-        // ==================== VALIDATION DESCRIPTION ====================
-        // Chercher par le name Symfony plutôt que par l'ID
-        const descriptionInput = document.querySelector('[name="declaration_dechet[description]"]');
-        const charCounter = document.getElementById('charCounter');
-        
-        console.log('Description input trouvé:', descriptionInput);
+        recenterBtn.addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    map.flyTo([lat, lng], 15);
+                    setLocation(lat, lng);
+                });
+            }
+        });
 
+        // ==================== DESCRIPTION COUNTER ====================
         if (descriptionInput && charCounter) {
             descriptionInput.addEventListener('input', function() {
                 const len = this.value.length;
-                console.log('Longueur:', len);
-                
                 charCounter.textContent = len + ' / 10 caractères minimum';
                 
                 if (len < 10 && len > 0) {
-                    charCounter.style.color = '#dc3545';
-                    charCounter.style.fontWeight = 'bold';
-                    this.style.borderColor = '#dc3545';
+                    charCounter.classList.add('text-danger');
+                    charCounter.classList.remove('text-success');
+                    this.classList.add('is-invalid');
                 } else if (len >= 10) {
-                    charCounter.style.color = '#28a745';
-                    charCounter.style.fontWeight = 'normal';
-                    this.style.borderColor = '#28a745';
+                    charCounter.classList.remove('text-danger');
+                    charCounter.classList.add('text-success');
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
                 } else {
-                    charCounter.style.color = '#6c757d';
-                    this.style.borderColor = '';
+                    charCounter.classList.remove('text-danger', 'text-success');
+                    this.classList.remove('is-invalid', 'is-valid');
                 }
             });
         }
 
-        // ==================== VALIDATION PHOTO ====================
-        const photoInput = document.querySelector('[name="declaration_dechet[photoFile]"]');
-        const preview = document.getElementById('previewImage');
-        
-        console.log('Photo input trouvé:', photoInput);
-        console.log('Preview trouvé:', preview);
+        // ==================== PHOTO UPLOAD & PREVIEW ====================
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
 
-        if (photoInput && preview) {
-            photoInput.addEventListener('change', function() {
-                const file = this.files[0];
-                console.log('Fichier sélectionné:', file);
-                
-                if (!file) {
-                    preview.style.display = 'none';
-                    return;
-                }
+        ['dragleave', 'drop'].forEach(event => {
+            dropZone.addEventListener(event, () => dropZone.classList.remove('dragover'));
+        });
 
-                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-                if (!allowedTypes.includes(file.type)) {
-                    alert('Format autorisé: JPEG, PNG, GIF, WebP');
-                    this.value = '';
-                    preview.style.display = 'none';
-                    return;
-                }
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const files = e.dataTransfer.files;
+            if (files.length) {
+                photoInput.files = files;
+                handlePhotoPreview(files[0]);
+            }
+        });
 
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    console.log('Image chargée');
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            });
+        photoInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                handlePhotoPreview(this.files[0]);
+            }
+        });
+
+        function handlePhotoPreview(file) {
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Veuillez sélectionner une image valide (JPG, PNG ou WebP)');
+                photoInput.value = '';
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('L\'image est trop lourde (Max 5Mo)');
+                photoInput.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                previewContainer.classList.remove('d-none');
+                uploadPlaceholder.classList.add('d-none');
+            };
+            reader.readAsDataURL(file);
         }
 
+        removePhotoBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            photoInput.value = '';
+            previewContainer.classList.add('d-none');
+            uploadPlaceholder.classList.remove('d-none');
+        });
+
+        // ==================== FORM VALIDATION ====================
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+
+            // Type
+            const typeSelect = document.querySelector('[name="declaration_dechet[typeDechet]"]');
+            if (!typeSelect.value) {
+                showError(typeSelect, 'Veuillez choisir un type de déchet');
+                isValid = false;
+            } else {
+                clearError(typeSelect);
+            }
+
+            // Quantité
+            const quantite = document.querySelector('[name="declaration_dechet[quantite]"]');
+            if (!quantite.value || quantite.value <= 0) {
+                showError(quantite, 'Veuillez saisir une quantité valide');
+                isValid = false;
+            } else {
+                clearError(quantite);
+            }
+
+            // Description
+            if (descriptionInput.value.length < 10) {
+                showError(descriptionInput, 'La description doit faire au moins 10 caractères');
+                isValid = false;
+            } else {
+                clearError(descriptionInput);
+            }
+
+            // Localisation
+            if (!latInput.value || !lngInput.value) {
+                document.getElementById('locationError').textContent = 'Veuillez sélectionner un emplacement sur la carte';
+                isValid = false;
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                // Scroll to first error
+                const firstError = document.querySelector('.is-invalid, #locationError:not(:empty)');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+
+        function showError(element, message) {
+            element.classList.add('is-invalid');
+            const feedback = element.closest('.col-md-12, .col-md-6').querySelector('.error-feedback');
+            if (feedback) feedback.textContent = message;
+        }
+
+        function clearError(element) {
+            element.classList.remove('is-invalid');
+            const feedback = element.closest('.col-md-12, .col-md-6').querySelector('.error-feedback');
+            if (feedback) feedback.textContent = '';
+        }
     });
 </script>
-
 {% endblock %}

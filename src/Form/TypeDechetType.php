@@ -24,10 +24,17 @@ class TypeDechetType extends AbstractType
                     'Déchets électroniques' => 'Déchets électroniques',
                     'Textile' => 'Textile',
                     'Bois' => 'Bois',
+                    'Batteries' => 'Batteries',
+                    'Huiles usées' => 'Huiles usées',
+                    'Déchets organiques' => 'Déchets organiques',
+                    'Déchets médicaux' => 'Déchets médicaux',
+                    'Déchets dangereux' => 'Déchets dangereux',
+                    'Déchets industriels' => 'Déchets industriels',
+                    'Déchets ménagers' => 'Déchets ménagers',
                 ],
             ])
 
-            ->add('valeurPointsKG', NumberType::class, [
+            ->add('valeurPointsKg', NumberType::class, [
                 'scale' => 0
             ])
 

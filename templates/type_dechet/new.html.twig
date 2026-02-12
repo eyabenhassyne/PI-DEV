@@ -2,28 +2,38 @@
 
 {% block page_title %}Admin - Ajouter type de déchet{% endblock %}
 
+{% block breadcrumb %}
+    <li class="breadcrumb-item text-muted">Admin</li>
+    <li class="breadcrumb-item text-muted"><a href="{{ path('app_typedechet_index') }}" class="text-decoration-none text-muted">Types de déchets</a></li>
+    <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">Ajouter</li>
+{% endblock %}
+
 {% block sidebar %}
 <li class="nav-item">
     <a class="nav-link" href="{{ path('admin_dashboard') }}">
-        <i class="fa-solid fa-chart-line me-2"></i> Tableau de bord
+        <i class="fa-solid fa-house"></i> Dashboard
     </a>
 </li>
+
+<div class="menu-label">Gestion Déchets</div>
 
 <li class="nav-item">
     <a class="nav-link active" href="{{ path('app_typedechet_index') }}">
-        <i class="fa-solid fa-recycle me-2"></i> Types de déchets
+        <i class="fa-solid fa-recycle"></i> Types de déchets
     </a>
 </li>
 
 <li class="nav-item">
     <a class="nav-link" href="#">
-        <i class="fa-solid fa-file me-2"></i> Déclarations
+        <i class="fa-solid fa-clipboard-list"></i> Déclarations
     </a>
 </li>
 
+<div class="menu-label">Administration</div>
+
 <li class="nav-item">
     <a class="nav-link" href="#">
-        <i class="fa-solid fa-users me-2"></i> Utilisateurs
+        <i class="fa-solid fa-users-gear"></i> Utilisateurs
     </a>
 </li>
 {% endblock %}
@@ -31,105 +41,125 @@
 {% block content %}
 
 <div class="container mt-4">
-    <div class="card shadow-lg p-4 rounded-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-success py-3">
+                    <h4 class="card-title mb-0 text-white d-flex align-items-center">
+                        <i class="fa-solid fa-plus-circle me-2"></i>
+                        Ajouter un nouveau type de déchet
+                    </h4>
+                </div>
 
-        <h3 class="mb-4">
-            <i class="fa-solid fa-plus text-success me-2"></i>
-            Ajouter un type de déchet
-        </h3>
+                <div class="card-body p-4">
+                    <p class="text-muted mb-4">Remplissez les informations ci-dessous pour créer une nouvelle catégorie de déchet.</p>
 
-        {{ form_start(form, {'attr': {'id': 'typeForm', 'novalidate': 'novalidate'}}) }}
+                    {{ form_start(form, {'attr': {'id': 'typeForm', 'novalidate': 'novalidate'}}) }}
 
-        <!-- LIBELLE -->
-        <div class="mb-3">
-            <label class="form-label">Libellé *</label>
+                    <div class="row">
+                        <!-- LIBELLE -->
+                        <div class="col-md-7 mb-4">
+                            <label class="form-label fw-bold text-dark">
+                                <i class="fa-solid fa-tag me-1 text-success"></i> Libellé <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-list-ul text-muted"></i></span>
+                                <select class="form-select border-start-0 ps-0" id="libelleSelect" name="type_dechet[libelle]">
+                                    <option value="">-- Sélectionner un type --</option>
+                                    <option value="Plastique">Plastique</option>
+                                    <option value="Verre">Verre</option>
+                                    <option value="Papier / Carton">Papier / Carton</option>
+                                    <option value="Métal">Métal</option>
+                                    <option value="Déchets électroniques">Déchets électroniques</option>
+                                    <option value="Textile">Textile</option>
+                                    <option value="Bois">Bois</option>
+                                    <option value="Batteries">Batteries</option>
+                                    <option value="Huiles usées">Huiles usées</option>
+                                    <option value="Déchets organiques">Déchets organiques</option>
+                                    <option value="Déchets médicaux">Déchets médicaux</option>
+                                    <option value="Déchets dangereux">Déchets dangereux</option>
+                                    <option value="Déchets industriels">Déchets industriels</option>
+                                    <option value="Déchets ménagers">Déchets ménagers</option>
+                                </select>
+                            </div>
+                            <div class="error-message" id="libelleError"></div>
+                        </div>
 
-            <select class="form-control" id="libelleSelect" name="type_dechet[libelle]">
-                <option value="">-- Sélectionner un type --</option>
-                <option value="Plastique">Plastique</option>
-                <option value="Verre">Verre</option>
-                <option value="Papier / Carton">Papier / Carton</option>
-                <option value="Métal">Métal</option>
-                <option value="Déchets électroniques">Déchets électroniques</option>
-                <option value="Textile">Textile</option>
-                <option value="Bois">Bois</option>
-                <option value="Batteries">Batteries</option>
-                <option value="Huiles usées">Huiles usées</option>
-                <option value="Déchets organiques">Déchets organiques</option>
-                <option value="Déchets médicaux">Déchets médicaux</option>
-                <option value="Déchets dangereux">Déchets dangereux</option>
-                <option value="Déchets industriels">Déchets industriels</option>
-                <option value="Déchets ménagers">Déchets ménagers</option>
-            </select>
+                        <!-- VALEUR -->
+                        <div class="col-md-5 mb-4">
+                            <label class="form-label fw-bold text-dark">
+                                <i class="fa-solid fa-star me-1 text-success"></i> Points / KG <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-calculator text-muted"></i></span>
+                                <input type="text" class="form-control border-start-0 ps-0" id="valeurInput" name="type_dechet[valeurPointsKg]" placeholder="Ex: 5">
+                                <span class="input-group-text bg-light">pts</span>
+                            </div>
+                            <div class="error-message" id="valeurError"></div>
+                        </div>
+                    </div>
 
-            <div class="error-message" id="libelleError"></div>
-        </div>
+                    <!-- DESCRIPTION -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark">
+                            <i class="fa-solid fa-align-left me-1 text-success"></i> Consignes de tri <span class="text-danger">*</span>
+                        </label>
+                        <div class="position-relative">
+                            <textarea class="form-control" id="descriptionInput" name="type_dechet[descriptionTri]" rows="4"
+                                      placeholder="Ex: Bac jaune, nettoyer avant tri..."></textarea>
+                            <div class="char-counter invalid" id="charCounter">
+                                0 / 10 caractères minimum
+                            </div>
+                        </div>
+                        <div class="error-message" id="descriptionError"></div>
+                    </div>
 
-        <!-- VALEUR -->
-        <div class="mb-3">
-            <label class="form-label">Valeur points/kg *</label>
+                    <hr class="my-4 opacity-50">
 
-            <input type="text" class="form-control" id="valeurInput" name="type_dechet[valeurPointsKg]" placeholder="Ex: 5">
+                    <div class="d-flex justify-content-end gap-3">
+                        <a href="{{ path('app_typedechet_index') }}"
+                           class="btn btn-light rounded-pill px-4 border">
+                            <i class="fa-solid fa-xmark me-2"></i> Annuler
+                        </a>
 
-            <div class="error-message" id="valeurError"></div>
-        </div>
+                        <button type="submit" class="btn btn-success rounded-pill px-5 shadow-sm">
+                            <i class="fa-solid fa-check-circle me-2"></i> Enregistrer
+                        </button>
+                    </div>
 
-        <!-- DESCRIPTION -->
-        <div class="mb-3">
-            <label class="form-label">Description tri *</label>
+                    {{ form_widget(form._token) }}
 
-            <textarea class="form-control" id="descriptionInput" name="type_dechet[descriptionTri]" rows="4"
-                      placeholder="Ex: Bac jaune, nettoyer avant tri..."></textarea>
+                    {{ form_end(form, { 'render_rest': false }) }}
 
-            <div class="char-counter invalid" id="charCounter">
-                0 / 10 caractères minimum
+                </div>
             </div>
-
-            <div class="error-message" id="descriptionError"></div>
         </div>
-
-        <div class="d-flex gap-3 mt-3">
-            <button type="submit" class="btn btn-success rounded-pill px-4">
-                Enregistrer
-            </button>
-
-            <a href="{{ path('app_typedechet_index') }}"
-               class="btn btn-outline-secondary rounded-pill">
-                Annuler
-            </a>
-        </div>
-
-        {{ form_end(form, { 'render_rest': false }) }}
-
     </div>
 </div>
 
 <style>
+.form-label { font-size: 0.95rem; }
+.input-group-text { border-color: #dee2e6; }
+.form-control, .form-select { border-color: #dee2e6; padding: 0.6rem 1rem; }
+.form-control:focus, .form-select:focus { border-color: #198754; box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.1); }
 .error-message {
     color: #dc3545;
-    font-size: 0.875rem;
-    margin-top: 6px;
+    font-size: 0.825rem;
+    margin-top: 5px;
     display: none;
+    font-weight: 500;
 }
-
-.error-message.show {
-    display: block;
-}
-
-.is-invalid {
-    border: 2px solid #dc3545 !important;
-}
-
+.error-message.show { display: block; }
+.is-invalid { border-color: #dc3545 !important; }
+.is-invalid + .input-group-text { border-color: #dc3545 !important; }
 .char-counter {
-    font-size: 0.85rem;
-    margin-top: 6px;
+    position: absolute;
+    bottom: -22px;
+    right: 0;
+    font-size: 0.75rem;
     color: #6c757d;
 }
-
-.char-counter.invalid {
-    color: #dc3545;
-    font-weight: bold;
-}
+.char-counter.invalid { color: #dc3545; font-weight: bold; }
 </style>
 
 <script>

@@ -1,6 +1,12 @@
 {% extends 'layouts/dashboard_base.html.twig' %}
 
-{% block page_title %}WasteWise TN - Dashboard{% endblock %}
+{% block title %}WasteWise TN - Dashboard{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{{ path('app_home') }}" class="text-decoration-none text-success">Home</a></li>
+<li class="breadcrumb-item text-muted">Citoyen</li>
+<li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+{% endblock %}
 
 {% block sidebar %}
 <li class="nav-item">
@@ -8,16 +14,22 @@
         <i class="fa-solid fa-house"></i> Accueil
     </a>
 </li>
+
+<div class="menu-label">Mes Actions</div>
+
 <li class="nav-item">
     <a class="nav-link" href="{{ path('declaration_dechet_new') }}">
-        <i class="fa-solid fa-file"></i> Déclarer un déchet
+        <i class="fa-solid fa-plus-circle"></i> Déclarer un déchet
     </a>
 </li>
 <li class="nav-item">
     <a class="nav-link" href="{{ path('citoyen_declarations') }}">
-        <i class="fa-solid fa-check-circle"></i> Mes déclarations
+        <i class="fa-solid fa-clipboard-list"></i> Mes déclarations
     </a>
 </li>
+
+<div class="menu-label">Suivi & Compte</div>
+
 <li class="nav-item">
     <a class="nav-link" href="{{ path('citoyen_statistiques') }}">
         <i class="fa-solid fa-chart-line"></i> Statistiques
@@ -33,93 +45,121 @@
 {% block content %}
 
 <!-- Hero -->
-<div class="hero">
-    <h2>Bienvenue dans votre dashboard</h2>
-    <p>Déclarez vos déchets et contribuez à un environnement plus durable.</p>
+<div class="hero mb-4">
+    <h2 class="h3 mb-2">Bienvenue dans votre dashboard</h2>
+    <p class="mb-0 opacity-75">Gérez vos déclarations et suivez votre impact environnemental en temps réel.</p>
 </div>
 
 <!-- Stats -->
 <div class="row g-4 mb-4">
-
     <div class="col-md-3">
-        <div class="stat-card d-flex justify-content-between align-items-center">
+        <div class="stat-card d-flex justify-content-between align-items-center h-100">
             <div>
-                <p class="text-muted">Déclarations totales</p>
-                <h3>12</h3>
+                <p class="text-muted small mb-1">Déclarations totales</p>
+                <h3 class="mb-0 fw-bold">{{ stats.total }}</h3>
             </div>
-            <div class="stat-icon">
+            <div class="stat-icon bg-success-subtle text-success">
                 <i class="fa-solid fa-leaf"></i>
             </div>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="stat-card d-flex justify-content-between align-items-center">
+        <div class="stat-card d-flex justify-content-between align-items-center h-100">
             <div>
-                <p class="text-muted">Validées</p>
-                <h3>8</h3>
+                <p class="text-muted small mb-1">Validées</p>
+                <h3 class="mb-0 fw-bold text-success">{{ stats.valide }}</h3>
             </div>
-            <div class="stat-icon">
-                <i class="fa-solid fa-check"></i>
+            <div class="stat-icon bg-success-subtle text-success">
+                <i class="fa-solid fa-check-double"></i>
             </div>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="stat-card d-flex justify-content-between align-items-center">
+        <div class="stat-card d-flex justify-content-between align-items-center h-100">
             <div>
-                <p class="text-muted">En attente</p>
-                <h3>3</h3>
+                <p class="text-muted small mb-1">En attente</p>
+                <h3 class="mb-0 fw-bold text-warning">{{ stats.en_attente }}</h3>
             </div>
-            <div class="stat-icon">
+            <div class="stat-icon bg-warning-subtle text-warning">
                 <i class="fa-solid fa-clock"></i>
             </div>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="stat-card d-flex justify-content-between align-items-center">
+        <div class="stat-card d-flex justify-content-between align-items-center h-100 border-success">
             <div>
-                <p class="text-muted">Points gagnés</p>
-                <h3>240</h3>
+                <p class="text-muted small mb-1">Points gagnés</p>
+                <h3 class="mb-0 fw-bold text-primary">{{ stats.points }} <small class="fs-6 fw-normal">pts</small></h3>
             </div>
-            <div class="stat-icon">
-                <i class="fa-solid fa-arrow-trend-up"></i>
+            <div class="stat-icon bg-primary-subtle text-primary">
+                <i class="fa-solid fa-star"></i>
             </div>
         </div>
     </div>
-
 </div>
 
-<!-- Bottom cards -->
+<!-- Quick Actions & Info -->
 <div class="row g-4">
-
-    <div class="col-md-6">
-        <div class="big-card">
-            <h4>Déclarer un nouveau déchet</h4>
-            <p class="text-muted">
-                Contribuez à l’environnement en déclarant vos déchets.
-            </p>
-
-            <a href="{{ path('declaration_dechet_new') }}" class="btn-green d-inline-block w-100 text-center">
-                Déclarer maintenant →
-            </a>
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body p-4">
+                <h5 class="card-title fw-bold mb-4">Actions Rapides</h5>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <a href="{{ path('declaration_dechet_new') }}" class="text-decoration-none">
+                            <div class="p-4 border rounded-4 hover-lift text-center">
+                                <div class="bg-success-subtle text-success rounded-circle d-inline-flex p-3 mb-3">
+                                    <i class="fa-solid fa-plus fa-xl"></i>
+                                </div>
+                                <h6 class="text-dark fw-bold mb-1">Nouvelle Déclaration</h6>
+                                <p class="text-muted small mb-0">Signaler un déchet en 1 minute</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="{{ path('citoyen_declarations') }}" class="text-decoration-none">
+                            <div class="p-4 border rounded-4 hover-lift text-center">
+                                <div class="bg-primary-subtle text-primary rounded-circle d-inline-flex p-3 mb-3">
+                                    <i class="fa-solid fa-list fa-xl"></i>
+                                </div>
+                                <h6 class="text-dark fw-bold mb-1">Voir mes listes</h6>
+                                <p class="text-muted small mb-0">Consulter l'historique complet</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="col-md-6">
-        <div class="big-card">
-            <h4>Suivre votre progression</h4>
-            <p class="text-muted">
-                Consultez vos statistiques et vos points gagnés.
-            </p>
-
-            <a href="{{ path('citoyen_statistiques') }}" class="btn-outline-custom d-inline-block w-100 text-center">
-                Voir les statistiques →
-            </a>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 bg-success text-white h-100">
+            <div class="card-body p-4 d-flex flex-column">
+                <h5 class="fw-bold mb-3">Saviez-vous ?</h5>
+                <p class="mb-4 opacity-75">Le tri sélectif permet d'économiser jusqu'à 70% d'énergie par rapport à la production de nouveaux matériaux.</p>
+                <div class="mt-auto">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3299/3299935.png" alt="Eco" class="img-fluid opacity-25" style="max-height: 100px;">
+                </div>
+            </div>
         </div>
     </div>
-
 </div>
+
+<style>
+    .hover-lift {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        border-color: #198754 !important;
+    }
+    .bg-success-subtle { background-color: #d1e7dd !important; }
+    .bg-warning-subtle { background-color: #fff3cd !important; }
+    .bg-primary-subtle { background-color: #cfe2ff !important; }
+</style>
 
 {% endblock %}
