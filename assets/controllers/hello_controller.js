@@ -1,16 +1,16 @@
-import  {  Controller  }  from  '@hotwired/stimulus' ;
+import { Controller } from '@hotwired/stimulus';
 
 /*
-* Ceci est un exemple de contrôleur Stimulus !
-*
-Tout élément possédant un attribut data-controller="hello" provoquera une réaction.
-* Ce contrôleur doit être exécuté. Le nom « hello » provient du nom du fichier :
-* hello_controller.js -> "bonjour"
-*
-* Supprimez ce fichier ou adaptez-le à votre usage !
-*/
-export  default  class  extends  Controller  {
-    connecter ( )  {
-        this.element.textContent = ' Bonjour Stimulus ! Modifiez - moi dans assets/controllers/hello_controller.js ' ;  
+ * This is an example Stimulus controller!
+ *
+ * Any element with a data-controller="hello" attribute will cause
+ * this controller to be executed. The name "hello" comes from the filename:
+ * hello_controller.js -> "hello"
+ *
+ * Delete this file or adapt it for your use!
+ */
+export default class extends Controller {
+    connect() {
+        this.element.textContent = 'Hello Stimulus! Edit me in assets/controllers/hello_controller.js';
     }
 }

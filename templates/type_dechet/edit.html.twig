@@ -1,0 +1,254 @@
+{% extends 'layouts/dashboard_base.html.twig' %}
+
+{% block page_title %}Modifier type déchet{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item text-muted">Admin</li>
+    <li class="breadcrumb-item text-muted"><a href="{{ path('app_typedechet_index') }}" class="text-decoration-none text-muted">Types de déchets</a></li>
+    <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">Modifier</li>
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-primary py-3">
+                    <h4 class="card-title mb-0 text-white d-flex align-items-center">
+                        <i class="fa-solid fa-pen-to-square me-2"></i>
+                        Modifier le type de déchet
+                    </h4>
+                </div>
+
+                <div class="card-body p-4">
+                    <p class="text-muted mb-4">Mettez à jour les informations du type de déchet ci-dessous.</p>
+
+                    {{ form_start(form, {'attr': {'id': 'typeForm', 'novalidate': 'novalidate'}}) }}
+
+                    <div class="row">
+                        <!-- LIBELLE -->
+                        <div class="col-md-7 mb-4">
+                            <label class="form-label fw-bold text-dark">
+                                <i class="fa-solid fa-tag me-1 text-primary"></i> Libellé <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-list-ul text-muted"></i></span>
+                                {{ form_widget(form.libelle, {'attr': {'class': 'form-select border-start-0 ps-0', 'id': 'libelleSelect'}}) }}
+                            </div>
+                            <div class="error-message" id="libelleError"></div>
+                        </div>
+
+                        <!-- VALEUR -->
+                        <div class="col-md-5 mb-4">
+                            <label class="form-label fw-bold text-dark">
+                                <i class="fa-solid fa-star me-1 text-primary"></i> Points / KG <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-calculator text-muted"></i></span>
+                                {{ form_widget(form.valeurPointsKg, {'attr': {'class': 'form-control border-start-0 ps-0', 'id': 'valeurInput', 'placeholder': 'Ex: 5'}}) }}
+                                <span class="input-group-text bg-light">pts</span>
+                            </div>
+                            <div class="error-message" id="valeurError"></div>
+                        </div>
+                    </div>
+
+                    <!-- DESCRIPTION -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark">
+                            <i class="fa-solid fa-align-left me-1 text-primary"></i> Consignes de tri <span class="text-danger">*</span>
+                        </label>
+                        <div class="position-relative">
+                            {{ form_widget(form.descriptionTri, {'attr': {'class': 'form-control', 'id': 'descriptionInput', 'rows': 4, 'placeholder': 'Ex: Bac jaune, nettoyer avant tri...'}}) }}
+                            <div class="char-counter {% if form.vars.value.descriptionTri|length < 10 %}invalid{% endif %}" id="charCounter">
+                                {{ form.vars.value.descriptionTri|length }} / 10 caractères minimum
+                            </div>
+                        </div>
+                        <div class="error-message" id="descriptionError"></div>
+                    </div>
+
+                    <hr class="my-4 opacity-50">
+
+                    <div class="d-flex justify-content-end gap-3">
+                        <a href="{{ path('app_typedechet_index') }}"
+                           class="btn btn-light rounded-pill px-4 border">
+                            <i class="fa-solid fa-xmark me-2"></i> Annuler
+                        </a>
+
+                        <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm">
+                            <i class="fa-solid fa-check-circle me-2"></i> Enregistrer les modifications
+                        </button>
+                    </div>
+
+                    {{ form_widget(form._token) }}
+
+                    {{ form_end(form, { 'render_rest': false }) }}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-label { font-size: 0.95rem; }
+.input-group-text { border-color: #dee2e6; }
+.form-control, .form-select { border-color: #dee2e6; padding: 0.6rem 1rem; }
+.form-control:focus, .form-select:focus { border-color: #0d6efd; box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1); }
+.error-message {
+    color: #dc3545;
+    font-size: 0.825rem;
+    margin-top: 5px;
+    display: none;
+    font-weight: 500;
+}
+.error-message.show { display: block; }
+.is-invalid { border-color: #dc3545 !important; }
+.is-invalid + .input-group-text { border-color: #dc3545 !important; }
+.char-counter {
+    position: absolute;
+    bottom: -22px;
+    right: 0;
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+.char-counter.invalid { color: #dc3545; font-weight: bold; }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const form = document.getElementById("typeForm");
+
+    const libelle = document.getElementById("libelleSelect");
+    const valeur = document.getElementById("valeurInput");
+    const description = document.getElementById("descriptionInput");
+
+    const libelleError = document.getElementById("libelleError");
+    const valeurError = document.getElementById("valeurError");
+    const descriptionError = document.getElementById("descriptionError");
+
+    const charCounter = document.getElementById("charCounter");
+
+    function showError(input, errorDiv, message) {
+        input.classList.add("is-invalid");
+        errorDiv.textContent = message;
+        errorDiv.classList.add("show");
+    }
+
+    function clearError(input, errorDiv) {
+        input.classList.remove("is-invalid");
+        errorDiv.textContent = "";
+        errorDiv.classList.remove("show");
+    }
+
+    /* =========================
+       LIBELLE
+    ========================== */
+
+    libelle.addEventListener("blur", function() {
+        if (libelle.value.trim() === "") {
+            showError(libelle, libelleError, "Champ obligatoire");
+        } else {
+            clearError(libelle, libelleError);
+        }
+    });
+
+    libelle.addEventListener("change", function() {
+        if (libelle.value.trim() !== "") {
+            clearError(libelle, libelleError);
+        }
+    });
+
+    /* =========================
+       VALEUR (SUP > 0)
+    ========================== */
+
+    valeur.addEventListener("keypress", function(e) {
+        const char = String.fromCharCode(e.which);
+        if (!/[0-9]/.test(char)) {
+            e.preventDefault();
+            showError(valeur, valeurError, "Uniquement des nombres autorisés.");
+        }
+    });
+
+    valeur.addEventListener("input", function() {
+        valeur.value = valeur.value.replace(/[^0-9]/g, '');
+        if (valeur.value.trim() === "") {
+            showError(valeur, valeurError, "Champ obligatoire");
+            return;
+        }
+        const number = parseInt(valeur.value);
+        if (isNaN(number)) {
+            showError(valeur, valeurError, "Veuillez entrer un nombre valide.");
+            return;
+        }
+        if (number <= 0) {
+            showError(valeur, valeurError, "La valeur doit être supérieure à 0.");
+            return;
+        }
+        clearError(valeur, valeurError);
+    });
+
+    /* =========================
+       DESCRIPTION + COMPTEUR LIVE
+    ========================== */
+
+    description.addEventListener("input", function() {
+        const length = description.value.length;
+        charCounter.textContent = length + " / 10 caractères minimum";
+        if (length < 10) {
+            charCounter.classList.add("invalid");
+        } else {
+            charCounter.classList.remove("invalid");
+            clearError(description, descriptionError);
+        }
+    });
+
+    description.addEventListener("blur", function() {
+        if (description.value.trim() === "") {
+            showError(description, descriptionError, "Champ obligatoire");
+        }
+        else if (description.value.length < 10) {
+            showError(description, descriptionError, "Minimum 10 caractères requis");
+        }
+        else {
+            clearError(description, descriptionError);
+        }
+    });
+
+    /* =========================
+       SUBMIT GLOBAL
+    ========================== */
+
+    form.addEventListener("submit", function(e) {
+        let valid = true;
+        if (libelle.value.trim() === "") {
+            showError(libelle, libelleError, "Champ obligatoire");
+            valid = false;
+        }
+        const number = parseInt(valeur.value);
+        if (valeur.value.trim() === "" || isNaN(number)) {
+            showError(valeur, valeurError, "Champ obligatoire");
+            valid = false;
+        }
+        else if (number <= 0) {
+            showError(valeur, valeurError, "La valeur doit être supérieure à 0.");
+            valid = false;
+        }
+        if (description.value.trim() === "") {
+            showError(description, descriptionError, "Champ obligatoire");
+            valid = false;
+        }
+        else if (description.value.length < 10) {
+            showError(description, descriptionError, "Minimum 10 caractères requis");
+            valid = false;
+        }
+        if (!valid) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+
+{% endblock %}
