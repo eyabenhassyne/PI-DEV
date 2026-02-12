@@ -1,0 +1,93 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Campagne #{{ c.id }} | Admin{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid py-4">
+
+  <div class="d-flex align-items-start justify-content-between mb-4">
+    <div>
+      <h3 class="mb-1">📣 {{ c.titre }}</h3>
+      <div class="text-muted">Détails campagne</div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-primary"
+         href="{{ path('admin_campagne_edit', { id: c.id }) }}">
+        <i class="bi bi-pencil"></i> Modifier
+      </a>
+
+      <a class="btn btn-outline-secondary"
+         href="{{ path('admin_campagne_index') }}">
+        <i class="bi bi-arrow-left"></i> Retour
+      </a>
+    </div>
+  </div>
+
+  {# ===== Informations ===== #}
+  <div class="card shadow-sm mb-4">
+    <div class="card-header fw-bold">
+      Informations
+    </div>
+
+    <div class="card-body">
+
+      <div class="row mb-3">
+        <div class="col-md-8">
+          <div class="fw-semibold">Période</div>
+          <div class="text-muted">
+            {{ c.dateDebut ? c.dateDebut|date('d/m/Y') : '—' }}
+            →
+            {{ c.dateFin ? c.dateFin|date('d/m/Y') : '—' }}
+          </div>
+        </div>
+
+        <div class="col-md-4 text-md-end">
+          {% if c.statut == 'ACTIVE' %}
+            <span class="badge bg-success fs-6">ACTIVE</span>
+          {% elseif c.statut == 'BROUILLON' %}
+            <span class="badge bg-warning text-dark fs-6">BROUILLON</span>
+          {% else %}
+            <span class="badge bg-secondary fs-6">TERMINEE</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <hr>
+
+      <div>
+        <div class="fw-semibold mb-1">Description</div>
+        <div class="text-muted">
+          {{ c.description ?: '—' }}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  {# ===== Suppression ===== #}
+  <div class="card shadow-sm border-danger">
+    <div class="card-header bg-danger text-white fw-bold">
+      Suppression
+    </div>
+
+    <div class="card-body">
+      <form method="post"
+            action="{{ path('admin_campagne_delete', { id: c.id }) }}"
+            onsubmit="return confirm('Supprimer cette campagne ?');">
+
+        <input type="hidden"
+               name="_token"
+               value="{{ csrf_token('delete_campagne_' ~ c.id) }}">
+
+        <button class="btn btn-danger">
+          <i class="bi bi-trash"></i> Supprimer cette campagne
+        </button>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

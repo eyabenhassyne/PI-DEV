@@ -1,0 +1,113 @@
+{# templates/citoyen/appel_index.html.twig #}
+{% extends 'citoyen/base.html.twig' %}
+
+{% block title %}Appels ouverts | WasteWise TN{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid p-0">
+
+  {# HEADER #}
+  <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-3">
+    <div>
+      <h3 class="mb-1">✅ Appels d’offres ouverts</h3>
+      <div class="text-muted">Choisis un appel et envoie ta proposition.</div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary" href="{{ path('app_dashboard_citoyen') }}">
+        <i class="bi bi-arrow-left"></i> Retour
+      </a>
+    </div>
+  </div>
+
+  {# RECHERCHE #}
+  <div class="card shadow-sm mb-3">
+    <div class="card-header fw-bold">Recherche</div>
+    <div class="card-body">
+
+      <form method="get">
+        <div class="row g-2 align-items-end">
+
+          <div class="col-12 col-md-8"> 
+            <label class="form-label" for="q">Mot clé</label>
+            <input
+              id="q"
+              class="form-control"
+              name="q"
+              value="{{ q|default('') }}"
+              placeholder="Titre ou description..."
+            >
+          </div>
+
+          <div class="col-12 col-md-4 d-flex gap-2 justify-content-md-end">
+            <a class="btn btn-outline-secondary w-100 w-md-auto" href="{{ path('cit_appel_index') }}">
+              Réinitialiser
+            </a>
+            <button class="btn btn-success w-100 w-md-auto" type="submit">
+              <i class="bi bi-search"></i> Rechercher
+            </button>
+          </div>
+
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  {% if appels is empty %}
+    <div class="card shadow-sm">
+      <div class="card-body text-muted fw-semibold">
+        Aucun appel ouvert pour le moment.
+      </div>
+    </div>
+  {% else %}
+
+    <div class="row g-3">
+      {% for a in appels %}
+        {% set desc = a.description|default('') %}
+
+        <div class="col-12 col-md-6 col-xl-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-body d-flex flex-column">
+
+              <h5 class="mb-1">{{ a.titre }}</h5>
+
+              <div class="text-muted small mt-1 d-flex flex-wrap gap-3">
+                <span>
+                  <i class="bi bi-calendar-event"></i>
+                  Début : <b class="text-dark">{{ a.dateDebut ? a.dateDebut|date('d/m/Y') : '—' }}</b>
+                </span>
+                <span>
+                  <i class="bi bi-hourglass-split"></i>
+                  Fin : <b class="text-dark">{{ a.dateFin ? a.dateFin|date('d/m/Y') : '—' }}</b>
+                </span>
+              </div>
+
+              <p class="text-muted mt-3 mb-0" style="line-height:1.6;">
+                {{ desc ? (desc|slice(0,160) ~ (desc|length > 160 ? '…' : '')) : '—' }}
+              </p>
+
+              <div class="mt-auto pt-3 d-flex justify-content-end gap-2 flex-wrap">
+                <a class="btn btn-outline-secondary btn-sm" href="{{ path('cit_appel_show', {id: a.id}) }}">
+                  Voir
+                </a>
+                <a class="btn btn-success btn-sm"
+   href="{{ path('cit_appel_proposer', {id: a.id}) }}">
+  <i class="bi bi-send"></i> Postuler
+</a>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      {% endfor %}
+    </div>
+
+  {% endif %}
+
+</div>
+
+{% endblock %}

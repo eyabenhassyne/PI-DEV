@@ -1,0 +1,29 @@
+{% extends 'valorisateur/base_valorizateur.html.twig' %}
+
+{% block title %}Modifier appel | WasteWise TN{% endblock %}
+
+{% block body %}
+
+  <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mb-3">
+    <div>
+      <h3 class="mb-1">✏️ Modifier l’appel</h3>
+      <div class="text-muted">{{ appel.titre }}</div>
+    </div>
+
+    <a class="btn btn-outline-secondary" href="{{ path('val_appel_show', {id: appel.id}) }}">
+      <i class="bi bi-arrow-left"></i> Retour
+    </a>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header fw-bold">Mise à jour</div>
+
+    <div class="card-body">
+      {{ include('valorisateur/appel_offre/_form.html.twig', {
+        form: form,
+        button_label: 'Mettre à jour'
+      }) }}
+    </div>
+  </div>
+
+{% endblock %}

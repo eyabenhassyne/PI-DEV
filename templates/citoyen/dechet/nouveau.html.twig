@@ -1,0 +1,235 @@
+{# templates/citoyen/dechet_new.html.twig #}
+{% extends 'citoyen/base.html.twig' %}
+
+{% block title %}Déclarer tes déchets | WasteWise TN{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    #map{
+      height: 320px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,.08);
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid p-0">
+
+  {# HEADER #}
+  <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-3">
+    <div>
+      <h3 class="mb-1">🗑️ Déclare tes déchets</h3>
+      <div class="text-muted">Choisis un type, une quantité et la localisation sur la carte.</div>
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-outline-secondary" href="{{ path('app_dashboard_citoyen') }}">
+        <i class="bi bi-arrow-left"></i> Dashboard
+      </a>
+    </div>
+  </div>
+
+  {# FLASH SUCCESS #}
+  {% for msg in app.flashes('success') %}
+    <div class="alert alert-success shadow-sm">{{ msg }}</div>
+  {% endfor %}
+
+  {# ERREUR GLOBALE #}
+  {% if form.vars.submitted and not form.vars.valid %}
+    <div class="alert alert-danger shadow-sm">
+      Merci de corriger les erreurs du formulaire.
+    </div>
+  {% endif %}
+
+  <div class="card shadow-sm">
+    <div class="card-header fw-bold">Formulaire</div>
+    <div class="card-body">
+
+      {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+
+      <div class="row g-3">
+
+        {# COL FORM #}
+        <div class="col-12 col-lg-6">
+
+          <div class="mb-3">
+            {{ form_label(form.type, null, { label_attr: { class: 'form-label' } }) }}
+            {{ form_widget(form.type, { attr: { class: 'form-select' } }) }}
+            <div class="text-danger small mt-1">{{ form_errors(form.type) }}</div>
+          </div>
+
+          <div class="mb-3">
+            {{ form_label(form.quantiteKg, null, { label_attr: { class: 'form-label' } }) }}
+            {{ form_widget(form.quantiteKg, { attr: { class: 'form-control', placeholder: 'Ex: 2.5' } }) }}
+            <div class="text-danger small mt-1">{{ form_errors(form.quantiteKg) }}</div>
+          </div>
+
+          <div class="mb-3">
+            {{ form_label(form.adresse, 'Localisation', { label_attr: { class: 'form-label' } }) }}
+            {{ form_widget(form.adresse, { attr: { class: 'form-control', placeholder: 'Clique sur la carte...' } }) }}
+            <div class="text-danger small mt-1">{{ form_errors(form.adresse) }}</div>
+            <div class="form-text">
+              Clique sur la carte pour choisir l’emplacement.
+            </div>
+          </div>
+
+          {# Hidden lat/lng #}
+          {{ form_widget(form.latitude,  { attr: { class: 'd-none' } }) }}
+          {{ form_widget(form.longitude, { attr: { class: 'd-none' } }) }}
+
+          <div class="d-flex justify-content-end gap-2 flex-wrap mt-3">
+            <a class="btn btn-outline-secondary" href="{{ path('app_dashboard_citoyen') }}">Annuler</a>
+            <button class="btn btn-success" type="submit">
+              <i class="bi bi-check2-circle"></i> Valider
+            </button>
+          </div>
+
+        </div>
+
+        {# COL MAP #}
+        <div class="col-12 col-lg-6">
+          <div id="map"></div>
+          <div class="text-muted small mt-2">
+            <i class="bi bi-info-circle"></i>
+            Les points existants sont affichés : ✓ vert (validé) / zone rouge (en attente ou refusé).
+          </div>
+        </div>
+
+      </div>
+
+      {{ form_end(form) }}
+
+    </div>
+  </div>
+
+</div>
+
+{# Leaflet JS #}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  const latInput  = document.getElementById("dechet_latitude");
+  const lngInput  = document.getElementById("dechet_longitude");
+  const addrInput = document.getElementById("dechet_adresse");
+
+  const defaultLat = 36.8065;
+  const defaultLng = 10.1815;
+
+  const map = L.map('map').setView([defaultLat, defaultLng], 12);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+
+  // Layer points existants
+  const existingLayer = L.layerGroup().addTo(map);
+
+  // Tick vert (VALIDE)
+  const greenTickIcon = L.divIcon({
+    className: '',
+    html: `
+      <div style="
+        width:28px;height:28px;border-radius:50%;
+        background:#16a34a; display:flex; align-items:center; justify-content:center;
+        border:2px solid #fff;
+        box-shadow:0 10px 20px rgba(0,0,0,.15);">
+        <span style="color:white;font-size:16px;font-weight:900;">✓</span>
+      </div>
+    `,
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -12]
+  });
+
+  function drawPendingZone(lat, lng, popupHtml){
+    const c = L.circle([lat, lng], {
+      radius: 70,
+      color: '#ef4444',
+      weight: 2,
+      fillColor: '#ef4444',
+      fillOpacity: 0.25
+    }).addTo(existingLayer);
+    c.bindPopup(popupHtml);
+  }
+
+  function drawValidTick(lat, lng, popupHtml){
+    const m = L.marker([lat, lng], { icon: greenTickIcon }).addTo(existingLayer);
+    m.bindPopup(popupHtml);
+  }
+
+  async function loadMyDechetsOnMap(){
+    try{
+      existingLayer.clearLayers();
+      const res = await fetch('/api/map/dechets/mine');
+      const data = await res.json();
+
+      (data || []).forEach(d => {
+        const lat = parseFloat(d.latitude);
+        const lng = parseFloat(d.longitude);
+
+        if(!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+        const popupHtml = `
+          <b>${d.type ?? '-'}</b><br>
+          ${d.quantiteKg ?? '-'} kg<br>
+          <b>Statut:</b> ${d.statut}<br>
+          <small>${d.createdAt ?? ''}</small>
+        `;
+
+        if(d.statut === 'VALIDE'){
+          drawValidTick(lat, lng, popupHtml);
+        } else {
+          drawPendingZone(lat, lng, popupHtml);
+        }
+      });
+    }catch(e){
+      console.error("Erreur chargement dechets map:", e);
+    }
+  }
+
+  loadMyDechetsOnMap();
+
+  // Marker du clic (choix emplacement)
+  let marker = null;
+
+  async function reverseGeocode(lat, lng){
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
+    const res = await fetch(url, { headers: { "Accept": "application/json" } });
+    if(!res.ok) return null;
+    const data = await res.json();
+    return data.display_name || null;
+  }
+
+  map.on('click', async function(e){
+    const { lat, lng } = e.latlng;
+
+    if(marker) map.removeLayer(marker);
+    marker = L.marker([lat, lng]).addTo(map);
+
+    if(latInput) latInput.value = lat.toFixed(6);
+    if(lngInput) lngInput.value = lng.toFixed(6);
+
+    if(addrInput){
+      addrInput.value = "Chargement adresse...";
+      const addr = await reverseGeocode(lat, lng);
+      addrInput.value = addr ? addr : `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+    }
+  });
+
+  // Si déjà rempli
+  if(latInput && lngInput && latInput.value && lngInput.value){
+    const lat = parseFloat(latInput.value);
+    const lng = parseFloat(lngInput.value);
+    if(Number.isFinite(lat) && Number.isFinite(lng)){
+      marker = L.marker([lat,lng]).addTo(map);
+      map.setView([lat,lng], 14);
+    }
+  }
+</script>
+
+{% endblock %}

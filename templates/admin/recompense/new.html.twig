@@ -1,0 +1,92 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Nouvelle récompense | WasteWise TN{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid py-4">
+
+  <div class="d-flex align-items-start justify-content-between mb-4">
+    <div>
+      <h3 class="mb-1">🎁 Nouvelle récompense</h3>
+      <div class="text-muted">
+        {% if form.partenaire.vars.disabled %}
+          Partenaire sélectionné depuis la fiche (champ verrouillé).
+        {% else %}
+          Choisir un partenaire puis définir la récompense.
+        {% endif %}
+      </div>
+    </div>
+
+    <div>
+      <a class="btn btn-outline-secondary" href="{{ path('recompense_index') }}">
+        <i class="bi bi-arrow-left"></i> Retour
+      </a>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header fw-bold">Création d’une récompense</div>
+
+    <div class="card-body">
+
+      {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+
+      <div class="row g-3">
+
+        <div class="col-12 col-md-6">
+          {{ form_label(form.titre, 'Titre', { label_attr: { class: 'form-label' } }) }}
+          {{ form_widget(form.titre, {
+            attr: { class: 'form-control', placeholder: "Ex: Bon d’achat 10DT" }
+          }) }}
+          {{ form_errors(form.titre) }}
+        </div>
+
+        <div class="col-12 col-md-6">
+          {{ form_label(form.partenaire, 'Partenaire', { label_attr: { class: 'form-label' } }) }}
+          {{ form_widget(form.partenaire, { attr: { class: 'form-select' } }) }}
+          {{ form_errors(form.partenaire) }}
+
+          {% if form.partenaire.vars.disabled %}
+            <div class="form-text">Ce partenaire a été choisi depuis sa fiche.</div>
+          {% endif %}
+        </div>
+
+        <div class="col-12">
+          {{ form_label(form.description, 'Description (optionnel)', { label_attr: { class: 'form-label' } }) }}
+          {{ form_widget(form.description, {
+            attr: { class: 'form-control', rows: 4, placeholder: 'Détails sur la récompense...' }
+          }) }}
+          {{ form_errors(form.description) }}
+        </div>
+
+        <div class="col-12 col-md-6">
+          {{ form_label(form.pointsNecessaires, 'Points nécessaires', { label_attr: { class: 'form-label' } }) }}
+          {{ form_widget(form.pointsNecessaires, { attr: { class: 'form-control', min: 1 } }) }}
+          {{ form_errors(form.pointsNecessaires) }}
+        </div>
+
+        <div class="col-12 col-md-6">
+          {{ form_label(form.stock, 'Stock', { label_attr: { class: 'form-label' } }) }}
+          {{ form_widget(form.stock, { attr: { class: 'form-control', min: 0 } }) }}
+          {{ form_errors(form.stock) }}
+          <div class="form-text">Astuce : mets un stock faible (&lt; 5) pour tester “Faible”.</div>
+        </div>
+
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 mt-4 flex-wrap">
+        <a class="btn btn-outline-secondary" href="{{ path('recompense_index') }}">Annuler</a>
+        <button class="btn btn-primary" type="submit">
+          <i class="bi bi-save"></i> Enregistrer
+        </button>
+      </div>
+
+      {{ form_end(form) }}
+
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

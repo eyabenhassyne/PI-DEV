@@ -1,0 +1,191 @@
+{% extends 'auth/base_auth.html.twig' %}
+
+{% block title %}Connexion | WasteWise TN{% endblock %}
+
+{% block body %}
+<main>
+  <section class="p-0 d-flex align-items-center position-relative overflow-hidden">
+
+    <div class="container-fluid">
+      <div class="row g-0">
+
+        {# ===================================================== #}
+        {# ===================== LEFT SIDE ===================== #}
+        {# ===================================================== #}
+        <div class="col-12 col-lg-6 d-md-flex align-items-center justify-content-center auth-left vh-lg-100">
+          <div class="p-4 p-lg-5 text-center">
+
+            <h2 class="fw-bold mb-3">Bienvenue sur WasteWise TN</h2>
+            <p class="h6 fw-light">
+              Déclare tes déchets et gagne des EcoPoints 🌿
+            </p>
+
+            <img
+              src="{{ asset('assets/images/element/02.svg') }}"
+              class="auth-illustration img-fluid"
+              alt="WasteWise Illustration"
+            >
+
+            <div class="d-sm-flex mt-5 align-items-center justify-content-center">
+              <ul class="avatar-group mb-2 mb-sm-0">
+                <li class="avatar avatar-sm">
+                  <img class="avatar-img rounded-circle"
+                       src="{{ asset('assets/images/avatar/01.jpg') }}"
+                       alt="">
+                </li>
+                <li class="avatar avatar-sm">
+                  <img class="avatar-img rounded-circle"
+                       src="{{ asset('assets/images/avatar/02.jpg') }}"
+                       alt="">
+                </li>
+                <li class="avatar avatar-sm">
+                  <img class="avatar-img rounded-circle"
+                       src="{{ asset('assets/images/avatar/03.jpg') }}"
+                       alt="">
+                </li>
+              </ul>
+
+              <p class="mb-0 ms-sm-3">
+                Rejoins la communauté WasteWise TN dès maintenant.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        {# ===================================================== #}
+        {# ===================== RIGHT SIDE ==================== #}
+        {# ===================================================== #}
+        <div class="col-12 col-lg-6 d-flex align-items-center justify-content-center auth-right">
+
+          <div class="auth-card">
+
+            <div class="text-center mb-4">
+              <span class="fs-1">👋</span>
+              <h1 class="fw-bold">Connexion</h1>
+              <p class="text-muted">
+                Content de te revoir ! Connecte-toi à ton compte.
+              </p>
+            </div>
+
+            {# ================= ERROR ================= #}
+            {% if error %}
+              <div class="alert alert-danger">
+                {{ error.messageKey|trans(error.messageData, 'security') }}
+              </div>
+            {% endif %}
+
+            {# ================= ALREADY CONNECTED ================= #}
+            {% if app.user %}
+              <div class="alert alert-info d-flex justify-content-between align-items-center">
+                <div>
+                  Connecté en tant que
+                  <strong>{{ app.user.userIdentifier }}</strong>
+                </div>
+                <a class="btn btn-sm btn-outline-primary"
+                   href="{{ path('app_logout') }}">
+                  Déconnexion
+                </a>
+              </div>
+            {% endif %}
+
+            {# ================= LOGIN FORM ================= #}
+            <form method="post" novalidate>
+
+              {# Email #}
+              <div class="mb-4">
+                <label class="form-label">Email *</label>
+
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text bg-light border-0">
+                    <i class="bi bi-envelope-fill"></i>
+                  </span>
+
+                  <input
+                    type="email"
+                    name="email"
+                    value="{{ last_username }}"
+                    class="form-control border-0 bg-light"
+                    placeholder="E-mail"
+                    autocomplete="email"
+                    required
+                    autofocus
+                  >
+                </div>
+              </div>
+
+              {# Password #}
+              <div class="mb-4">
+                <label class="form-label">Mot de passe *</label>
+
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text bg-light border-0">
+                    <i class="bi bi-lock-fill"></i>
+                  </span>
+
+                  <input
+                    type="password"
+                    name="password"
+                    class="form-control border-0 bg-light"
+                    placeholder="Mot de passe"
+                    autocomplete="current-password"
+                    required
+                  >
+                </div>
+
+                <div class="form-text">
+                  Ton mot de passe doit contenir au moins 8 caractères.
+                </div>
+              </div>
+
+              {# CSRF TOKEN #}
+              <input type="hidden"
+                     name="_csrf_token"
+                     value="{{ csrf_token('authenticate') }}">
+
+              {# Remember + Forgot #}
+              <div class="mb-4 d-flex justify-content-between align-items-center">
+                <div class="form-check">
+                  <input type="checkbox"
+                         class="form-check-input"
+                         id="rememberMe"
+                         name="_remember_me">
+                  <label class="form-check-label" for="rememberMe">
+                    Se souvenir de moi
+                  </label>
+                </div>
+
+                <a href="#"
+                   class="text-secondary"
+                   onclick="alert('Bientôt disponible'); return false;">
+                  Mot de passe oublié ?
+                </a>
+              </div>
+
+              {# Submit #}
+              <div class="d-grid">
+                <button class="btn btn-primary btn-lg auth-btn"
+                        type="submit">
+                  Connexion
+                </button>
+              </div>
+
+            </form>
+
+            {# Register link #}
+            <div class="mt-4 text-center">
+              Pas de compte ?
+              <a href="{{ path('app_register') }}">
+                Créer un compte
+              </a>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+</main>
+{% endblock %}

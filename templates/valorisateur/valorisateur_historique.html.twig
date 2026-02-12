@@ -1,0 +1,151 @@
+{# templates/valorisateur/historique.html.twig #}
+{% extends 'valorisateur/base_valorizateur.html.twig' %}
+
+{% block title %}Historique | Valorisateur - WasteWise TN{% endblock %}
+
+{% block body %}
+
+  <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mb-3">
+    <div>
+      <h3 class="mb-1">📁 Historique des déclarations traitées</h3>
+      <div class="text-muted">VALIDÉES + REFUSÉES (filtres & pagination)</div>
+    </div>
+
+    <a class="btn btn-outline-secondary" href="{{ path('app_dashboard_valorizateur') }}">
+      <i class="bi bi-arrow-left"></i> Dashboard
+    </a>
+  </div>
+
+  {# ===== FILTRES ===== #}
+  <div class="card shadow-sm mb-3">
+    <div class="card-header fw-bold">Filtres</div>
+    <div class="card-body">
+
+      <form method="get" class="row g-3 align-items-end">
+
+        <div class="col-12 col-md-3">
+          <label class="form-label fw-semibold">Type</label>
+          <input class="form-control" name="type" value="{{ filters.type }}" placeholder="plastique, papier..." />
+        </div>
+
+        <div class="col-12 col-md-2">
+          <label class="form-label fw-semibold">Statut</label>
+          <select class="form-select" name="statut">
+            <option value="">Tous</option>
+            <option value="{{ STATUT_VALIDE }}" {{ filters.statut == STATUT_VALIDE ? 'selected' : '' }}>
+              VALIDÉ
+            </option>
+            <option value="{{ STATUT_REFUSE }}" {{ filters.statut == STATUT_REFUSE ? 'selected' : '' }}>
+              REFUSÉ
+            </option>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-2">
+          <label class="form-label fw-semibold">Du</label>
+          <input class="form-control" type="date" name="dateFrom" value="{{ filters.dateFrom }}" />
+        </div>
+
+        <div class="col-12 col-md-2">
+          <label class="form-label fw-semibold">Au</label>
+          <input class="form-control" type="date" name="dateTo" value="{{ filters.dateTo }}" />
+        </div>
+
+        <div class="col-12 col-md-3">
+          <label class="form-label fw-semibold">Par page</label>
+          <select class="form-select" name="limit">
+            {% for l in [5,10,20,50] %}
+              <option value="{{ l }}" {{ limit == l ? 'selected' : '' }}>{{ l }}</option>
+            {% endfor %}
+          </select>
+
+          <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-success" type="submit">
+              <i class="bi bi-funnel"></i> Filtrer
+            </button>
+            <a class="btn btn-outline-secondary" href="{{ path('app_valorizateur_historique') }}">
+              Réinitialiser
+            </a>
+          </div>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  {# ===== RESULTATS ===== #}
+  <div class="card shadow-sm">
+    <div class="card-header fw-bold">
+      Résultats <span class="text-muted fw-normal">({{ total }})</span>
+    </div>
+
+    <div class="card-body p-0">
+      {% if items is empty %}
+        <div class="p-4 text-muted">Aucun résultat.</div>
+      {% else %}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Quantité</th>
+                <th>Adresse</th>
+                <th>Citoyen</th>
+                <th>Statut</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for d in items %}
+                {% set badgeClass = d.statut == 'VALIDE' ? 'bg-success' : 'bg-danger' %}
+                <tr>
+                  <td>#{{ d.id }}</td>
+                  <td class="fw-semibold">{{ d.type }}</td>
+                  <td>{{ d.quantiteKg }} kg</td>
+                  <td>{{ d.adresse ?? '—' }}</td>
+                  <td>{{ d.user ? d.user.email : '—' }}</td>
+                  <td><span class="badge {{ badgeClass }}">{{ d.statut|replace({'_':' '}) }}</span></td>
+                  <td>{{ d.createdAt ? d.createdAt|date('d/m/Y H:i') : '—' }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+
+          </table>
+        </div>
+      {% endif %}
+    </div>
+
+    {# ===== PAGINATION ===== #}
+    {% if items is not empty %}
+      {% set q = app.request.query.all %}
+      <div class="card-footer bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="text-muted small">Page {{ page }} / {{ pages }}</div>
+
+        <div class="d-flex gap-2">
+          {% if page > 1 %}
+            {% set qPrev = q|merge({'page': page - 1}) %}
+            <a class="btn btn-outline-secondary btn-sm" href="{{ path('app_valorizateur_historique', qPrev) }}">
+              ← Précédent
+            </a>
+          {% else %}
+            <button class="btn btn-outline-secondary btn-sm" disabled>← Précédent</button>
+          {% endif %}
+
+          {% if page < pages %}
+            {% set qNext = q|merge({'page': page + 1}) %}
+            <a class="btn btn-outline-secondary btn-sm" href="{{ path('app_valorizateur_historique', qNext) }}">
+              Suivant →
+            </a>
+          {% else %}
+            <button class="btn btn-outline-secondary btn-sm" disabled>Suivant →</button>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+
+{% endblock %}

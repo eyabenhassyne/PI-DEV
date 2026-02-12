@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+{% block title %}Nouveau partenaire | WasteWise TN{% endblock %}
+
+{% block body %}
+<div class="ww-app">
+
+  {# ===== SIDEBAR (copie la même sidebar que ton dashboard admin) ===== #}
+  <aside class="ww-side">
+    <div class="ww-side-head">
+      <div class="ww-side-logo">WW</div>
+      <div>
+        <div class="ww-side-brand">WasteWise <span>TN</span></div>
+        <div class="ww-side-tag">Administration</div>
+      </div>
+    </div>
+
+    <div class="ww-side-user">
+      <div class="ww-avatar">A</div>
+      <div>
+        <div class="ww-user-email">{{ app.user.email }}</div>
+        <div class="ww-user-meta">
+          <span class="ww-pill ww-info">ADMIN</span>
+        </div>
+      </div>
+    </div>
+
+    {% set route = app.request.attributes.get('_route') %}
+    <nav class="ww-side-nav">
+      <a class="ww-nav-item" href="{{ path('app_dashboard_admin') }}">
+        <span class="ww-nav-ic">📊</span> Dashboard
+      </a>
+
+      <a class="ww-nav-item {{ route starts with 'partenaire_' ? 'active' : '' }}" href="{{ path('partenaire_index') }}">
+        <span class="ww-nav-ic">🏢</span> Partenaires
+      </a>
+
+      <a class="ww-nav-item {{ route starts with 'recompense_' ? 'active' : '' }}" href="{{ path('recompense_index') }}">
+        <span class="ww-nav-ic">🎁</span> Récompenses
+      </a>
+
+      <div class="ww-nav-sep"></div>
+
+      <a class="ww-nav-item danger" href="{{ path('app_logout') }}">
+        <span class="ww-nav-ic">🚪</span> Déconnexion
+      </a>
+    </nav>
+
+    <div class="ww-side-foot">© {{ "now"|date("Y") }} WasteWise TN</div>
+  </aside>
+
+  {# ===== MAIN ===== #}
+  <main class="ww-main">
+
+    {# Topbar #}
+    <div class="ww-topbar">
+      <div>
+        <div class="ww-h1">🏢 Nouveau partenaire</div>
+        <div class="ww-sub">Créer un partenaire (sans compte utilisateur) pour gérer ses récompenses</div>
+      </div>
+
+      <div class="ww-top-actions">
+        <a class="ww-top-btn" href="{{ path('partenaire_index') }}">← Retour</a>
+      </div>
+    </div>
+
+    {# Form card #}
+    <section class="ww-card2">
+
+      {# erreurs globales #}
+      {% if form.vars.errors|length %}
+        <div class="ww-alert">
+          Merci de corriger les erreurs dans le formulaire.
+        </div>
+      {% endif %}
+
+      {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+
+      <div class="ww-grid-2">
+        <div class="ww-field">
+          {{ form_label(form.nomEntreprise, 'Nom de l’entreprise') }}
+          {{ form_widget(form.nomEntreprise, { attr: { class: 'ww-input', placeholder: 'Ex: Carrefour, Monoprix...' } }) }}
+          {{ form_errors(form.nomEntreprise) }}
+        </div>
+
+        <div class="ww-field">
+          {{ form_label(form.categorie, 'Catégorie') }}
+          {{ form_widget(form.categorie, { attr: { class: 'ww-input', placeholder: 'Ex: Supermarché, ONG, Startup...' } }) }}
+          {{ form_errors(form.categorie) }}
+        </div>
+      </div>
+
+      <div class="ww-field">
+        {{ form_label(form.siteWeb, 'Site web (optionnel)') }}
+        {{ form_widget(form.siteWeb, { attr: { class: 'ww-input', placeholder: 'https://www.exemple.com' } }) }}
+        {{ form_errors(form.siteWeb) }}
+      </div>
+
+      <div class="ww-row" style="margin-top: 6px;">
+        <div class="ww-check">
+          {{ form_widget(form.actif) }}
+          <span><b>Partenaire actif</b> (visible et utilisable)</span>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="ww-top-btn" href="{{ path('partenaire_index') }}">Annuler</a>
+          <button class="ww-btn ww-btn-mini" type="submit">💾 Enregistrer</button>
+        </div>
+      </div>
+
+      {{ form_end(form) }}
+
+      <div class="ww-footer-note">
+        Astuce : après création, clique sur le partenaire pour ajouter des récompenses.
+      </div>
+
+    </section>
+
+  </main>
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'valorisateur/base_valorizateur.html.twig' %}
+
+{% block title %}Détails appel | WasteWise TN{% endblock %}
+
+{% block body %}
+
+  <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mb-3">
+    <div>
+      <h3 class="mb-1">📌 {{ appel.titre }}</h3>
+
+      {% set badgeClass =
+        appel.statut == 'PUBLIE' ? 'success' :
+        (appel.statut == 'BROUILLON' ? 'secondary' : 'danger')
+      %}
+
+      <span class="badge bg-{{ badgeClass }}">
+        {{ appel.statut }}
+      </span>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary" href="{{ path('val_appel_index') }}">
+        <i class="bi bi-arrow-left"></i> Liste
+      </a>
+
+      <a class="btn btn-warning" href="{{ path('val_appel_edit', {id: appel.id}) }}">
+        <i class="bi bi-pencil"></i> Modifier
+      </a>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-3">
+    <div class="card-header fw-bold">Détails</div>
+
+    <div class="card-body">
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <strong>Date début :</strong><br>
+          {{ appel.dateDebut ? appel.dateDebut|date('d/m/Y') : '—' }}
+        </div>
+
+        <div class="col-md-6">
+          <strong>Date fin :</strong><br>
+          {{ appel.dateFin ? appel.dateFin|date('d/m/Y') : '—' }}
+        </div>
+      </div>
+
+      <hr>
+
+      <div>
+        <strong>Description</strong>
+        <p class="text-muted mt-2 mb-0">
+          {{ appel.description ?: '—' }}
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card border-danger shadow-sm">
+    <div class="card-header bg-danger text-white fw-bold">
+      Zone dangereuse
+    </div>
+
+    <div class="card-body">
+      <p class="text-danger mb-3">
+        ⚠️ Cette action est irréversible. L’appel sera définitivement supprimé.
+      </p>
+
+      <form method="post"
+            action="{{ path('val_appel_delete', {id: appel.id}) }}"
+            onsubmit="return confirm('Supprimer définitivement cet appel ?');">
+
+        <input type="hidden"
+               name="_token"
+               value="{{ csrf_token('delete_appel_' ~ appel.id) }}">
+
+        <button class="btn btn-danger">
+          <i class="bi bi-trash"></i> Supprimer définitivement
+        </button>
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

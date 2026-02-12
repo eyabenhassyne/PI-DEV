@@ -1,0 +1,107 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Récompenses | WasteWise TN{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid py-4">
+
+  <div class="d-flex align-items-start justify-content-between mb-4">
+    <div>
+      <h3 class="mb-1">🎁 Récompenses</h3>
+      <div class="text-muted">Toutes les récompenses proposées par les partenaires</div>
+    </div>
+
+    <div>
+      <a class="btn btn-primary" href="{{ path('recompense_new') }}">
+        <i class="bi bi-plus-lg"></i> Nouvelle récompense
+      </a>
+    </div>
+  </div>
+
+  {# ✅ Flash messages #}
+  {% for label, messages in app.flashes %}
+    {% for m in messages %}
+      <div class="alert alert-{{ label == 'error' ? 'danger' : label }} shadow-sm">
+        {{ m }}
+      </div>
+    {% endfor %}
+  {% endfor %}
+
+  <div class="card shadow-sm">
+    <div class="card-header fw-bold">Liste des récompenses</div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Titre</th>
+            <th>Partenaire</th>
+            <th style="width:140px;">Points</th>
+            <th style="width:140px;">Stock</th>
+            <th style="width:180px;" class="text-end">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+        {% for r in items %}
+          <tr>
+            <td>
+              <div class="fw-bold">{{ r.titre }}</div>
+              {% if r.description %}
+                <div class="small text-muted">
+                  {{ r.description|slice(0, 60) }}{% if r.description|length > 60 %}…{% endif %}
+                </div>
+              {% endif %}
+            </td>
+
+            <td>
+              <span class="badge bg-info text-dark">
+                {{ r.partenaire ? r.partenaire.nomEntreprise : '—' }}
+              </span>
+            </td>
+
+            <td>
+              <span class="badge bg-success">
+                {{ r.pointsNecessaires ?? 0 }} pts
+              </span>
+            </td>
+
+            <td>
+              {% if r.stock is null %}
+                <span class="badge bg-secondary">—</span>
+              {% elseif r.stock <= 0 %}
+                <span class="badge bg-danger">Rupture</span>
+              {% elseif r.stock < 5 %}
+                <span class="badge bg-warning text-dark">Faible ({{ r.stock }})</span>
+              {% else %}
+                <span class="badge bg-success">{{ r.stock }}</span>
+              {% endif %}
+            </td>
+
+            <td class="text-end" style="white-space:nowrap;">
+              <a class="btn btn-sm btn-outline-secondary"
+                 href="{{ path('recompense_show', { id: r.id }) }}">
+                <i class="bi bi-eye"></i> Voir
+              </a>
+
+              <a class="btn btn-sm btn-outline-primary"
+                 href="{{ path('recompense_edit', { id: r.id }) }}">
+                <i class="bi bi-pencil"></i> Modifier
+              </a>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="5" class="text-muted">Aucune récompense enregistrée.</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+
+      </table>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

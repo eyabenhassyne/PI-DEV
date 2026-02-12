@@ -1,0 +1,175 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Partenaire | {{ p.nomEntreprise }}{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid py-4">
+
+  {# ===== TOP HEADER ===== #}
+  <div class="d-flex align-items-start justify-content-between mb-4">
+    <div>
+      <h3 class="mb-1">🏢 {{ p.nomEntreprise }}</h3>
+
+      <div class="text-muted d-flex flex-wrap gap-2 align-items-center">
+        {% if p.actif %}
+          <span class="badge bg-success">Actif</span>
+        {% else %}
+          <span class="badge bg-secondary">Inactif</span>
+        {% endif %}
+
+        <span>📌 Catégorie : <b>{{ p.categorie }}</b></span>
+
+        {% if p.siteWeb %}
+          <span>• 🌐 Site :
+            <a href="{{ p.siteWeb }}" target="_blank" rel="noopener">{{ p.siteWeb }}</a>
+          </span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-outline-secondary" href="{{ path('partenaire_index') }}">
+        <i class="bi bi-arrow-left"></i> Liste
+      </a>
+
+      <a class="btn btn-primary" href="{{ path('recompense_new', { partenaire: p.id }) }}">
+        <i class="bi bi-plus-lg"></i> Ajouter récompense
+      </a>
+
+      <a class="btn btn-outline-primary" href="{{ path('partenaire_edit', { id: p.id }) }}">
+        <i class="bi bi-pencil"></i> Modifier
+      </a>
+    </div>
+  </div>
+
+  {# ===== FLASH ===== #}
+  {% for label, messages in app.flashes %}
+    {% for m in messages %}
+      <div class="alert alert-{{ label == 'error' ? 'danger' : label }} shadow-sm">
+        {{ m }}
+      </div>
+    {% endfor %}
+  {% endfor %}
+
+  {# ===== ACTIONS + DELETE ===== #}
+  <div class="card shadow-sm mb-4">
+    <div class="card-header fw-bold">Actions</div>
+    <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <div class="text-muted">Gérer ce partenaire et ses récompenses.</div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <a class="btn btn-primary" href="{{ path('recompense_new', { partenaire: p.id }) }}">
+          <i class="bi bi-plus-lg"></i> Nouvelle récompense
+        </a>
+
+        <a class="btn btn-outline-primary" href="{{ path('partenaire_edit', { id: p.id }) }}">
+          <i class="bi bi-pencil"></i> Modifier partenaire
+        </a>
+
+        <form method="post"
+              action="{{ path('partenaire_delete', { id: p.id }) }}"
+              onsubmit="return confirm('Supprimer ce partenaire ?');"
+              class="d-inline">
+          <input type="hidden" name="_token" value="{{ csrf_token('delete_partenaire_' ~ p.id) }}">
+          <button class="btn btn-outline-danger" type="submit">
+            <i class="bi bi-trash"></i> Supprimer
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {# ===== REWARDS LIST ===== #}
+  <div class="card shadow-sm">
+    <div class="card-header fw-bold d-flex align-items-center justify-content-between">
+      <span>🎁 Récompenses</span>
+      <span class="text-muted small">{{ recompenses|length }} élément(s)</span>
+    </div>
+
+    {% if recompenses is empty %}
+      <div class="card-body">
+        <div class="text-muted">
+          Aucune récompense. Clique sur <b>“Ajouter récompense”</b> pour créer la première.
+        </div>
+      </div>
+    {% else %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Titre</th>
+              <th style="width:140px;">Points</th>
+              <th style="width:140px;">Stock</th>
+              <th style="width:220px;" class="text-end">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+          {% for r in recompenses %}
+            <tr>
+              <td>
+                <div class="fw-bold">{{ r.titre }}</div>
+                {% if r.description %}
+                  <div class="small text-muted">
+                    {{ r.description|slice(0, 70) }}{% if r.description|length > 70 %}…{% endif %}
+                  </div>
+                {% endif %}
+              </td>
+
+              <td>
+                <span class="badge bg-success-subtle text-success border">
+                  {{ r.pointsNecessaires }} pts
+                </span>
+              </td>
+
+              <td>
+                {% if r.stock is null %}
+                  <span class="badge bg-secondary">—</span>
+                {% elseif r.stock <= 0 %}
+                  <span class="badge bg-danger">Rupture</span>
+                {% elseif r.stock < 5 %}
+                  <span class="badge bg-warning text-dark">Faible ({{ r.stock }})</span>
+                {% else %}
+                  <span class="badge bg-success">{{ r.stock }}</span>
+                {% endif %}
+              </td>
+
+              <td class="text-end" style="white-space:nowrap;">
+                <a class="btn btn-sm btn-outline-secondary"
+                   href="{{ path('recompense_show', { id: r.id }) }}">
+                  <i class="bi bi-eye"></i>
+                </a>
+
+                <a class="btn btn-sm btn-outline-primary"
+                   href="{{ path('recompense_edit', { id: r.id }) }}">
+                  <i class="bi bi-pencil"></i>
+                </a>
+
+                <form method="post"
+                      action="{{ path('recompense_delete', { id: r.id }) }}"
+                      onsubmit="return confirm('Supprimer cette récompense ?');"
+                      class="d-inline">
+                  <input type="hidden" name="_token" value="{{ csrf_token('delete_recompense_' ~ r.id) }}">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+
+    <div class="card-body">
+      <a class="btn btn-outline-secondary" href="{{ path('partenaire_index') }}">
+        <i class="bi bi-arrow-left"></i> Retour à la liste
+      </a>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

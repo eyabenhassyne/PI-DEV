@@ -1,0 +1,112 @@
+{# templates/citoyen/recompenses.html.twig #}
+{% extends 'citoyen/base.html.twig' %}
+
+{% block title %}Récompenses | WasteWise TN{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid p-0">
+
+  {# HEADER #}
+  <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-3">
+    <div>
+      <h3 class="mb-1">🎁 Récompenses</h3>
+      <div class="text-muted">Récompenses disponibles chez nos partenaires</div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary" href="{{ path('app_dashboard_citoyen') }}">
+        <i class="bi bi-arrow-left"></i> Retour Dashboard
+      </a>
+    </div>
+  </div>
+
+  {# RÉSUMÉ #}
+  <div class="d-flex flex-wrap gap-2 mb-3">
+    <span class="badge text-bg-primary">
+      Disponibles : {{ recompenses|length }}
+    </span>
+    <span class="badge text-bg-success">
+      Ton solde : {{ ecoPoints|default(0) }} pts
+    </span>
+  </div>
+
+  {% if recompenses is empty %}
+    <div class="card shadow-sm">
+      <div class="card-body text-muted fw-semibold">
+        🫧 Aucune récompense disponible pour le moment.
+      </div>
+    </div>
+  {% else %}
+
+    <div class="row g-3">
+      {% for r in recompenses %}
+        {% set eligible = ecoPoints|default(0) >= r.pointsNecessaires %}
+
+        <div class="col-12 col-md-6 col-xl-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-body d-flex flex-column">
+
+              <div class="d-flex align-items-start justify-content-between gap-2">
+                <h5 class="mb-0">{{ r.titre }}</h5>
+
+                {% if eligible %}
+                  <span class="badge text-bg-success">✅ Éligible</span>
+                {% else %}
+                  <span class="badge text-bg-warning text-dark">⛔ Pas assez</span>
+                {% endif %}
+              </div>
+
+              <div class="text-muted small mt-2">
+                <i class="bi bi-star-fill"></i>
+                Points : <b class="text-dark">{{ r.pointsNecessaires }}</b>
+                <span class="mx-2">•</span>
+                <i class="bi bi-box-seam"></i>
+                Stock : <b class="text-dark">{{ r.stock }}</b>
+              </div>
+
+              <div class="mt-2">
+                <div class="text-muted small">
+                  <i class="bi bi-building"></i>
+                  Partenaire :
+                  <b class="text-dark">{{ r.partenaire ? r.partenaire.nomEntreprise : '—' }}</b>
+                </div>
+              </div>
+
+              <p class="text-muted mt-3 mb-0" style="line-height:1.5;">
+                {{ r.description ?: 'Aucune description.' }}
+              </p>
+
+              {# FOOTER ACTIONS (en bas) #}
+              <div class="mt-auto pt-3 d-flex justify-content-end gap-2 flex-wrap">
+
+                <a class="btn btn-outline-secondary btn-sm"
+                   href="{{ path('app_dashboard_citoyen') }}">
+                  Fermer
+                </a>
+
+                {% if eligible and r.stock > 0 %}
+                  <a class="btn btn-success btn-sm"
+                     href="#"
+                     onclick="alert('Fonction échange à ajouter');return false;">
+                    <i class="bi bi-arrow-repeat"></i> Échanger
+                  </a>
+                {% else %}
+                  <button class="btn btn-secondary btn-sm" disabled>
+                    <i class="bi bi-lock"></i> Échanger
+                  </button>
+                {% endif %}
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+  {% endif %}
+
+</div>
+
+{% endblock %}

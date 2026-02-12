@@ -1,0 +1,140 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Utilisateurs | WasteWise{% endblock %}
+
+{% block body %}
+
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+  <div>
+    <h2 class="mb-0">👥 Utilisateurs</h2>
+    <div class="text-muted small">Gestion des comptes (liste, consulter, modifier)</div>
+  </div>
+
+  <a href="{{ path('app_user_new') }}" class="btn btn-primary">
+    <i class="bi bi-person-plus"></i> Créer
+  </a>
+</div>
+
+{# ---- barre recherche (optionnelle) ---- #}
+<form method="get" class="card shadow-sm border-0 mb-3">
+  <div class="card-body">
+    <div class="row g-2 align-items-center">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text"
+                 name="q"
+                 value="{{ app.request.query.get('q') }}"
+                 class="form-control"
+                 placeholder="Rechercher (email, nom, prénom...)">
+        </div>
+      </div>
+      <div class="col-md-6 d-flex gap-2 justify-content-md-end">
+        <button class="btn btn-outline-primary">
+          <i class="bi bi-funnel"></i> Filtrer
+        </button>
+        <a href="{{ path('app_user_index') }}" class="btn btn-outline-secondary">
+          <i class="bi bi-x-circle"></i> Réinitialiser
+        </a>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="card shadow-sm border-0">
+  <div class="card-header bg-white d-flex align-items-center justify-content-between">
+    <div class="fw-bold">Liste des utilisateurs</div>
+    <span class="badge bg-light text-dark border">
+      Total: {{ users|length }}
+    </span>
+  </div>
+
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th style="width:70px;">ID</th>
+            <th>Email</th>
+            <th>Nom</th>
+            <th>Téléphone</th>
+            <th>Type</th>
+            <th>Rôles</th>
+            <th>Créé le</th>
+            <th class="text-end" style="width:170px;">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+        {% for user in users %}
+          <tr>
+            <td class="fw-semibold">#{{ user.id }}</td>
+
+            <td>
+              <div class="fw-semibold">{{ user.email }}</div>
+              <div class="text-muted small">{{ user.prenom }} {{ user.nom }}</div>
+            </td>
+
+            <td>{{ user.prenom }} {{ user.nom }}</td>
+
+            <td>{{ user.telephone ?: '—' }}</td>
+
+            <td>
+              {% set t = user.type|default('') %}
+              {% if t == 'ADMIN' %}
+                <span class="badge bg-danger"><i class="bi bi-shield-lock"></i> ADMIN</span>
+              {% elseif t == 'VALORIZER' %}
+                <span class="badge bg-success"><i class="bi bi-recycle"></i> VALORISATEUR</span>
+              {% elseif t == 'CITOYEN' %}
+                <span class="badge bg-primary"><i class="bi bi-person"></i> CITOYEN</span>
+              {% else %}
+                <span class="badge bg-secondary">{{ t ?: '—' }}</span>
+              {% endif %}
+            </td>
+
+            <td>
+              {% if user.roles %}
+                <div class="d-flex flex-wrap gap-1">
+                  {% for r in user.roles %}
+                    <span class="badge bg-light text-dark border">{{ r }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                —
+              {% endif %}
+            </td>
+
+            <td class="text-muted small">
+              {{ user.createdAt ? user.createdAt|date('d/m/Y H:i') : '—' }}
+            </td>
+
+            <td class="text-end">
+              <div class="btn-group" role="group">
+                <a class="btn btn-outline-secondary btn-sm"
+                   href="{{ path('app_user_show', {'id': user.id}) }}"
+                   title="Consulter">
+                  <i class="bi bi-eye"></i>
+                </a>
+
+                <a class="btn btn-outline-primary btn-sm"
+                   href="{{ path('app_user_edit', {'id': user.id}) }}"
+                   title="Modifier">
+                  <i class="bi bi-pencil-square"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="8" class="text-center py-4 text-muted">
+              <i class="bi bi-info-circle"></i> Aucun utilisateur trouvé
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

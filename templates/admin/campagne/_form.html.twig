@@ -1,0 +1,54 @@
+<div class="ww-card2">
+  <div class="ww-card2-title">
+    {{ title|default('Formulaire') }}
+  </div>
+
+  {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+
+    <div class="ww-grid-2">
+      <div class="ww-field">
+        {{ form_label(form.titre) }}
+        {{ form_widget(form.titre, { attr: { class: 'ww-input' } }) }}
+        {{ form_errors(form.titre) }}
+      </div>
+
+      <div class="ww-field">
+        {{ form_label(form.statut) }}
+        {{ form_widget(form.statut, { attr: { class: 'ww-input' } }) }}
+        {{ form_errors(form.statut) }}
+      </div>
+    </div>
+
+    <div class="ww-field">
+      {{ form_label(form.description) }}
+      {{ form_widget(form.description, { 
+        attr: { 
+          class: 'ww-input ww-textarea', 
+          rows: 4 
+        } 
+      }) }}
+      {{ form_errors(form.description) }}
+    </div>
+
+    <div class="ww-grid-2">
+      <div class="ww-field">
+        {{ form_label(form.dateDebut) }}
+        {{ form_widget(form.dateDebut, { attr: { class: 'ww-input' } }) }}
+        {{ form_errors(form.dateDebut) }}
+      </div>
+
+      <div class="ww-field">
+        {{ form_label(form.dateFin) }}
+        {{ form_widget(form.dateFin, { attr: { class: 'ww-input' } }) }}
+        {{ form_errors(form.dateFin) }}
+      </div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <button class="ww-btn ww-btn-mini" type="submit">
+        💾 Enregistrer
+      </button>
+    </div>
+
+  {{ form_end(form) }}
+</div>
