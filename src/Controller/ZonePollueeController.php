@@ -30,6 +30,8 @@ class ZonePollueeController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $zone = new ZonePolluee();
+        $zone->setDateIdentification(new \DateTime());
+        
         $form = $this->createForm(ZonePollueeType::class, $zone);
         $form->handleRequest($request);
 

@@ -10,7 +10,7 @@ class ZonePolluee
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: "integer")]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -19,10 +19,14 @@ class ZonePolluee
     #[ORM\Column(length: 255)]
     private ?string $coordonneesGps = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: "integer")]
     private ?int $niveauPollution = null;
 
-    #[ORM\ManyToOne(inversedBy: 'zonePolluees')]
+    #[ORM\Column(type: "datetime")]
+    private ?\DateTimeInterface $dateIdentification = null;
+
+    #[ORM\ManyToOne(targetEntity: IndicateurImpact::class, inversedBy: "zonePolluees")]
+    #[ORM\JoinColumn(name: "indicateur_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
     private ?IndicateurImpact $indicateur = null;
 
     public function getId(): ?int
@@ -38,7 +42,6 @@ class ZonePolluee
     public function setNomZone(string $nomZone): static
     {
         $this->nomZone = $nomZone;
-
         return $this;
     }
 
@@ -50,7 +53,6 @@ class ZonePolluee
     public function setCoordonneesGps(string $coordonneesGps): static
     {
         $this->coordonneesGps = $coordonneesGps;
-
         return $this;
     }
 
@@ -62,7 +64,17 @@ class ZonePolluee
     public function setNiveauPollution(int $niveauPollution): static
     {
         $this->niveauPollution = $niveauPollution;
+        return $this;
+    }
 
+    public function getDateIdentification(): ?\DateTimeInterface
+    {
+        return $this->dateIdentification;
+    }
+
+    public function setDateIdentification(?\DateTimeInterface $dateIdentification): static
+    {
+        $this->dateIdentification = $dateIdentification;
         return $this;
     }
 
@@ -74,7 +86,6 @@ class ZonePolluee
     public function setIndicateur(?IndicateurImpact $indicateur): static
     {
         $this->indicateur = $indicateur;
-
         return $this;
     }
 }

@@ -3,36 +3,62 @@
 {% block title %}Modifier une zone polluée{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <h1>Modifier la zone : {{ zone.nomZone }}</h1>
-    
-    {{ form_start(form) }}
-        <div class="mb-3">
-            {{ form_label(form.nomZone) }}
-            {{ form_widget(form.nomZone, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.nomZone) }}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_zone_polluee_index') }}" class="text-decoration-none">Zones Polluées</a></li>
+                    <li class="breadcrumb-item active">Modifier</li>
+                </ol>
+            </nav>
+
+            <!-- Main Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h4 class="mb-0">Modifier la zone : {{ zone.nomZone }}</h4>
+                </div>
+                
+                <div class="card-body p-4">
+                    {{ form_start(form) }}
+                        <div class="mb-3">
+                            {{ form_label(form.nomZone, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                            {{ form_widget(form.nomZone, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.nomZone) }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.coordonneesGps, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                            {{ form_widget(form.coordonneesGps, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.coordonneesGps) }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.niveauPollution, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                            {{ form_widget(form.niveauPollution, {'attr': {'class': 'form-control', 'min': '1', 'max': '10'}}) }}
+                            {{ form_errors(form.niveauPollution) }}
+                        </div>
+                        
+                        <div class="mb-4">
+                            {{ form_label(form.indicateur, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                            {{ form_widget(form.indicateur, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.indicateur) }}
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Enregistrer
+                            </button>
+                            <a href="{{ path('app_zone_polluee_index') }}" class="btn btn-light">
+                                <i class="fas fa-times me-2"></i>Annuler
+                            </a>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
         </div>
-        
-        <div class="mb-3">
-            {{ form_label(form.coordonneesGps) }}
-            {{ form_widget(form.coordonneesGps, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.coordonneesGps) }}
-        </div>
-        
-        <div class="mb-3">
-            {{ form_label(form.niveauPollution) }}
-            {{ form_widget(form.niveauPollution, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.niveauPollution) }}
-        </div>
-        
-        <div class="mb-3">
-            {{ form_label(form.indicateur) }}
-            {{ form_widget(form.indicateur, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.indicateur) }}
-        </div>
-        
-        <button type="submit" class="btn btn-primary">Enregistrer</button>
-        <a href="{{ path('app_zone_polluee_index') }}" class="btn btn-secondary">Annuler</a>
-    {{ form_end(form) }}
+    </div>
 </div>
 {% endblock %}
