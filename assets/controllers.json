@@ -1,0 +1,15 @@
+{
+    "contrôleurs" : {
+        "@symfony/ux-turbo" : {
+            "turbo-core" : {
+                "activé" : true ,
+                "aller chercher" : " impatient "
+            },
+            "mercure-turbo-stream" : {
+                "activé" : false ,
+                "aller chercher" : " impatient "
+            }
+        }
+    },
+    "points d'entrée" : []
+}

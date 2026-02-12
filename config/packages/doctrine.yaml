@@ -1,0 +1,22 @@
+doctrine:
+    dbal:
+        
+        # url: '%env(resolve:DATABASE_URL)%'  
+        driver: 'pdo_mysql'
+        host: '127.0.0.1'
+        port: 3306
+        user: 'root'
+        password: ''
+        dbname: 'pidev'
+        server_version: '8.0.32'
+        
+
+    orm:
+        auto_mapping: true
+        mappings:
+            App:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Entity'
+                prefix: 'App\Entity'
+                alias: App
