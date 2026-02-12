@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -24,35 +25,35 @@ class RegistrationFormType extends AbstractType
             ->add('email', EmailType::class, [
                 'constraints' => [
                     new NotBlank(message: 'Veuillez saisir un email.'),
+                    new Email(message: 'Email invalide.'),
                 ],
             ])
             ->add('nom', TextType::class, [
                 'constraints' => [
                     new NotBlank(message: 'Veuillez saisir votre nom.'),
-                    new Length(min: 2, max: 100),
+                    new Length(min: 2, max: 120),
                 ],
             ])
             ->add('prenom', TextType::class, [
                 'constraints' => [
                     new NotBlank(message: 'Veuillez saisir votre prénom.'),
-                    new Length(min: 2, max: 100),
+                    new Length(min: 2, max: 120),
                 ],
             ])
             ->add('telephone', TextType::class, [
                 'required' => false,
                 'constraints' => [
-                    new Length(min: 8, max: 20),
+                    new Length(min: 8, max: 30),
                 ],
             ])
-
-            // ✅ TYPE: sans PARTENAIRE (et sans ADMIN)
-            ->add('type', ChoiceType::class, [
-                'choices' => [
-                    'Citoyen'      => User::TYPE_CITIZEN,
-                    'Valorisateur' => User::TYPE_VALORIZER,
-                ],
-                'data' => User::TYPE_CITIZEN,
-            ])
+           ->add('type', ChoiceType::class, [
+    'choices' => [
+        'Citoyen'      => User::TYPE_CITIZEN,
+        'Valorisateur' => User::TYPE_VALORIZER,
+        'Admin'        => User::TYPE_ADMIN,   // ✅ ajouté
+    ],
+    'data' => User::TYPE_CITIZEN,
+])
 
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
