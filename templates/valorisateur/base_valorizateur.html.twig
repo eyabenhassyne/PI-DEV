@@ -4,27 +4,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>{% block title %}Valorisateur | WasteWise{% endblock %}</title>
 
-  {# Vendor CSS #}
+  {# ===== CSS COMMUN ===== #}
   <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/vendor/font-awesome/css/all.min.css') }}">
-
-  {# Template CSS #}
   <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 
   <style>
     .main-wrapper{ display:flex; min-height:100vh; }
     .sidebar{
-      width:280px; flex:0 0 280px;
+      width:270px;
       border-right:1px solid rgba(0,0,0,.08);
       background:#fff;
     }
-    .page-wrapper{ flex:1 1 auto; min-width:0; background:#f8fafc; }
+    .page-wrapper{ flex:1; background:#f8fafc; }
     .page-header{ position:sticky; top:0; z-index:10; }
 
-    /* Sidebar links */
     .sidebar .nav-link{
       border-radius:10px;
       padding:.6rem .8rem;
@@ -33,23 +31,21 @@
       align-items:center;
       gap:.45rem;
     }
-    .sidebar .nav-link:hover{ background:rgba(2,6,23,.04); }
+    .sidebar .nav-link:hover{ background:rgba(2,6,23,.05); }
+
     .sidebar .nav-link.active{
       background:#16a34a;
       color:#fff !important;
       font-weight:700;
     }
-    .sidebar .nav-link.active i{ color:#fff !important; }
 
-    /* Responsive */
-    @media (max-width: 991.98px){
+    @media(max-width:991px){
       .main-wrapper{ flex-direction:column; }
       .sidebar{
-        width:100%; flex:0 0 auto;
+        width:100%;
         border-right:none;
         border-bottom:1px solid rgba(0,0,0,.08);
       }
-      .page-header{ position:static; }
     }
   </style>
 
@@ -61,6 +57,8 @@
 {% set route = app.request.attributes.get('_route') %}
 {% set userLabel = app.user ? app.user.userIdentifier : 'User' %}
 {% set firstChar = userLabel|first|upper %}
+{% set base = app.request.baseUrl %}
+{% set urlProfilEdit = base ~ '/valorisateur/profil/modifier' %}
 
 <div class="main-wrapper">
 
@@ -69,23 +67,20 @@
 
     <div class="p-3 border-bottom">
       <a href="{{ path('app_dashboard_valorizateur') }}"
-         class="d-flex align-items-center gap-2 text-decoration-none">
-        <span class="fw-bold text-success">WasteWise TN</span>
+         class="d-flex align-items-center gap-2 text-decoration-none fw-bold text-success">
+        <i class="bi bi-recycle"></i> WasteWise TN
       </a>
       <div class="small text-muted">Espace Valorisateur</div>
     </div>
 
-    <div class="p-3 border-bottom">
-      <div class="d-flex align-items-center gap-2">
-        <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold"
-             style="width:42px;height:42px;background:#e8f5ee;color:#166534;">
-          {{ firstChar }}
-        </div>
-
-        <div class="min-w-0">
-          <div class="fw-semibold text-truncate">{{ userLabel }}</div>
-          <div class="small text-muted">VALORISATEUR</div>
-        </div>
+    <div class="p-3 border-bottom d-flex align-items-center gap-2">
+      <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold"
+           style="width:42px;height:42px;background:#e8f5ee;color:#166534;">
+        {{ firstChar }}
+      </div>
+      <div class="min-w-0">
+        <div class="fw-semibold text-truncate">{{ userLabel }}</div>
+        <div class="small text-muted">VALORISATEUR</div>
       </div>
     </div>
 
@@ -124,19 +119,32 @@
 
   </aside>
 
+
   {# ===== PAGE CONTENT ===== #}
   <div class="page-wrapper">
 
-    <header class="page-header bg-white border-bottom px-4 py-3 d-flex align-items-center justify-content-between">
-      <div class="fw-bold">Valorisateur</div>
+    <header class="page-header bg-white border-bottom px-4 py-3 d-flex justify-content-between align-items-center">
+
+      <div class="fw-bold">Dashboard Valorisateur</div>
 
       {% if app.user %}
-        <div class="d-flex align-items-center gap-2">
-          <i class="bi bi-person-circle"></i>
-          <span class="small text-muted">{{ app.user.userIdentifier }}</span>
+        <div class="d-flex align-items-center gap-3 small text-muted">
+
+          <i class="bi bi-person-circle fs-5"></i>
+          {{ app.user.userIdentifier }}
+
+          {# ✅ Bouton modifier profil #}
+          <a class="btn btn-sm btn-outline-success"
+             href="{{ urlProfilEdit }}"
+             title="Modifier mon profil">
+            <i class="bi bi-pencil"></i>
+          </a>
+
         </div>
       {% endif %}
+
     </header>
+
 
     <main class="px-4 py-4">
 

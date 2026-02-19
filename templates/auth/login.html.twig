@@ -9,175 +9,94 @@
     <div class="container-fluid">
       <div class="row g-0">
 
-        {# ===================================================== #}
-        {# ===================== LEFT SIDE ===================== #}
-        {# ===================================================== #}
+        {# ================= LEFT SIDE ================= #}
         <div class="col-12 col-lg-6 d-md-flex align-items-center justify-content-center auth-left vh-lg-100">
           <div class="p-4 p-lg-5 text-center">
 
             <h2 class="fw-bold mb-3">Bienvenue sur WasteWise TN</h2>
-            <p class="h6 fw-light">
-              Déclare tes déchets et gagne des EcoPoints 🌿
-            </p>
+            <p class="h6 fw-light">Déclare tes déchets et gagne des EcoPoints 🌿</p>
 
-            <img
-              src="{{ asset('assets/images/element/02.svg') }}"
-              class="auth-illustration img-fluid"
-              alt="WasteWise Illustration"
-            >
-
-            <div class="d-sm-flex mt-5 align-items-center justify-content-center">
-              <ul class="avatar-group mb-2 mb-sm-0">
-                <li class="avatar avatar-sm">
-                  <img class="avatar-img rounded-circle"
-                       src="{{ asset('assets/images/avatar/01.jpg') }}"
-                       alt="">
-                </li>
-                <li class="avatar avatar-sm">
-                  <img class="avatar-img rounded-circle"
-                       src="{{ asset('assets/images/avatar/02.jpg') }}"
-                       alt="">
-                </li>
-                <li class="avatar avatar-sm">
-                  <img class="avatar-img rounded-circle"
-                       src="{{ asset('assets/images/avatar/03.jpg') }}"
-                       alt="">
-                </li>
-              </ul>
-
-              <p class="mb-0 ms-sm-3">
-                Rejoins la communauté WasteWise TN dès maintenant.
-              </p>
-            </div>
+            <img src="{{ asset('assets/images/element/02.svg') }}"
+                 class="auth-illustration img-fluid"
+                 alt="WasteWise Illustration">
 
           </div>
         </div>
 
-        {# ===================================================== #}
-        {# ===================== RIGHT SIDE ==================== #}
-        {# ===================================================== #}
+        {# ================= RIGHT SIDE ================= #}
         <div class="col-12 col-lg-6 d-flex align-items-center justify-content-center auth-right">
 
           <div class="auth-card">
 
             <div class="text-center mb-4">
-              <span class="fs-1">👋</span>
               <h1 class="fw-bold">Connexion</h1>
-              <p class="text-muted">
-                Content de te revoir ! Connecte-toi à ton compte.
-              </p>
+              <p class="text-muted">Connecte-toi à ton compte</p>
             </div>
 
-            {# ================= ERROR ================= #}
-            {% if error %}
-              <div class="alert alert-danger">
-                {{ error.messageKey|trans(error.messageData, 'security') }}
-              </div>
-            {% endif %}
+            {# ========= LOGIN SOCIAL ========= #}
+            <div class="d-grid gap-2 mb-4">
 
-            {# ================= ALREADY CONNECTED ================= #}
-            {% if app.user %}
-              <div class="alert alert-info d-flex justify-content-between align-items-center">
-                <div>
-                  Connecté en tant que
-                  <strong>{{ app.user.userIdentifier }}</strong>
-                </div>
-                <a class="btn btn-sm btn-outline-primary"
-                   href="{{ path('app_logout') }}">
-                  Déconnexion
-                </a>
-              </div>
-            {% endif %}
+              <a class="btn btn-light border"
+                 href="{{ path('connect_google_start') }}">
+                <i class="fab fa-google me-2"></i> Continuer avec Google
+              </a>
 
-            {# ================= LOGIN FORM ================= #}
-            <form method="post" novalidate>
+              <a class="btn btn-primary"
+                 href="{{ path('connect_facebook_start') }}">
+                <i class="fab fa-facebook me-2"></i> Continuer avec Facebook
+              </a>
 
-              {# Email #}
-              <div class="mb-4">
-                <label class="form-label">Email *</label>
+              <a class="btn btn-dark"
+                 href="{{ path('connect_github_start') }}">
+                <i class="fab fa-github me-2"></i> Continuer avec GitHub
+              </a>
 
-                <div class="input-group input-group-lg">
-                  <span class="input-group-text bg-light border-0">
-                    <i class="bi bi-envelope-fill"></i>
-                  </span>
+            </div>
 
-                  <input
-                    type="email"
-                    name="email"
-                    value="{{ last_username }}"
-                    class="form-control border-0 bg-light"
-                    placeholder="E-mail"
-                    autocomplete="email"
-                    required
-                    autofocus
-                  >
-                </div>
+            <div class="text-center my-3">
+              <span class="text-muted">OU</span>
+            </div>
+
+            {# ========= LOGIN FORM ========= #}
+            <form method="post">
+
+              <div class="mb-3">
+                <input type="email"
+                       name="email"
+                       value="{{ last_username }}"
+                       class="form-control"
+                       placeholder="Email"
+                       required>
               </div>
 
-              {# Password #}
-              <div class="mb-4">
-                <label class="form-label">Mot de passe *</label>
-
-                <div class="input-group input-group-lg">
-                  <span class="input-group-text bg-light border-0">
-                    <i class="bi bi-lock-fill"></i>
-                  </span>
-
-                  <input
-                    type="password"
-                    name="password"
-                    class="form-control border-0 bg-light"
-                    placeholder="Mot de passe"
-                    autocomplete="current-password"
-                    required
-                  >
-                </div>
-
-                <div class="form-text">
-                  Ton mot de passe doit contenir au moins 8 caractères.
-                </div>
+              <div class="mb-3">
+                <input type="password"
+                       name="password"
+                       class="form-control"
+                       placeholder="Mot de passe"
+                       required>
               </div>
 
-              {# CSRF TOKEN #}
               <input type="hidden"
                      name="_csrf_token"
                      value="{{ csrf_token('authenticate') }}">
 
-              {# Remember + Forgot #}
-              <div class="mb-4 d-flex justify-content-between align-items-center">
-                <div class="form-check">
-                  <input type="checkbox"
-                         class="form-check-input"
-                         id="rememberMe"
-                         name="_remember_me">
-                  <label class="form-check-label" for="rememberMe">
-                    Se souvenir de moi
-                  </label>
-                </div>
-
-                <a href="#"
-                   class="text-secondary"
-                   onclick="alert('Bientôt disponible'); return false;">
-                  Mot de passe oublié ?
-                </a>
-              </div>
-
-              {# Submit #}
               <div class="d-grid">
-                <button class="btn btn-primary btn-lg auth-btn"
-                        type="submit">
-                  Connexion
-                </button>
+                <button class="btn btn-success">Connexion</button>
               </div>
 
             </form>
 
-            {# Register link #}
-            <div class="mt-4 text-center">
-              Pas de compte ?
-              <a href="{{ path('app_register') }}">
-                Créer un compte
+            {# ✅ Connexion avec visage en bas #}
+            <div class="d-grid mt-3">
+              <a class="btn btn-outline-secondary" href="{{ path('app_face_login') }}">
+                <i class="bi bi-camera me-2"></i> Connexion avec visage
               </a>
+            </div>
+
+            <div class="text-center mt-3">
+              Pas de compte ?
+              <a href="{{ path('app_register') }}">Créer un compte</a>
             </div>
 
           </div>
@@ -185,7 +104,6 @@
 
       </div>
     </div>
-
   </section>
 </main>
 {% endblock %}

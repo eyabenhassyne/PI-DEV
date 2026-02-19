@@ -16,29 +16,52 @@ security:
     main:
       lazy: true
       provider: app_user_provider
+
+      user_checker: App\Security\UserActiveChecker
       entry_point: App\Security\AppAuthenticator
+
       custom_authenticators:
-      - App\Security\AppAuthenticator
-      - App\Security\GoogleAuthenticator
-      - App\Security\FacebookAuthenticator
+        - App\Security\AppAuthenticator
+        - App\Security\GoogleAuthenticator
+        - App\Security\FacebookAuthenticator
+        - App\Security\GithubAuthenticator
+        - App\Security\FaceLoginAuthenticator
 
       logout:
         path: app_logout
         target: app_login
 
   access_control:
-    # ✅ ADMIN : protège tout ce qui commence par /admin
+    # 🔓 PUBLIC ROUTES (auth / OAuth)
+    - { path: ^/connect/github, roles: PUBLIC_ACCESS }
+    - { path: ^/connect/github/check, roles: PUBLIC_ACCESS }
+    - { path: ^/connect/google, roles: PUBLIC_ACCESS }
+    - { path: ^/connect/google/check, roles: PUBLIC_ACCESS }
+    - { path: ^/connect/facebook, roles: PUBLIC_ACCESS }
+    - { path: ^/connect/facebook/check, roles: PUBLIC_ACCESS }
+    - { path: ^/login, roles: PUBLIC_ACCESS }
+    - { path: ^/register, roles: PUBLIC_ACCESS }
+    - { path: ^/logout, roles: PUBLIC_ACCESS }
+
+    # ✅ Face login public
+    - { path: ^/face-login, roles: PUBLIC_ACCESS }
+    - { path: ^/api/face-login/verify, roles: PUBLIC_ACCESS }
+
+    # 🔒 Enroll (connecté)
+    - { path: ^/citoyen/face/enroll, roles: ROLE_USER }
+
+    # 🔒 ADMIN
+    - { path: ^/dashboard/admin, roles: ROLE_ADMIN }
     - { path: ^/admin, roles: ROLE_ADMIN }
 
-    # ✅ VALORIZER
+    # 🔒 VALORIZER
     - { path: ^/dashboard/valorisateur/historique, roles: ROLE_VALORIZER }
     - { path: ^/dashboard/valorisateur, roles: ROLE_VALORIZER }
 
-    # ✅ CAMPAGNES (actions sensibles)
+    # 🔒 CAMPAGNES
     - { path: ^/campagnes/my, roles: ROLE_USER }
     - { path: ^/campagnes/\d+/join, roles: ROLE_USER }
     - { path: ^/campagnes/\d+/leave, roles: ROLE_USER }
 
-    # ✅ DASHBOARD (hub + citoyen)
-    - { path: ^/dashboard/admin, roles: ROLE_ADMIN }
+    # 🔒 DASHBOARD GENERAL
     - { path: ^/dashboard, roles: ROLE_USER }

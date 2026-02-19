@@ -1,4 +1,3 @@
-{# templates/citoyen/base.html.twig #}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -10,9 +9,8 @@
   <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/vendor/font-awesome/css/all.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/vendor/overlay-scrollbar/css/OverlayScrollbars.min.css') }}">
 
-  {# Template CSS #}
+  {# Main CSS #}
   <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 
   <style>
@@ -31,100 +29,50 @@
 
     /* ===== Sidebar ===== */
     .sidebar{
-      width:280px; flex:0 0 280px;
-      background:rgba(255,255,255,.85);
+      width:280px;
+      background:#fff;
       border-right:1px solid var(--ww-border);
-      backdrop-filter: blur(10px);
     }
-    .side-brand{
-      font-weight:900;
-      letter-spacing:-.3px;
-      color:var(--ww-text);
-    }
-    .side-tag{ color:var(--ww-muted); font-size:.86rem; }
-
-    .side-user{
-      display:flex; gap:10px; align-items:center;
-    }
+    .side-brand{ font-weight:900; color:var(--ww-text); letter-spacing:-.3px; }
+    .side-user{ display:flex; align-items:center; gap:10px; }
     .side-avatar{
-      width:42px;height:42px;border-radius:999px;
+      width:42px;height:42px;border-radius:50%;
       display:flex;align-items:center;justify-content:center;
       background:rgba(47,107,79,.12);
       color:var(--ww-green);
-      font-weight:900;
+      font-weight:bold;
     }
-    .side-meta{ color:var(--ww-muted); font-size:.82rem; }
 
     .sidebar .nav-link{
       border-radius:12px;
       padding:.6rem .8rem;
+      display:flex;
+      align-items:center;
+      gap:10px;
       color:#334155;
-      display:flex; align-items:center; gap:10px;
-      transition:.15s ease;
+      transition:.2s;
     }
-    .sidebar .nav-link:hover{
-      background:rgba(2,6,23,.04);
-      transform: translateX(2px);
-    }
+    .sidebar .nav-link:hover{ background:rgba(0,0,0,.05); }
     .sidebar .nav-link.active{
       background:linear-gradient(90deg, var(--ww-green), var(--ww-green-2));
       color:#fff !important;
-      font-weight:800;
+      font-weight:700;
     }
-    .sidebar .nav-link.active i{ color:#fff; }
 
     /* ===== Page ===== */
-    .page-wrapper{ flex:1 1 auto; min-width:0; background:var(--ww-bg); }
+    .page-wrapper{ flex:1; background:var(--ww-bg); }
     .page-header{
-      position:sticky; top:0; z-index:10;
-      background:rgba(255,255,255,.9);
+      background:#fff;
       border-bottom:1px solid var(--ww-border);
-      backdrop-filter: blur(10px);
     }
 
-    /* ===== UI helpers ===== */
-    .ww-title{ font-weight:900; letter-spacing:-.3px; color:var(--ww-text); }
-    .ww-subtitle{ color:var(--ww-muted); }
-
-    .ww-card{
-      background:var(--ww-card);
-      border:1px solid rgba(0,0,0,.06);
-      border-radius:18px;
-      box-shadow:0 10px 30px rgba(15,23,42,.06);
-    }
-    .ww-card-h{
-      padding:14px 16px;
-      border-bottom:1px solid rgba(0,0,0,.06);
-      font-weight:800;
-      background:rgba(255,255,255,.7);
-      border-top-left-radius:18px;
-      border-top-right-radius:18px;
-    }
-    .ww-card-b{ padding:16px; }
-
-    .ww-badge{
-      background:#f1f5f9;
-      color:#0f172a;
-      border:1px solid rgba(0,0,0,.06);
-      font-weight:700;
-      padding:.35rem .55rem;
-      border-radius:999px;
-      font-size:.82rem;
-      display:inline-flex;
-      gap:.35rem;
-      align-items:center;
-      white-space:nowrap;
-    }
-
-    /* Responsive */
-    @media (max-width: 991.98px){
+    @media (max-width: 991px){
       .main-wrapper{ flex-direction:column; }
       .sidebar{
-        width:100%; flex:0 0 auto;
+        width:100%;
         border-right:none;
         border-bottom:1px solid var(--ww-border);
       }
-      .page-header{ position:static; }
     }
   </style>
 
@@ -132,21 +80,30 @@
 </head>
 
 <body>
+
 {% set route = app.request.attributes.get('_route') %}
 {% set userLabel = app.user ? app.user.userIdentifier : 'Invité' %}
 {% set firstChar = userLabel|first|upper %}
 
+{# ✅ Liens directs (anti-crash routing) #}
+{% set base = app.request.baseUrl %}
+{% set urlDashboard = base ~ '/citoyen/dashboard' %}
+{% set urlProfil = base ~ '/citoyen/profil' %}
+{% set urlProfilEdit = base ~ '/citoyen/profil/modifier' %}
+
 <div class="main-wrapper">
 
-  {# ===== SIDEBAR ===== #}
+  {# ================= SIDEBAR ================= #}
   <aside class="sidebar">
 
     <div class="p-3 border-bottom">
-      <a href="{{ path('app_dashboard_citoyen') }}" class="d-flex align-items-center gap-2 text-decoration-none">
+      {# dashboard citoyen: garde path si tu es sûr qu'il existe, sinon lien direct #}
+      <a href="{{ path('app_dashboard_citoyen') }}"
+         class="d-flex align-items-center gap-2 text-decoration-none">
         <i class="bi bi-leaf-fill text-success"></i>
         <span class="side-brand">WasteWise <span class="text-success">TN</span></span>
       </a>
-      <div class="side-tag">Espace Citoyen</div>
+      <div class="text-muted small">Espace Citoyen</div>
     </div>
 
     <div class="p-3 border-bottom">
@@ -154,8 +111,8 @@
         <div class="side-avatar">{{ firstChar }}</div>
         <div class="min-w-0">
           <div class="fw-semibold text-truncate">{{ userLabel }}</div>
-          <div class="side-meta">
-            {{ attribute(app.user, 'type') is defined ? app.user.type : 'CITOYEN' }}
+          <div class="small text-muted">
+            {{ (app.user and attribute(app.user, 'type') is defined) ? app.user.type : 'CITOYEN' }}
           </div>
         </div>
       </div>
@@ -171,8 +128,16 @@
           </a>
         </li>
 
+        {# ✅ Mon Profil: lien direct => ne plantera jamais #}
         <li class="nav-item">
-          <a class="nav-link {{ route in ['dechet_nouveau','citoyen_dechet_nouveau'] ? 'active' : '' }}"
+          <a class="nav-link {{ route starts with 'citoyen_profile_' ? 'active' : '' }}"
+             href="{{ urlProfil }}">
+            <i class="bi bi-person"></i> Mon Profil
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link {{ route == 'dechet_nouveau' ? 'active' : '' }}"
              href="{{ path('dechet_nouveau') }}">
             <i class="bi bi-trash3"></i> Déclarer déchets
           </a>
@@ -186,23 +151,9 @@
         </li>
 
         <li class="nav-item">
-          <a class="nav-link {{ route == 'citoyen_impact' ? 'active' : '' }}"
-             href="{{ path('citoyen_impact') }}">
-            <i class="bi bi-globe-europe-africa"></i> Impact
-          </a>
-        </li>
-
-        <li class="nav-item">
           <a class="nav-link {{ route == 'app_citoyen_recompenses' ? 'active' : '' }}"
              href="{{ path('app_citoyen_recompenses') }}">
             <i class="bi bi-gift"></i> Récompenses
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link {{ route == 'app_citoyen_recompenses_acquises' ? 'active' : '' }}"
-             href="{{ path('app_citoyen_recompenses_acquises') }}">
-            <i class="bi bi-award"></i> Mes récompenses
           </a>
         </li>
 
@@ -220,7 +171,7 @@
           </a>
         </li>
 
-        <li class="nav-item mt-2">
+        <li class="nav-item mt-3">
           <a class="nav-link text-danger" href="{{ path('app_logout') }}">
             <i class="bi bi-box-arrow-right"></i> Déconnexion
           </a>
@@ -231,16 +182,22 @@
 
   </aside>
 
-  {# ===== PAGE CONTENT ===== #}
+  {# ================= PAGE CONTENT ================= #}
   <div class="page-wrapper">
 
-    <header class="page-header px-4 py-3 d-flex align-items-center justify-content-between">
-      <div class="fw-bold">Citoyen</div>
+    <header class="page-header px-4 py-3 d-flex justify-content-between align-items-center">
+      <div class="fw-bold">Espace Citoyen</div>
 
       {% if app.user %}
-        <div class="d-flex align-items-center gap-2">
+        <div class="small text-muted d-flex align-items-center gap-2">
           <i class="bi bi-person-circle"></i>
-          <span class="small text-muted">{{ app.user.userIdentifier }}</span>
+          {{ app.user.userIdentifier }}
+
+          {# ✅ bouton modifier profil: lien direct #}
+          <a class="btn btn-sm btn-outline-success"
+             href="{{ urlProfilEdit }}">
+            <i class="bi bi-pencil"></i>
+          </a>
         </div>
       {% endif %}
     </header>
@@ -251,20 +208,21 @@
       {% for label, messages in app.flashes %}
         {% for message in messages %}
           {% set bs = label == 'error' ? 'danger' : label %}
-          <div class="alert alert-{{ bs }} shadow-sm mb-3">
+          <div class="alert alert-{{ bs }} shadow-sm">
             {{ message }}
           </div>
         {% endfor %}
       {% endfor %}
 
       {% block body %}{% endblock %}
+
     </main>
 
   </div>
+
 </div>
 
 <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('assets/vendor/overlay-scrollbar/js/OverlayScrollbars.min.js') }}"></script>
 {% block javascripts %}{% endblock %}
 </body>
 </html>

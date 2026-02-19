@@ -1,71 +1,51 @@
-{# templates/admin/user/_form.html.twig #}
+{{ form_start(form, {
+  action: path('app_user_edit', {'id': user.id}),
+  method: 'POST'
+}) }}
 
-{{ form_start(form, { attr: { class: 'row g-3', novalidate: 'novalidate' } }) }}
+  {# ✅ affiche les erreurs globales #}
+  {{ form_errors(form) }}
 
-  {# === Email === #}
-  <div class="col-md-6">
-    {{ form_label(form.email, 'Email', { label_attr: { class: 'form-label' } }) }}
-    {{ form_widget(form.email, { attr: { class: 'form-control', placeholder: 'exemple@email.com' } }) }}
-    <div class="text-danger small">{{ form_errors(form.email) }}</div>
-  </div>
+  <div class="row g-3">
+    <div class="col-md-12">
+      {{ form_label(form.email) }}
+      {{ form_widget(form.email) }}
+      {{ form_errors(form.email) }}
+    </div>
 
-  {# === Password === #}
-  {% if form.password is defined %}
+    {# Si tu as type #}
+    {% if form.type is defined %}
+      <div class="col-md-6">
+        {{ form_label(form.type) }}
+        {{ form_widget(form.type) }}
+        {{ form_errors(form.type) }}
+      </div>
+    {% endif %}
+
     <div class="col-md-6">
-      {{ form_label(form.password, 'Mot de passe', { label_attr: { class: 'form-label' } }) }}
-      {{ form_widget(form.password, { attr: { class: 'form-control', placeholder: '••••••••' } }) }}
-      <div class="text-danger small">{{ form_errors(form.password) }}</div>
+      {{ form_label(form.roles) }}
+      {{ form_widget(form.roles) }}
+      {{ form_errors(form.roles) }}
+      <div class="form-text">{{ form_help(form.roles) }}</div>
+    </div>
 
-      {# ✅ Affiche le message uniquement si c'est une modification #}
-      {% if user is defined and user.id %}
-        <div class="form-text text-muted">
-          Laisse vide si tu ne veux pas changer le mot de passe.
-        </div>
+    <div class="col-md-12">
+      {{ form_label(form.plainPassword) }}
+      {{ form_widget(form.plainPassword) }}
+      {{ form_errors(form.plainPassword) }}
+      {% if form_help(form.plainPassword) %}
+        <div class="form-text">{{ form_help(form.plainPassword) }}</div>
       {% endif %}
     </div>
-  {% endif %}
-
-  {# === Nom === #}
-  <div class="col-md-6">
-    {{ form_label(form.nom, 'Nom', { label_attr: { class: 'form-label' } }) }}
-    {{ form_widget(form.nom, { attr: { class: 'form-control', placeholder: 'Nom' } }) }}
-    <div class="text-danger small">{{ form_errors(form.nom) }}</div>
   </div>
 
-  {# === Prénom === #}
-  <div class="col-md-6">
-    {{ form_label(form.prenom, 'Prénom', { label_attr: { class: 'form-label' } }) }}
-    {{ form_widget(form.prenom, { attr: { class: 'form-control', placeholder: 'Prénom' } }) }}
-    <div class="text-danger small">{{ form_errors(form.prenom) }}</div>
-  </div>
-
-  {# === Téléphone === #}
-  <div class="col-md-6">
-    {{ form_label(form.telephone, 'Téléphone', { label_attr: { class: 'form-label' } }) }}
-    {{ form_widget(form.telephone, { attr: { class: 'form-control', placeholder: 'Ex: 20 000 000' } }) }}
-    <div class="text-danger small">{{ form_errors(form.telephone) }}</div>
-  </div>
-
-  {# === Type === #}
-  <div class="col-md-6">
-    {{ form_label(form.type, 'Type utilisateur', { label_attr: { class: 'form-label' } }) }}
-    {{ form_widget(form.type, { attr: { class: 'form-select' } }) }}
-    <div class="text-danger small">{{ form_errors(form.type) }}</div>
-  </div>
-
-  {# ✅ CSRF / champs cachés #}
-  {{ form_rest(form) }}
-
-  {# === Boutons === #}
-  <div class="col-12 d-flex justify-content-end gap-2 mt-2">
-    <a href="{{ path('app_user_index') }}" class="btn btn-outline-secondary">
-      <i class="bi bi-x-circle"></i> Annuler
-    </a>
-
-    <button type="submit" class="btn btn-primary">
-      <i class="bi bi-check-circle"></i>
-      {{ button_label|default('Enregistrer') }}
+  <div class="d-flex gap-2 mt-4">
+    <button class="btn btn-primary">
+      <i class="bi bi-check2-circle"></i> {{ button_label|default('Enregistrer') }}
     </button>
+    <a href="{{ path('app_user_index') }}" class="btn btn-outline-secondary">
+      Annuler
+    </a>
   </div>
 
 {{ form_end(form) }}

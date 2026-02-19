@@ -13,33 +13,15 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 #[Route('/citoyen/appels')]
+#[IsGranted('ROLE_CITOYEN')]
 class AppelOffreFrontController extends AbstractController
 {
-    /**
-     * ✅ Vérifie que l’utilisateur est bien un citoyen
-     */
-    private function denyUnlessCitizen(): void
-    {
-        $this->denyAccessUnlessGranted('ROLE_USER');
-
-        $user = $this->getUser();
-        if (!$user || !method_exists($user, 'getType')) {
-            throw $this->createAccessDeniedException('Accès refusé.');
-        }
-
-        // Dans ta DB: type = "CITIZEN"
-        if ($user->getType() !== 'CITIZEN') {
-            throw $this->createAccessDeniedException("Accès réservé aux citoyens.");
-        }
-    }
-
     #[Route('', name: 'cit_appel_index', methods: ['GET'])]
     public function index(Request $request, AppelOffreRepository $repo): Response
     {
-        $this->denyUnlessCitizen();
-
         $q = (string) $request->query->get('q', '');
         $appels = $repo->listOpenForCitoyen($q);
 
@@ -52,8 +34,6 @@ class AppelOffreFrontController extends AbstractController
     #[Route('/{id}', name: 'cit_appel_show', methods: ['GET'])]
     public function show(AppelOffre $appel): Response
     {
-        $this->denyUnlessCitizen();
-
         return $this->render('citoyen/appel/show.html.twig', [
             'appel' => $appel,
         ]);
@@ -66,8 +46,6 @@ class AppelOffreFrontController extends AbstractController
         PropositionRepository $propRepo,
         EntityManagerInterface $em
     ): Response {
-        $this->denyUnlessCitizen();
-
         // ✅ règle serveur: proposer seulement si ouvert + pas expiré
         if (!method_exists($appel, 'isOuvert') || !$appel->isOuvert()) {
             $this->addFlash('danger', "Cet appel d'offre n'est plus ouvert.");

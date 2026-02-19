@@ -9,11 +9,21 @@
 
 {% block body %}
 
+{% set fullName = (user.prenom ~ ' ' ~ user.nom)|trim %}
+{% set initials = (user.prenom ? user.prenom|slice(0,1) : 'U') ~ (user.nom ? user.nom|slice(0,1) : '') %}
+
 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-  <div>
-    <h2 class="mb-0">✏️ Modifier utilisateur</h2>
-    <div class="text-muted small">
-      Mise à jour du compte — ID #{{ user.id }}
+  <div class="d-flex align-items-center gap-3">
+    <div class="rounded-circle border d-inline-flex align-items-center justify-content-center"
+         style="width:44px;height:44px;background:#e9f5ee;color:#2f6b4f;font-weight:700;">
+      {{ initials|upper }}
+    </div>
+
+    <div>
+      <h2 class="mb-0">✏️ Modifier utilisateur</h2>
+      <div class="text-muted small">
+        Mise à jour du compte — <span class="fw-semibold">{{ user.email }}</span>
+      </div>
     </div>
   </div>
 
@@ -28,6 +38,16 @@
   </div>
 </div>
 
+{# ✅ Flash messages #}
+{% for label, messages in app.flashes %}
+  {% for msg in messages %}
+    <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+      {{ msg }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {% endfor %}
+{% endfor %}
+
 <div class="row g-3">
   <div class="col-lg-8">
     <div class="card shadow-sm border-0">
@@ -39,8 +59,7 @@
       </div>
 
       <div class="card-body">
-        {# ✅ chemin corrigé #}
-        {{ include('admin/user/_form.html.twig', { button_label: 'Mettre à jour' }) }}
+        {{ include('admin/user/_form.html.twig', { user: user, form: form, button_label: 'Mettre à jour' }) }}
       </div>
     </div>
   </div>
@@ -62,7 +81,6 @@
 
         <div class="border-top pt-3">
           <div class="text-muted small mb-2">Suppression</div>
-          {# ✅ chemin corrigé #}
           {{ include('admin/user/_delete_form.html.twig', { user: user }) }}
         </div>
       </div>

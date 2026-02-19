@@ -33,7 +33,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::STRING, length: 255)]
     private ?string $password = null;
 
-    // ✅ champs utilisés dans tes formulaires
     #[ORM\Column(type: Types::STRING, length: 120)]
     private ?string $nom = null;
 
@@ -46,16 +45,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::STRING, length: 20)]
     private string $type = self::TYPE_CITIZEN;
 
-    // ✅ utilisé par EasyAdmin / tri / historique
-   #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-private ?\DateTimeImmutable $createdAt = null;
-
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private \DateTimeImmutable $createdAt;
 
     // ======================================
-    // ✅ RELATIONS DECHETS
+    // ✅ NEW: Activation / Désactivation
+    // ======================================
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private bool $isActive = true;
+
+    /**
+     * ✅ Reconnaissance faciale (embedding/vecteur)
+     * Stock JSON : [0.12, -0.03, ...]
+     */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $faceEmbedding = null;
+
+    /**
+     * ✅ Date du dernier enrôlement du visage
+     */
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $faceUpdatedAt = null;
+
+    // ======================================
+    // ✅ RELATIONS
     // ======================================
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Dechet::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Dechet::class, orphanRemoval: true)]
     private Collection $dechets;
 
     #[ORM\OneToMany(mappedBy: 'validatedBy', targetEntity: Dechet::class)]
@@ -66,15 +82,16 @@ private ?\DateTimeImmutable $createdAt = null;
         $this->dechets = new ArrayCollection();
         $this->validatedDechets = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
+        $this->isActive = true;
     }
 
     public function __toString(): string
     {
-        return (string) $this->email;
+        return (string) ($this->email ?? '');
     }
 
     // ======================================
-    // ✅ Getters / Setters
+    // ✅ Security
     // ======================================
 
     public function getId(): ?int
@@ -89,16 +106,16 @@ private ?\DateTimeImmutable $createdAt = null;
 
     public function setEmail(string $email): self
     {
-        $this->email = strtolower(trim($email));
+        $this->email = mb_strtolower(trim($email));
         return $this;
     }
 
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string) ($this->email ?? '');
     }
 
-    // pour compatibilité ancien code
+    // compat ancien code
     public function getUsername(): string
     {
         return $this->getUserIdentifier();
@@ -107,27 +124,30 @@ private ?\DateTimeImmutable $createdAt = null;
     public function getRoles(): array
     {
         $roles = $this->roles;
+
+        // toujours ROLE_USER
         $roles[] = 'ROLE_USER';
 
-        // ✅ option : auto-injecter rôle selon type
-        if ($this->type === self::TYPE_ADMIN) {
-            $roles[] = 'ROLE_ADMIN';
-        } elseif ($this->type === self::TYPE_VALORIZER) {
-            $roles[] = 'ROLE_VALORIZER';
-        }
+        // ajouter rôle basé sur le type
+        $roles[] = match ($this->type) {
+            self::TYPE_ADMIN => 'ROLE_ADMIN',
+            self::TYPE_VALORIZER => 'ROLE_VALORIZER',
+            default => 'ROLE_CITIZEN',
+        };
 
         return array_values(array_unique($roles));
     }
 
     public function setRoles(array $roles): self
     {
+        $roles = array_values(array_filter($roles, fn($r) => is_string($r) && $r !== ''));
         $this->roles = $roles;
         return $this;
     }
 
     public function getPassword(): string
     {
-        return (string) $this->password;
+        return (string) ($this->password ?? '');
     }
 
     public function setPassword(string $password): self
@@ -138,8 +158,27 @@ private ?\DateTimeImmutable $createdAt = null;
 
     public function eraseCredentials(): void
     {
-        // nothing
+        // rien
     }
+
+    // ======================================
+    // ✅ NEW: isActive (activer/désactiver)
+    // ======================================
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
+        return $this;
+    }
+
+    // ======================================
+    // ✅ Profil
+    // ======================================
 
     public function getNom(): ?string
     {
@@ -170,7 +209,7 @@ private ?\DateTimeImmutable $createdAt = null;
 
     public function setTelephone(?string $telephone): self
     {
-        $this->telephone = $telephone ? trim($telephone) : null;
+        $this->telephone = $telephone !== null ? trim($telephone) : null;
         return $this;
     }
 
@@ -186,7 +225,7 @@ private ?\DateTimeImmutable $createdAt = null;
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -196,6 +235,78 @@ private ?\DateTimeImmutable $createdAt = null;
         $this->createdAt = $createdAt;
         return $this;
     }
+
+    // ======================================
+    // ✅ Face Embedding (Reconnaissance faciale)
+    // ======================================
+
+    public function getFaceEmbedding(): ?array
+    {
+        return $this->faceEmbedding;
+    }
+
+    /**
+     * Stocke un embedding propre:
+     * - cast float
+     * - retire NaN/INF
+     * - met à jour faceUpdatedAt
+     */
+    public function setFaceEmbedding(?array $faceEmbedding): self
+    {
+        if ($faceEmbedding === null) {
+            $this->faceEmbedding = null;
+            $this->faceUpdatedAt = null;
+            return $this;
+        }
+
+        $clean = [];
+        foreach ($faceEmbedding as $v) {
+            $f = (float) $v;
+            if (!is_finite($f)) {
+                continue;
+            }
+            $clean[] = $f;
+        }
+
+        // si trop court => on refuse / on vide
+        if (count($clean) < 64) {
+            $this->faceEmbedding = null;
+            $this->faceUpdatedAt = null;
+            return $this;
+        }
+
+        $this->faceEmbedding = $clean;
+        $this->faceUpdatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function hasFaceEmbedding(int $minSize = 64): bool
+    {
+        return is_array($this->faceEmbedding) && count($this->faceEmbedding) >= $minSize;
+    }
+
+    public function clearFaceEmbedding(): self
+    {
+        $this->faceEmbedding = null;
+        $this->faceUpdatedAt = null;
+        return $this;
+    }
+
+    public function getFaceUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->faceUpdatedAt;
+    }
+
+    public function setFaceUpdatedAt(?\DateTimeImmutable $faceUpdatedAt): self
+    {
+        $this->faceUpdatedAt = $faceUpdatedAt;
+        return $this;
+    }
+
+    // ======================================
+    // ✅ Relations Dechet
+    // ======================================
 
     /** @return Collection<int, Dechet> */
     public function getDechets(): Collection

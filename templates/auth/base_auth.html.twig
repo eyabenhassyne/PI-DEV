@@ -6,29 +6,26 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  {# ✅ Favicon (si existe dans ton template) #}
   <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
 
-  {# ✅ Plugins CSS (Eduport) #}
+  {# ✅ Bootstrap CSS (MANQUANT chez toi) #}
+  <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/dist/css/bootstrap.min.css') }}">
+
+  {# ✅ Icons #}
   <link rel="stylesheet" href="{{ asset('assets/vendor/font-awesome/css/all.min.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}">
 
-  {# ✅ Theme CSS (Eduport) #}
+  {# ✅ Theme CSS #}
   <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 
   {% block stylesheets %}{% endblock %}
 </head>
 
 <body>
-
   {% block body %}{% endblock %}
 
-  {# ✅ Bootstrap JS (Eduport) #}
   <script src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
-
-  {# ✅ Functions JS (Eduport) #}
   <script src="{{ asset('assets/js/functions.js') }}"></script>
-
   {% block javascripts %}{% endblock %}
 </body>
 </html>

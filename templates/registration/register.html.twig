@@ -8,142 +8,113 @@
   <div class="container">
     <div class="row align-items-center g-5">
 
-      {# ================= IMAGE GAUCHE ================= #}
+      {# IMAGE #}
       <div class="col-lg-6 d-none d-lg-block text-center">
-        <div class="auth-illustration-wrapper">
-          <img
-            src="{{ asset('assets/images/element/02.svg') }}"
-            class="img-fluid auth-illustration-advanced"
-            alt="Illustration WasteWise">
-        </div>
+        <img src="{{ asset('assets/images/element/02.svg') }}"
+             class="img-fluid"
+             alt="WasteWise">
       </div>
 
-      {# ================= FORMULAIRE DROITE ================= #}
+      {# FORM #}
       <div class="col-lg-6">
         <div class="auth-card-advanced">
 
           <div class="text-center mb-4">
-            <h2 class="auth-title">Créer un compte</h2>
-            <p class="auth-subtitle">Rejoins la communauté écologique WasteWise 🌿</p>
+            <h2>Créer un compte</h2>
+            <p class="text-muted">Rejoins WasteWise 🌿</p>
           </div>
 
-          {% if not registrationForm.vars.valid %}
-            <div class="alert alert-danger">
-              Merci de corriger les champs indiqués.
-            </div>
-          {% endif %}
+          {{ form_start(registrationForm) }}
 
-          {{ form_start(registrationForm, { attr: { novalidate: 'novalidate' } }) }}
-
-          {# EMAIL #}
           <div class="mb-3">
-            <label class="form-label fw-semibold">Email *</label>
-            {{ form_widget(registrationForm.email, {
-              attr: { class: 'form-control auth-input', placeholder: 'ex: khalil@mail.com', autocomplete: 'email' }
-            }) }}
-            <div class="text-danger small mt-1">{{ form_errors(registrationForm.email) }}</div>
+            {{ form_widget(registrationForm.email,
+              {'attr': {'class':'form-control','placeholder':'Email'}}) }}
           </div>
 
-          {# PASSWORD #}
           <div class="mb-3">
-            <label class="form-label fw-semibold">Mot de passe *</label>
-            {{ form_widget(registrationForm.plainPassword, {
-              attr: { class: 'form-control auth-input', placeholder: '********', autocomplete: 'new-password' }
-            }) }}
-            <div class="text-danger small mt-1">{{ form_errors(registrationForm.plainPassword) }}</div>
+            {{ form_widget(registrationForm.plainPassword,
+              {'attr': {'class':'form-control','placeholder':'Mot de passe'}}) }}
           </div>
 
-          {# CONFIRM PASSWORD (si existe) #}
-          {% if registrationForm.confirmPassword is defined %}
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Confirmer le mot de passe *</label>
-              {{ form_widget(registrationForm.confirmPassword, {
-                attr: { class: 'form-control auth-input', placeholder: '********', autocomplete: 'new-password' }
-              }) }}
-              <div class="text-danger small mt-1">{{ form_errors(registrationForm.confirmPassword) }}</div>
-            </div>
-          {% endif %}
+          {# ✅ Face embedding envoyé au controller #}
+          <input type="hidden" id="faceEmbedding" name="faceEmbedding" value="">
 
-          {# NOM / PRENOM (si existent) #}
-          {% if registrationForm.prenom is defined or registrationForm.nom is defined %}
-            <div class="row">
-              {% if registrationForm.prenom is defined %}
-                <div class="col-md-6 mb-3">
-                  <label class="form-label fw-semibold">Prénom</label>
-                  {{ form_widget(registrationForm.prenom, {
-                    attr: { class: 'form-control auth-input', autocomplete: 'given-name' }
-                  }) }}
-                  <div class="text-danger small mt-1">{{ form_errors(registrationForm.prenom) }}</div>
+          {# ✅ Bloc Enrôlement Visage (optionnel) #}
+          <div class="card border-0 shadow-sm mt-3">
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div>
+                  <div class="fw-bold">📷 Enregistrer mon visage (optionnel)</div>
+                  <div class="text-muted small">Autorise la caméra puis capture ton visage.</div>
                 </div>
-              {% endif %}
+              </div>
 
-              {% if registrationForm.nom is defined %}
-                <div class="col-md-6 mb-3">
-                  <label class="form-label fw-semibold">Nom</label>
-                  {{ form_widget(registrationForm.nom, {
-                    attr: { class: 'form-control auth-input', autocomplete: 'family-name' }
-                  }) }}
-                  <div class="text-danger small mt-1">{{ form_errors(registrationForm.nom) }}</div>
-                </div>
-              {% endif %}
+              <div class="mt-3">
+                <video id="cam" autoplay playsinline muted class="w-100 rounded border"
+                       style="max-height:220px; object-fit:cover;"></video>
+              </div>
+
+              <div id="faceStatus" class="alert alert-info mt-3 mb-2">
+                Chargement des modèles…
+              </div>
+
+              <div class="d-flex gap-2 flex-wrap">
+                <button type="button" class="btn btn-outline-primary" id="btnStartCam" disabled>
+                  Démarrer caméra
+                </button>
+                <button type="button" class="btn btn-success" id="btnCapture" disabled>
+                  Capturer visage
+                </button>
+                <button type="button" class="btn btn-outline-danger" id="btnStopCam" disabled>
+                  Stop
+                </button>
+              </div>
+
+              <div class="text-muted small mt-2">
+                * On stocke un vecteur numérique (embedding), pas une photo.
+              </div>
             </div>
-          {% endif %}
+          </div>
 
-          {# TELEPHONE (sans type/role) #}
-          {% if registrationForm.telephone is defined %}
-            <div class="mt-2">
-              <label class="form-label fw-semibold">Téléphone *</label>
-              {{ form_widget(registrationForm.telephone, {
-                attr: { class: 'form-control auth-input', placeholder: '+216 26 212 423', autocomplete: 'tel' }
-              }) }}
-              <div class="text-danger small mt-1">{{ form_errors(registrationForm.telephone) }}</div>
-            </div>
-          {% endif %}
-
-          {# CONDITIONS #}
-          {% if registrationForm.agreeTerms is defined %}
-            <div class="form-check mt-4">
-              {{ form_widget(registrationForm.agreeTerms, { attr: { class: 'form-check-input', id: 'agreeTerms' } }) }}
-              <label class="form-check-label" for="agreeTerms">
-                J’accepte les conditions d’utilisation
-              </label>
-              <div class="text-danger small mt-1">{{ form_errors(registrationForm.agreeTerms) }}</div>
-            </div>
-          {% endif %}
-
-          {# BOUTON #}
-          <div class="d-grid mt-4">
-            <button class="btn auth-btn-advanced" type="submit">
-              Créer mon compte
-            </button>
+          <div class="d-grid mt-3">
+            <button class="btn btn-success">Créer un compte</button>
           </div>
 
           {{ form_end(registrationForm) }}
 
-          {# ===== SEPARATEUR ===== #}
-          <div class="position-relative my-4 text-center">
-            <hr>
-            <span class="auth-divider">Ou s’inscrire avec</span>
+          <div class="text-center my-4">
+            <span class="text-muted">OU s’inscrire avec</span>
           </div>
 
-          {# ===== GOOGLE + FACEBOOK ===== #}
+          {# ========= SOCIAL ========= #}
           <div class="row g-2">
-            <div class="col-12 col-md-6 d-grid">
-              <a href="{{ path('connect_google_start') }}" class="btn btn-google">
+
+            <div class="col-md-4 d-grid">
+              <a href="{{ path('connect_google_start') }}"
+                 class="btn btn-light border">
                 <i class="fab fa-google me-2"></i> Google
               </a>
             </div>
 
-            <div class="col-12 col-md-6 d-grid">
-              <a href="{{ path('connect_facebook_start') }}" class="btn btn-facebook">
-                <i class="fab fa-facebook-f me-2"></i> Facebook
+            <div class="col-md-4 d-grid">
+              <a href="{{ path('connect_facebook_start') }}"
+                 class="btn btn-primary">
+                <i class="fab fa-facebook me-2"></i> Facebook
               </a>
             </div>
+
+            <div class="col-md-4 d-grid">
+              <a href="{{ path('connect_github_start') }}"
+                 class="btn btn-dark">
+                <i class="fab fa-github me-2"></i> GitHub
+              </a>
+            </div>
+
           </div>
 
           <div class="text-center mt-4">
             Déjà un compte ?
-            <a href="{{ path('app_login') }}" class="auth-link">Se connecter</a>
+            <a href="{{ path('app_login') }}">Se connecter</a>
           </div>
 
         </div>
@@ -151,6 +122,90 @@
 
     </div>
   </div>
-
 </main>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const MODEL_URL = "/models";
+
+  const video = document.getElementById("cam");
+  const statusEl = document.getElementById("faceStatus");
+  const btnStart = document.getElementById("btnStartCam");
+  const btnCapture = document.getElementById("btnCapture");
+  const btnStop = document.getElementById("btnStopCam");
+  const hidden = document.getElementById("faceEmbedding");
+
+  let stream = null;
+
+  const setStatus = (msg, type="info") => {
+    statusEl.className = "alert alert-" + type;
+    statusEl.textContent = msg;
+  };
+
+  // 1) Charger modèles
+  try {
+    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+    await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+    await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+
+    setStatus("✅ Modèles chargés. Tu peux démarrer la caméra.", "success");
+    btnStart.disabled = false;
+  } catch (e) {
+    console.error(e);
+    setStatus("❌ Modèles introuvables. Vérifie /public/models.", "danger");
+    return;
+  }
+
+  // 2) Start caméra
+  btnStart.addEventListener("click", async () => {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video:true, audio:false });
+      video.srcObject = stream;
+
+      btnCapture.disabled = false;
+      btnStop.disabled = false;
+
+      setStatus("Caméra OK. Clique 'Capturer visage'.", "info");
+    } catch (e) {
+      console.error(e);
+      setStatus("❌ Caméra refusée / indisponible.", "danger");
+    }
+  });
+
+  // 3) Stop caméra
+  btnStop.addEventListener("click", () => {
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    stream = null;
+    video.srcObject = null;
+
+    btnCapture.disabled = true;
+    btnStop.disabled = true;
+
+    setStatus("Caméra arrêtée.", "secondary");
+  });
+
+  // 4) Capturer embedding
+  btnCapture.addEventListener("click", async () => {
+    setStatus("Détection du visage…", "info");
+
+    const det = await faceapi
+      .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 }))
+      .withFaceLandmarks()
+      .withFaceDescriptor();
+
+    if (!det) {
+      setStatus("❌ Aucun visage détecté (lumière/position).", "warning");
+      return;
+    }
+
+    hidden.value = JSON.stringify(Array.from(det.descriptor));
+    setStatus("✅ Visage capturé. Tu peux terminer l’inscription.", "success");
+  });
+});
+</script>
 {% endblock %}

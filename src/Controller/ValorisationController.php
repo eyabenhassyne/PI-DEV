@@ -22,36 +22,49 @@ class ValorisationController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_VALORIZER');
 
         // ✅ CSRF
-        if (!$this->isCsrfTokenValid('dechet_validate_' . $dechet->getId(), $request->request->get('_token'))) {
-            $this->addFlash('error', 'Action refusée (CSRF invalide).');
+        $token = (string) $request->request->get('_token', '');
+        if (!$this->isCsrfTokenValid('dechet_validate_' . $dechet->getId(), $token)) {
+            $this->addFlash('danger', 'Action refusée (CSRF invalide).');
             return $this->redirectToRoute('app_dashboard_valorizateur');
         }
 
-        // ✅ déjà traité ?
+        // ✅ Déjà traité ?
         if ($dechet->getStatut() !== Dechet::STATUT_EN_ATTENTE) {
             $this->addFlash('warning', 'Cette déclaration a déjà été traitée.');
             return $this->redirectToRoute('app_dashboard_valorizateur');
         }
 
-        // ✅ statut + trace
+        // ✅ Statut + trace
         $dechet->setStatut(Dechet::STATUT_VALIDE);
         $dechet->setValidatedAt(new \DateTimeImmutable());
-        $dechet->setValidatedBy($this->getUser());
 
-        // ✅ EcoPoints définitifs : on prend l'estimation (ou 0)
+        $user = $this->getUser();
+        if ($user) {
+            // Si validatedBy est une relation vers User
+            $dechet->setValidatedBy($user);
+        }
+
+        // ✅ EcoPoints : estimation (ou 0)
         $points = (int) ($dechet->getEstimationEcoPoints() ?? 0);
+        if ($points < 0) {
+            $points = 0;
+        }
         $dechet->setEcoPointsAttribues($points);
 
-        // ✅ créditer le citoyen
+        // ✅ Créditer le citoyen
         $citoyen = $dechet->getUser();
-        if ($citoyen) {
+        if ($citoyen && method_exists($citoyen, 'addEcoPoints')) {
             $citoyen->addEcoPoints($points);
         }
 
         $em->flush();
 
-        // ✅ email automatique
-        $mailer->sendDechetValide($dechet);
+        // ✅ Email auto (on évite de casser la page si problème mail)
+        try {
+            $mailer->sendDechetValide($dechet);
+        } catch (\Throwable $e) {
+            $this->addFlash('warning', 'Déclaration validée, mais email non envoyé.');
+        }
 
         $this->addFlash('success', 'Déclaration validée ✅ + ' . $points . ' EcoPoints attribués.');
         return $this->redirectToRoute('app_dashboard_valorizateur');
@@ -67,31 +80,40 @@ class ValorisationController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_VALORIZER');
 
         // ✅ CSRF
-        if (!$this->isCsrfTokenValid('dechet_refuse_' . $dechet->getId(), $request->request->get('_token'))) {
-            $this->addFlash('error', 'Action refusée (CSRF invalide).');
+        $token = (string) $request->request->get('_token', '');
+        if (!$this->isCsrfTokenValid('dechet_refuse_' . $dechet->getId(), $token)) {
+            $this->addFlash('danger', 'Action refusée (CSRF invalide).');
             return $this->redirectToRoute('app_dashboard_valorizateur');
         }
 
-        // ✅ déjà traité ?
+        // ✅ Déjà traité ?
         if ($dechet->getStatut() !== Dechet::STATUT_EN_ATTENTE) {
             $this->addFlash('warning', 'Cette déclaration a déjà été traitée.');
             return $this->redirectToRoute('app_dashboard_valorizateur');
         }
 
-        // ✅ statut + trace
+        // ✅ Statut + trace
         $dechet->setStatut(Dechet::STATUT_REFUSE);
         $dechet->setValidatedAt(new \DateTimeImmutable());
-        $dechet->setValidatedBy($this->getUser());
 
-        // ✅ pas de points
+        $user = $this->getUser();
+        if ($user) {
+            $dechet->setValidatedBy($user);
+        }
+
+        // ✅ Pas de points
         $dechet->setEcoPointsAttribues(0);
 
         $em->flush();
 
-        // ✅ email automatique
-        $mailer->sendDechetRefuse($dechet);
+        // ✅ Email auto
+        try {
+            $mailer->sendDechetRefuse($dechet);
+        } catch (\Throwable $e) {
+            $this->addFlash('warning', 'Déclaration refusée, mais email non envoyé.');
+        }
 
-        $this->addFlash('success', 'Déclaration refusée ❌ Email envoyé au citoyen.');
+        $this->addFlash('success', 'Déclaration refusée ❌');
         return $this->redirectToRoute('app_dashboard_valorizateur');
     }
 }
