@@ -97,113 +97,154 @@ class __TwigTemplate_3d3905fa31957774181870e3b668da9b extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "body"));
 
         // line 6
-        yield "<div class=\"container-fluid py-4\">
-    <div class=\"row\">
-        <div class=\"col-12\">
-            <!-- Breadcrumb -->
+        yield "<div class=\"d-flex\">
+    <!-- Sidebar -->
+    <div class=\"sidebar\">
+        <div class=\"sidebar-header\">
+            <h3>
+                <i class=\"fas fa-recycle me-2\"></i>
+                WasteWise
+            </h3>
+        </div>
+        
+        <div class=\"sidebar-menu\">
+            <div class=\"menu-label\">MAIN</div>
+            
+            <a href=\"";
+        // line 19
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("admin_dashboard");
+        yield "\" class=\"nav-link\">
+                <i class=\"fas fa-chart-pie\"></i>
+                <span>Dashboard</span>
+            </a>
+            
+            <a href=\"";
+        // line 24
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_zone_polluee_index");
+        yield "\" class=\"nav-link\">
+                <i class=\"fas fa-map-marker-alt\"></i>
+                <span>Zones Polluées</span>
+            </a>
+            
+            <a href=\"";
+        // line 29
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_indicateur_impact_index");
+        yield "\" class=\"nav-link active\">
+                <i class=\"fas fa-chart-line\"></i>
+                <span>Indicateurs d'Impact</span>
+            </a>
+        </div>
+        
+        <div class=\"sidebar-footer\">
+            <div class=\"d-flex align-items-center\">
+                <i class=\"fas fa-circle text-success me-2\" style=\"font-size: 10px;\"></i>
+                <span class=\"small\">Admin</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class=\"w-100\">
+        <!-- Top Header -->
+        <div class=\"top-header d-flex justify-content-between align-items-center\">
             <nav aria-label=\"breadcrumb\">
-                <ol class=\"breadcrumb\">
-                    <li class=\"breadcrumb-item\"><a href=\"#\" class=\"text-decoration-none\">Dashboard</a></li>
-                    <li class=\"breadcrumb-item active\">Indicateurs d'Impact</li>
+                <ol class=\"breadcrumb mb-0\">
+                    <li class=\"breadcrumb-item\"><a href=\"";
+        // line 49
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("admin_dashboard");
+        yield "\" class=\"text-decoration-none\">Dashboard</a></li>
+                    <li class=\"breadcrumb-item active\">Indicateurs</li>
                 </ol>
             </nav>
+            
+            <div class=\"d-flex align-items-center gap-3\">
+                <i class=\"fas fa-bell text-muted\"></i>
+                <i class=\"fas fa-user-circle text-muted\" style=\"font-size: 1.5rem;\"></i>
+            </div>
+        </div>
 
+        <!-- Main Content Area -->
+        <div class=\"main-content\">
             <!-- Page Header -->
             <div class=\"d-flex justify-content-between align-items-center mb-4\">
                 <h2 class=\"h3 mb-0\">Indicateurs d'Impact</h2>
                 <a href=\"";
-        // line 20
+        // line 65
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_indicateur_impact_new");
-        yield "\" class=\"btn btn-primary\">
-                    <i class=\"fas fa-plus me-2\"></i>Ajouter un indicateur
+        yield "\" class=\"btn btn-green\">
+                    <i class=\"fas fa-plus me-2\"></i>Ajouter
                 </a>
             </div>
 
             <!-- Flash Messages -->
             ";
-        // line 26
+        // line 71
         $context['_parent'] = $context;
-        $context['_seq'] = CoreExtension::ensureTraversable(CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 26, $this->source); })()), "flashes", ["success"], "method", false, false, false, 26));
+        $context['_seq'] = CoreExtension::ensureTraversable(CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 71, $this->source); })()), "flashes", ["success"], "method", false, false, false, 71));
         foreach ($context['_seq'] as $context["_key"] => $context["message"]) {
-            // line 27
+            // line 72
             yield "                <div class=\"alert alert-success alert-dismissible fade show\" role=\"alert\">
-                    <i class=\"fas fa-check-circle me-2\"></i>";
-            // line 28
+                    ";
+            // line 73
             yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($context["message"], "html", null, true);
             yield "
-                    <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>
+                    <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\"></button>
                 </div>
             ";
         }
         $_parent = $context['_parent'];
         unset($context['_seq'], $context['_key'], $context['message'], $context['_parent']);
         $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 32
+        // line 77
         yield "
             <!-- Stats Cards -->
             <div class=\"row g-3 mb-4\">
                 <div class=\"col-md-4\">
-                    <div class=\"card border-0 shadow-sm\">
-                        <div class=\"card-body\">
-                            <div class=\"d-flex align-items-center\">
-                                <div class=\"flex-shrink-0\">
-                                    <div class=\"bg-primary bg-opacity-10 p-3 rounded-3\">
-                                        <i class=\"fas fa-chart-line text-primary fs-3\"></i>
-                                    </div>
-                                </div>
-                                <div class=\"flex-grow-1 ms-3\">
-                                    <h6 class=\"text-muted mb-1\">Total Indicateurs</h6>
-                                    <h3 class=\"mb-0 fw-bold\">";
-        // line 46
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::length($this->env->getCharset(), (isset($context["indicateurs"]) || array_key_exists("indicateurs", $context) ? $context["indicateurs"] : (function () { throw new RuntimeError('Variable "indicateurs" does not exist.', 46, $this->source); })())), "html", null, true);
+                    <div class=\"stat-card\">
+                        <div class=\"d-flex align-items-center\">
+                            <div class=\"stat-icon me-3\">
+                                <i class=\"fas fa-chart-line fs-3\"></i>
+                            </div>
+                            <div>
+                                <h6 class=\"text-muted mb-1\">Total</h6>
+                                <h3 class=\"mb-0 fw-bold\">";
+        // line 88
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::length($this->env->getCharset(), (isset($context["indicateurs"]) || array_key_exists("indicateurs", $context) ? $context["indicateurs"] : (function () { throw new RuntimeError('Variable "indicateurs" does not exist.', 88, $this->source); })())), "html", null, true);
         yield "</h3>
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
                 <div class=\"col-md-4\">
-                    <div class=\"card border-0 shadow-sm\">
-                        <div class=\"card-body\">
-                            <div class=\"d-flex align-items-center\">
-                                <div class=\"flex-shrink-0\">
-                                    <div class=\"bg-success bg-opacity-10 p-3 rounded-3\">
-                                        <i class=\"fas fa-trash-alt text-success fs-3\"></i>
-                                    </div>
-                                </div>
-                                <div class=\"flex-grow-1 ms-3\">
-                                    <h6 class=\"text-muted mb-1\">Total Déchets (kg)</h6>
-                                    <h3 class=\"mb-0 fw-bold\">
-                                        ";
-        // line 65
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::reduce($this->env, (isset($context["indicateurs"]) || array_key_exists("indicateurs", $context) ? $context["indicateurs"] : (function () { throw new RuntimeError('Variable "indicateurs" does not exist.', 65, $this->source); })()), function ($__total__, $__item__) use ($context, $macros) { $context["total"] = $__total__; $context["item"] = $__item__; return ((isset($context["total"]) || array_key_exists("total", $context) ? $context["total"] : (function () { throw new RuntimeError('Variable "total" does not exist.', 65, $this->source); })()) + CoreExtension::getAttribute($this->env, $this->source, (isset($context["item"]) || array_key_exists("item", $context) ? $context["item"] : (function () { throw new RuntimeError('Variable "item" does not exist.', 65, $this->source); })()), "totalKgRecoltes", [], "any", false, false, false, 65)); }, 0), "html", null, true);
-        yield " kg
-                                    </h3>
-                                </div>
+                    <div class=\"stat-card\">
+                        <div class=\"d-flex align-items-center\">
+                            <div class=\"stat-icon me-3\">
+                                <i class=\"fas fa-trash-alt fs-3\"></i>
+                            </div>
+                            <div>
+                                <h6 class=\"text-muted mb-1\">Déchets (kg)</h6>
+                                <h3 class=\"mb-0 fw-bold\">";
+        // line 102
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::reduce($this->env, (isset($context["indicateurs"]) || array_key_exists("indicateurs", $context) ? $context["indicateurs"] : (function () { throw new RuntimeError('Variable "indicateurs" does not exist.', 102, $this->source); })()), function ($__total__, $__item__) use ($context, $macros) { $context["total"] = $__total__; $context["item"] = $__item__; return ((isset($context["total"]) || array_key_exists("total", $context) ? $context["total"] : (function () { throw new RuntimeError('Variable "total" does not exist.', 102, $this->source); })()) + CoreExtension::getAttribute($this->env, $this->source, (isset($context["item"]) || array_key_exists("item", $context) ? $context["item"] : (function () { throw new RuntimeError('Variable "item" does not exist.', 102, $this->source); })()), "totalKgRecoltes", [], "any", false, false, false, 102)); }, 0), "html", null, true);
+        yield " kg</h3>
                             </div>
                         </div>
                     </div>
                 </div>
                 
                 <div class=\"col-md-4\">
-                    <div class=\"card border-0 shadow-sm\">
-                        <div class=\"card-body\">
-                            <div class=\"d-flex align-items-center\">
-                                <div class=\"flex-shrink-0\">
-                                    <div class=\"bg-info bg-opacity-10 p-3 rounded-3\">
-                                        <i class=\"fas fa-cloud text-info fs-3\"></i>
-                                    </div>
-                                </div>
-                                <div class=\"flex-grow-1 ms-3\">
-                                    <h6 class=\"text-muted mb-1\">Total CO2 évité (kg)</h6>
-                                    <h3 class=\"mb-0 fw-bold\">
-                                        ";
-        // line 85
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::reduce($this->env, (isset($context["indicateurs"]) || array_key_exists("indicateurs", $context) ? $context["indicateurs"] : (function () { throw new RuntimeError('Variable "indicateurs" does not exist.', 85, $this->source); })()), function ($__total__, $__item__) use ($context, $macros) { $context["total"] = $__total__; $context["item"] = $__item__; return ((isset($context["total"]) || array_key_exists("total", $context) ? $context["total"] : (function () { throw new RuntimeError('Variable "total" does not exist.', 85, $this->source); })()) + CoreExtension::getAttribute($this->env, $this->source, (isset($context["item"]) || array_key_exists("item", $context) ? $context["item"] : (function () { throw new RuntimeError('Variable "item" does not exist.', 85, $this->source); })()), "co2Evite", [], "any", false, false, false, 85)); }, 0), "html", null, true);
-        yield " kg
-                                    </h3>
-                                </div>
+                    <div class=\"stat-card\">
+                        <div class=\"d-flex align-items-center\">
+                            <div class=\"stat-icon me-3\">
+                                <i class=\"fas fa-cloud fs-3\"></i>
+                            </div>
+                            <div>
+                                <h6 class=\"text-muted mb-1\">CO2 évité</h6>
+                                <h3 class=\"mb-0 fw-bold\">";
+        // line 116
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::reduce($this->env, (isset($context["indicateurs"]) || array_key_exists("indicateurs", $context) ? $context["indicateurs"] : (function () { throw new RuntimeError('Variable "indicateurs" does not exist.', 116, $this->source); })()), function ($__total__, $__item__) use ($context, $macros) { $context["total"] = $__total__; $context["item"] = $__item__; return ((isset($context["total"]) || array_key_exists("total", $context) ? $context["total"] : (function () { throw new RuntimeError('Variable "total" does not exist.', 116, $this->source); })()) + CoreExtension::getAttribute($this->env, $this->source, (isset($context["item"]) || array_key_exists("item", $context) ? $context["item"] : (function () { throw new RuntimeError('Variable "item" does not exist.', 116, $this->source); })()), "co2Evite", [], "any", false, false, false, 116)); }, 0), "html", null, true);
+        yield " kg</h3>
                             </div>
                         </div>
                     </div>
@@ -211,99 +252,92 @@ class __TwigTemplate_3d3905fa31957774181870e3b668da9b extends Template
             </div>
 
             <!-- Main Card -->
-            <div class=\"card border-0 shadow-sm\">
-                <div class=\"card-header bg-white border-0 pt-4 px-4\">
-                    <h5 class=\"mb-0\">Liste des indicateurs</h5>
-                </div>
-                
-                <div class=\"card-body p-4\">
-                    <div class=\"table-responsive\">
-                        <table class=\"table table-hover align-middle\">
-                            <thead class=\"table-light\">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Déchets récoltés (kg)</th>
-                                    <th>CO2 évité (kg)</th>
-                                    <th>Date de calcul</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ";
-        // line 113
+            <div class=\"big-card\">
+                <div class=\"table-responsive\">
+                    <table class=\"table table-hover align-middle\">
+                        <thead class=\"table-light\">
+                            <tr>
+                                <th>ID</th>
+                                <th>Déchets (kg)</th>
+                                <th>CO2 évité (kg)</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ";
+        // line 137
         $context['_parent'] = $context;
-        $context['_seq'] = CoreExtension::ensureTraversable((isset($context["indicateurs"]) || array_key_exists("indicateurs", $context) ? $context["indicateurs"] : (function () { throw new RuntimeError('Variable "indicateurs" does not exist.', 113, $this->source); })()));
+        $context['_seq'] = CoreExtension::ensureTraversable((isset($context["indicateurs"]) || array_key_exists("indicateurs", $context) ? $context["indicateurs"] : (function () { throw new RuntimeError('Variable "indicateurs" does not exist.', 137, $this->source); })()));
         $context['_iterated'] = false;
         foreach ($context['_seq'] as $context["_key"] => $context["indicateur"]) {
-            // line 114
-            yield "                                <tr>
-                                    <td><span class=\"fw-medium\">#";
-            // line 115
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["indicateur"], "id", [], "any", false, false, false, 115), "html", null, true);
-            yield "</span></td>
-                                    <td>";
-            // line 116
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["indicateur"], "totalKgRecoltes", [], "any", false, false, false, 116), "html", null, true);
-            yield " kg</td>
-                                    <td>";
-            // line 117
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["indicateur"], "co2Evite", [], "any", false, false, false, 117), "html", null, true);
-            yield " kg</td>
-                                    <td>";
-            // line 118
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatDate(CoreExtension::getAttribute($this->env, $this->source, $context["indicateur"], "dateCalcul", [], "any", false, false, false, 118), "d/m/Y H:i"), "html", null, true);
+            // line 138
+            yield "                            <tr>
+                                <td>#";
+            // line 139
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["indicateur"], "id", [], "any", false, false, false, 139), "html", null, true);
             yield "</td>
-                                    <td>
-                                        <div class=\"d-flex gap-2\">
-                                            <a href=\"";
-            // line 121
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_indicateur_impact_show", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["indicateur"], "id", [], "any", false, false, false, 121)]), "html", null, true);
-            yield "\" class=\"btn btn-sm btn-light\">
-                                                <i class=\"fas fa-eye\"></i>
-                                            </a>
-                                            <a href=\"";
-            // line 124
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_indicateur_impact_edit", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["indicateur"], "id", [], "any", false, false, false, 124)]), "html", null, true);
-            yield "\" class=\"btn btn-sm btn-light\">
-                                                <i class=\"fas fa-edit\"></i>
-                                            </a>
-                                            <form method=\"post\" action=\"";
-            // line 127
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_indicateur_impact_delete", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["indicateur"], "id", [], "any", false, false, false, 127)]), "html", null, true);
+                                <td>";
+            // line 140
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["indicateur"], "totalKgRecoltes", [], "any", false, false, false, 140), "html", null, true);
+            yield " kg</td>
+                                <td>";
+            // line 141
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["indicateur"], "co2Evite", [], "any", false, false, false, 141), "html", null, true);
+            yield " kg</td>
+                                <td>";
+            // line 142
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatDate(CoreExtension::getAttribute($this->env, $this->source, $context["indicateur"], "dateCalcul", [], "any", false, false, false, 142), "d/m/Y H:i"), "html", null, true);
+            yield "</td>
+                                <td>
+                                    <div class=\"d-flex gap-2\">
+                                        <a href=\"";
+            // line 145
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_indicateur_impact_show", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["indicateur"], "id", [], "any", false, false, false, 145)]), "html", null, true);
+            yield "\" class=\"btn btn-sm btn-outline-custom\">
+                                            <i class=\"fas fa-eye\"></i>
+                                        </a>
+                                        <a href=\"";
+            // line 148
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_indicateur_impact_edit", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["indicateur"], "id", [], "any", false, false, false, 148)]), "html", null, true);
+            yield "\" class=\"btn btn-sm btn-outline-custom\">
+                                            <i class=\"fas fa-edit\"></i>
+                                        </a>
+                                        <form method=\"post\" action=\"";
+            // line 151
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_indicateur_impact_delete", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["indicateur"], "id", [], "any", false, false, false, 151)]), "html", null, true);
             yield "\" style=\"display:inline;\">
-                                                <input type=\"hidden\" name=\"_token\" value=\"";
-            // line 128
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderCsrfToken(("delete" . CoreExtension::getAttribute($this->env, $this->source, $context["indicateur"], "id", [], "any", false, false, false, 128))), "html", null, true);
+                                            <input type=\"hidden\" name=\"_token\" value=\"";
+            // line 152
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderCsrfToken(("delete" . CoreExtension::getAttribute($this->env, $this->source, $context["indicateur"], "id", [], "any", false, false, false, 152))), "html", null, true);
             yield "\">
-                                                <button type=\"submit\" class=\"btn btn-sm btn-light text-danger\" onclick=\"return confirm('Êtes-vous sûr de vouloir supprimer cet indicateur ?')\">
-                                                    <i class=\"fas fa-trash\"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                                ";
+                                            <button type=\"submit\" class=\"btn btn-sm btn-outline-custom text-danger\" onclick=\"return confirm('Supprimer ?')\">
+                                                <i class=\"fas fa-trash\"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            ";
             $context['_iterated'] = true;
         }
-        // line 136
+        // line 160
         if (!$context['_iterated']) {
-            // line 137
-            yield "                                <tr>
-                                    <td colspan=\"5\" class=\"text-center py-5\">
-                                        <i class=\"fas fa-chart-line fs-1 text-muted mb-3 d-block\"></i>
-                                        <h6 class=\"text-muted\">Aucun indicateur d'impact enregistré</h6>
-                                        <p class=\"text-muted small mb-0\">Cliquez sur \"Ajouter un indicateur\" pour commencer</p>
-                                    </td>
-                                </tr>
-                                ";
+            // line 161
+            yield "                            <tr>
+                                <td colspan=\"5\" class=\"text-center py-5\">
+                                    <i class=\"fas fa-chart-line fs-1 text-muted mb-3\"></i>
+                                    <p class=\"text-muted\">Aucun indicateur</p>
+                                </td>
+                            </tr>
+                            ";
         }
         $_parent = $context['_parent'];
         unset($context['_seq'], $context['_key'], $context['indicateur'], $context['_parent'], $context['_iterated']);
         $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 145
-        yield "                            </tbody>
-                        </table>
-                    </div>
+        // line 168
+        yield "                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -340,7 +374,7 @@ class __TwigTemplate_3d3905fa31957774181870e3b668da9b extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  304 => 145,  291 => 137,  289 => 136,  276 => 128,  272 => 127,  266 => 124,  260 => 121,  254 => 118,  250 => 117,  246 => 116,  242 => 115,  239 => 114,  234 => 113,  203 => 85,  180 => 65,  158 => 46,  142 => 32,  132 => 28,  129 => 27,  125 => 26,  116 => 20,  100 => 6,  87 => 5,  64 => 3,  41 => 1,);
+        return array (  339 => 168,  327 => 161,  325 => 160,  312 => 152,  308 => 151,  302 => 148,  296 => 145,  290 => 142,  286 => 141,  282 => 140,  278 => 139,  275 => 138,  270 => 137,  246 => 116,  229 => 102,  212 => 88,  199 => 77,  189 => 73,  186 => 72,  182 => 71,  173 => 65,  154 => 49,  131 => 29,  123 => 24,  115 => 19,  100 => 6,  87 => 5,  64 => 3,  41 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -350,88 +384,117 @@ class __TwigTemplate_3d3905fa31957774181870e3b668da9b extends Template
 {% block title %}Liste des Indicateurs d'Impact{% endblock %}
 
 {% block body %}
-<div class=\"container-fluid py-4\">
-    <div class=\"row\">
-        <div class=\"col-12\">
-            <!-- Breadcrumb -->
+<div class=\"d-flex\">
+    <!-- Sidebar -->
+    <div class=\"sidebar\">
+        <div class=\"sidebar-header\">
+            <h3>
+                <i class=\"fas fa-recycle me-2\"></i>
+                WasteWise
+            </h3>
+        </div>
+        
+        <div class=\"sidebar-menu\">
+            <div class=\"menu-label\">MAIN</div>
+            
+            <a href=\"{{ path('admin_dashboard') }}\" class=\"nav-link\">
+                <i class=\"fas fa-chart-pie\"></i>
+                <span>Dashboard</span>
+            </a>
+            
+            <a href=\"{{ path('app_zone_polluee_index') }}\" class=\"nav-link\">
+                <i class=\"fas fa-map-marker-alt\"></i>
+                <span>Zones Polluées</span>
+            </a>
+            
+            <a href=\"{{ path('app_indicateur_impact_index') }}\" class=\"nav-link active\">
+                <i class=\"fas fa-chart-line\"></i>
+                <span>Indicateurs d'Impact</span>
+            </a>
+        </div>
+        
+        <div class=\"sidebar-footer\">
+            <div class=\"d-flex align-items-center\">
+                <i class=\"fas fa-circle text-success me-2\" style=\"font-size: 10px;\"></i>
+                <span class=\"small\">Admin</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class=\"w-100\">
+        <!-- Top Header -->
+        <div class=\"top-header d-flex justify-content-between align-items-center\">
             <nav aria-label=\"breadcrumb\">
-                <ol class=\"breadcrumb\">
-                    <li class=\"breadcrumb-item\"><a href=\"#\" class=\"text-decoration-none\">Dashboard</a></li>
-                    <li class=\"breadcrumb-item active\">Indicateurs d'Impact</li>
+                <ol class=\"breadcrumb mb-0\">
+                    <li class=\"breadcrumb-item\"><a href=\"{{ path('admin_dashboard') }}\" class=\"text-decoration-none\">Dashboard</a></li>
+                    <li class=\"breadcrumb-item active\">Indicateurs</li>
                 </ol>
             </nav>
+            
+            <div class=\"d-flex align-items-center gap-3\">
+                <i class=\"fas fa-bell text-muted\"></i>
+                <i class=\"fas fa-user-circle text-muted\" style=\"font-size: 1.5rem;\"></i>
+            </div>
+        </div>
 
+        <!-- Main Content Area -->
+        <div class=\"main-content\">
             <!-- Page Header -->
             <div class=\"d-flex justify-content-between align-items-center mb-4\">
                 <h2 class=\"h3 mb-0\">Indicateurs d'Impact</h2>
-                <a href=\"{{ path('app_indicateur_impact_new') }}\" class=\"btn btn-primary\">
-                    <i class=\"fas fa-plus me-2\"></i>Ajouter un indicateur
+                <a href=\"{{ path('app_indicateur_impact_new') }}\" class=\"btn btn-green\">
+                    <i class=\"fas fa-plus me-2\"></i>Ajouter
                 </a>
             </div>
 
             <!-- Flash Messages -->
             {% for message in app.flashes('success') %}
                 <div class=\"alert alert-success alert-dismissible fade show\" role=\"alert\">
-                    <i class=\"fas fa-check-circle me-2\"></i>{{ message }}
-                    <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>
+                    {{ message }}
+                    <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\"></button>
                 </div>
             {% endfor %}
 
             <!-- Stats Cards -->
             <div class=\"row g-3 mb-4\">
                 <div class=\"col-md-4\">
-                    <div class=\"card border-0 shadow-sm\">
-                        <div class=\"card-body\">
-                            <div class=\"d-flex align-items-center\">
-                                <div class=\"flex-shrink-0\">
-                                    <div class=\"bg-primary bg-opacity-10 p-3 rounded-3\">
-                                        <i class=\"fas fa-chart-line text-primary fs-3\"></i>
-                                    </div>
-                                </div>
-                                <div class=\"flex-grow-1 ms-3\">
-                                    <h6 class=\"text-muted mb-1\">Total Indicateurs</h6>
-                                    <h3 class=\"mb-0 fw-bold\">{{ indicateurs|length }}</h3>
-                                </div>
+                    <div class=\"stat-card\">
+                        <div class=\"d-flex align-items-center\">
+                            <div class=\"stat-icon me-3\">
+                                <i class=\"fas fa-chart-line fs-3\"></i>
+                            </div>
+                            <div>
+                                <h6 class=\"text-muted mb-1\">Total</h6>
+                                <h3 class=\"mb-0 fw-bold\">{{ indicateurs|length }}</h3>
                             </div>
                         </div>
                     </div>
                 </div>
                 
                 <div class=\"col-md-4\">
-                    <div class=\"card border-0 shadow-sm\">
-                        <div class=\"card-body\">
-                            <div class=\"d-flex align-items-center\">
-                                <div class=\"flex-shrink-0\">
-                                    <div class=\"bg-success bg-opacity-10 p-3 rounded-3\">
-                                        <i class=\"fas fa-trash-alt text-success fs-3\"></i>
-                                    </div>
-                                </div>
-                                <div class=\"flex-grow-1 ms-3\">
-                                    <h6 class=\"text-muted mb-1\">Total Déchets (kg)</h6>
-                                    <h3 class=\"mb-0 fw-bold\">
-                                        {{ indicateurs|reduce((total, item) => total + item.totalKgRecoltes, 0) }} kg
-                                    </h3>
-                                </div>
+                    <div class=\"stat-card\">
+                        <div class=\"d-flex align-items-center\">
+                            <div class=\"stat-icon me-3\">
+                                <i class=\"fas fa-trash-alt fs-3\"></i>
+                            </div>
+                            <div>
+                                <h6 class=\"text-muted mb-1\">Déchets (kg)</h6>
+                                <h3 class=\"mb-0 fw-bold\">{{ indicateurs|reduce((total, item) => total + item.totalKgRecoltes, 0) }} kg</h3>
                             </div>
                         </div>
                     </div>
                 </div>
                 
                 <div class=\"col-md-4\">
-                    <div class=\"card border-0 shadow-sm\">
-                        <div class=\"card-body\">
-                            <div class=\"d-flex align-items-center\">
-                                <div class=\"flex-shrink-0\">
-                                    <div class=\"bg-info bg-opacity-10 p-3 rounded-3\">
-                                        <i class=\"fas fa-cloud text-info fs-3\"></i>
-                                    </div>
-                                </div>
-                                <div class=\"flex-grow-1 ms-3\">
-                                    <h6 class=\"text-muted mb-1\">Total CO2 évité (kg)</h6>
-                                    <h3 class=\"mb-0 fw-bold\">
-                                        {{ indicateurs|reduce((total, item) => total + item.co2Evite, 0) }} kg
-                                    </h3>
-                                </div>
+                    <div class=\"stat-card\">
+                        <div class=\"d-flex align-items-center\">
+                            <div class=\"stat-icon me-3\">
+                                <i class=\"fas fa-cloud fs-3\"></i>
+                            </div>
+                            <div>
+                                <h6 class=\"text-muted mb-1\">CO2 évité</h6>
+                                <h3 class=\"mb-0 fw-bold\">{{ indicateurs|reduce((total, item) => total + item.co2Evite, 0) }} kg</h3>
                             </div>
                         </div>
                     </div>
@@ -439,59 +502,52 @@ class __TwigTemplate_3d3905fa31957774181870e3b668da9b extends Template
             </div>
 
             <!-- Main Card -->
-            <div class=\"card border-0 shadow-sm\">
-                <div class=\"card-header bg-white border-0 pt-4 px-4\">
-                    <h5 class=\"mb-0\">Liste des indicateurs</h5>
-                </div>
-                
-                <div class=\"card-body p-4\">
-                    <div class=\"table-responsive\">
-                        <table class=\"table table-hover align-middle\">
-                            <thead class=\"table-light\">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Déchets récoltés (kg)</th>
-                                    <th>CO2 évité (kg)</th>
-                                    <th>Date de calcul</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for indicateur in indicateurs %}
-                                <tr>
-                                    <td><span class=\"fw-medium\">#{{ indicateur.id }}</span></td>
-                                    <td>{{ indicateur.totalKgRecoltes }} kg</td>
-                                    <td>{{ indicateur.co2Evite }} kg</td>
-                                    <td>{{ indicateur.dateCalcul|date('d/m/Y H:i') }}</td>
-                                    <td>
-                                        <div class=\"d-flex gap-2\">
-                                            <a href=\"{{ path('app_indicateur_impact_show', {'id': indicateur.id}) }}\" class=\"btn btn-sm btn-light\">
-                                                <i class=\"fas fa-eye\"></i>
-                                            </a>
-                                            <a href=\"{{ path('app_indicateur_impact_edit', {'id': indicateur.id}) }}\" class=\"btn btn-sm btn-light\">
-                                                <i class=\"fas fa-edit\"></i>
-                                            </a>
-                                            <form method=\"post\" action=\"{{ path('app_indicateur_impact_delete', {'id': indicateur.id}) }}\" style=\"display:inline;\">
-                                                <input type=\"hidden\" name=\"_token\" value=\"{{ csrf_token('delete' ~ indicateur.id) }}\">
-                                                <button type=\"submit\" class=\"btn btn-sm btn-light text-danger\" onclick=\"return confirm('Êtes-vous sûr de vouloir supprimer cet indicateur ?')\">
-                                                    <i class=\"fas fa-trash\"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% else %}
-                                <tr>
-                                    <td colspan=\"5\" class=\"text-center py-5\">
-                                        <i class=\"fas fa-chart-line fs-1 text-muted mb-3 d-block\"></i>
-                                        <h6 class=\"text-muted\">Aucun indicateur d'impact enregistré</h6>
-                                        <p class=\"text-muted small mb-0\">Cliquez sur \"Ajouter un indicateur\" pour commencer</p>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+            <div class=\"big-card\">
+                <div class=\"table-responsive\">
+                    <table class=\"table table-hover align-middle\">
+                        <thead class=\"table-light\">
+                            <tr>
+                                <th>ID</th>
+                                <th>Déchets (kg)</th>
+                                <th>CO2 évité (kg)</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for indicateur in indicateurs %}
+                            <tr>
+                                <td>#{{ indicateur.id }}</td>
+                                <td>{{ indicateur.totalKgRecoltes }} kg</td>
+                                <td>{{ indicateur.co2Evite }} kg</td>
+                                <td>{{ indicateur.dateCalcul|date('d/m/Y H:i') }}</td>
+                                <td>
+                                    <div class=\"d-flex gap-2\">
+                                        <a href=\"{{ path('app_indicateur_impact_show', {'id': indicateur.id}) }}\" class=\"btn btn-sm btn-outline-custom\">
+                                            <i class=\"fas fa-eye\"></i>
+                                        </a>
+                                        <a href=\"{{ path('app_indicateur_impact_edit', {'id': indicateur.id}) }}\" class=\"btn btn-sm btn-outline-custom\">
+                                            <i class=\"fas fa-edit\"></i>
+                                        </a>
+                                        <form method=\"post\" action=\"{{ path('app_indicateur_impact_delete', {'id': indicateur.id}) }}\" style=\"display:inline;\">
+                                            <input type=\"hidden\" name=\"_token\" value=\"{{ csrf_token('delete' ~ indicateur.id) }}\">
+                                            <button type=\"submit\" class=\"btn btn-sm btn-outline-custom text-danger\" onclick=\"return confirm('Supprimer ?')\">
+                                                <i class=\"fas fa-trash\"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan=\"5\" class=\"text-center py-5\">
+                                    <i class=\"fas fa-chart-line fs-1 text-muted mb-3\"></i>
+                                    <p class=\"text-muted\">Aucun indicateur</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

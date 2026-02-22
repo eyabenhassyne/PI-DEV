@@ -12,6 +12,8 @@ return array(
     'Twig\\' => array($vendorDir . '/twig/twig/src'),
     'Symfony\\UX\\Turbo\\' => array($vendorDir . '/symfony/ux-turbo/src'),
     'Symfony\\UX\\StimulusBundle\\' => array($vendorDir . '/symfony/stimulus-bundle/src'),
+    'Symfony\\UX\\Map\\Bridge\\Leaflet\\' => array($vendorDir . '/symfony/ux-leaflet-map/src'),
+    'Symfony\\UX\\Map\\' => array($vendorDir . '/symfony/ux-map/src'),
     'Symfony\\Runtime\\Symfony\\Component\\' => array($vendorDir . '/symfony/runtime/Internal'),
     'Symfony\\Polyfill\\Php84\\' => array($vendorDir . '/symfony/polyfill-php84'),
     'Symfony\\Polyfill\\Php83\\' => array($vendorDir . '/symfony/polyfill-php83'),

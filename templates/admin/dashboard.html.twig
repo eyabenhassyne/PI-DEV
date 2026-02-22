@@ -1,0 +1,168 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Admin - WasteWise TN{% endblock %}
+
+{% block body %}
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3>
+                <i class="fas fa-recycle me-2"></i>
+                WasteWise
+            </h3>
+        </div>
+        
+        <div class="sidebar-menu">
+            <div class="menu-label">MAIN</div>
+            
+            <a href="{{ path('admin_dashboard') }}" class="nav-link active">
+                <i class="fas fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+            
+            <a href="{{ path('app_zone_polluee_index') }}" class="nav-link">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Zones Polluées</span>
+            </a>
+            
+            <a href="{{ path('app_indicateur_impact_index') }}" class="nav-link">
+                <i class="fas fa-chart-line"></i>
+                <span>Indicateurs d'Impact</span>
+            </a>
+
+            <!-- ADD THIS NEW LINK -->
+            <a href="{{ path('app_map') }}" class="nav-link">
+                <i class="fas fa-map"></i>
+                <span>Carte</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-circle text-success me-2" style="font-size: 10px;"></i>
+                <span class="small">Admin</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="w-100">
+        <!-- Top Header -->
+        <div class="top-header d-flex justify-content-between align-items-center">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Admin</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex align-items-center gap-3">
+                <i class="fas fa-bell text-muted"></i>
+                <i class="fas fa-user-circle text-muted" style="font-size: 1.5rem;"></i>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Hero Banner -->
+            <div class="hero">
+                <h1 class="display-6 fw-bold mb-3">Dashboard Administrateur</h1>
+                <p class="mb-0 opacity-75">Module 6 - Gestion de l'Impact et des Zones Polluées</p>
+            </div>
+
+            {% set totalZones = zones|default([])|length %}
+            {% set totalIndicateurs = indicateurs|default([])|length %}
+            {% set totalKg = indicateurs|reduce((carry, i) => carry + i.totalKgRecoltes, 0) %}
+            {% set totalCo2 = indicateurs|reduce((carry, i) => carry + i.co2Evite, 0) %}
+            {% set moyennePollution = zones|reduce((carry, z) => carry + z.niveauPollution, 0) / (totalZones ?: 1) %}
+            {% set zonesCritiques = zones|filter(z => z.niveauPollution >= 7)|length %}
+
+            <!-- Cartes de statistiques -->
+            <div class="row g-4 mb-4">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted">Zones Polluées</span>
+                            <h3 class="mb-0 mt-2">{{ totalZones }}</h3>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-map-marker-alt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted">Indicateurs</span>
+                            <h3 class="mb-0 mt-2">{{ totalIndicateurs }}</h3>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted">Déchets collectés</span>
+                            <h3 class="mb-0 mt-2">{{ totalKg|round }} kg</h3>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-trash-alt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted">CO₂ évité</span>
+                            <h3 class="mb-0 mt-2">{{ totalCo2|round }} kg</h3>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-leaf fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cartes d'accès rapide -->
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="big-card h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="stat-icon me-3">
+                                <i class="fas fa-map-marker-alt fs-3"></i>
+                            </div>
+                            <h4 class="mb-0">Zones Polluées</h4>
+                        </div>
+                        <p class="text-muted mb-3">Gérez les zones à risque, consultez les niveaux de pollution.</p>
+                        <div class="d-flex gap-2">
+                            <a href="{{ path('app_zone_polluee_index') }}" class="btn btn-green">Voir toutes</a>
+                            <a href="{{ path('app_zone_polluee_new') }}" class="btn-outline-custom">Ajouter</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="big-card h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="stat-icon me-3">
+                                <i class="fas fa-chart-line fs-3"></i>
+                            </div>
+                            <h4 class="mb-0">Indicateurs d'Impact</h4>
+                        </div>
+                        <p class="text-muted mb-3">Suivez les déchets collectés et le CO₂ évité.</p>
+                        <div class="d-flex gap-2">
+                            <a href="{{ path('app_indicateur_impact_index') }}" class="btn btn-green">Voir tous</a>
+                            <a href="{{ path('app_indicateur_impact_new') }}" class="btn-outline-custom">Ajouter</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -25,6 +25,7 @@
       <parameter key="SecurityBundle">Symfony\Bundle\SecurityBundle\SecurityBundle</parameter>
       <parameter key="MonologBundle">Symfony\Bundle\MonologBundle\MonologBundle</parameter>
       <parameter key="MakerBundle">Symfony\Bundle\MakerBundle\MakerBundle</parameter>
+      <parameter key="UXMapBundle">Symfony\UX\Map\UXMapBundle</parameter>
     </parameter>
     <parameter key="kernel.bundles_metadata" type="collection">
       <parameter key="FrameworkBundle" type="collection">
@@ -74,6 +75,10 @@
       <parameter key="MakerBundle" type="collection">
         <parameter key="path">C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\maker-bundle</parameter>
         <parameter key="namespace">Symfony\Bundle\MakerBundle</parameter>
+      </parameter>
+      <parameter key="UXMapBundle" type="collection">
+        <parameter key="path">C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\ux-map</parameter>
+        <parameter key="namespace">Symfony\UX\Map</parameter>
       </parameter>
     </parameter>
     <parameter key="kernel.charset">UTF-8</parameter>
@@ -352,11 +357,32 @@
     <service id="App\Entity" class="App\Entity" abstract="true">
       <tag name="container.excluded" source="in &quot;config/services.yaml&quot;"/>
     </service>
+    <service id="App\Controller\Admin6Controller" class="App\Controller\Admin6Controller" public="true" autowire="true" autoconfigure="true">
+      <tag name="controller.service_arguments"/>
+      <tag name="container.service_subscriber"/>
+      <call method="setContainer">
+        <argument type="service" id=".service_locator.O2p6Lk7.App\Controller\Admin6Controller"/>
+      </call>
+    </service>
+    <service id="App\Controller\ApiController" class="App\Controller\ApiController" public="true" autowire="true" autoconfigure="true">
+      <tag name="controller.service_arguments"/>
+      <tag name="container.service_subscriber"/>
+      <call method="setContainer">
+        <argument type="service" id=".service_locator.O2p6Lk7.App\Controller\ApiController"/>
+      </call>
+    </service>
     <service id="App\Controller\IndicateurImpactController" class="App\Controller\IndicateurImpactController" public="true" autowire="true" autoconfigure="true">
       <tag name="controller.service_arguments"/>
       <tag name="container.service_subscriber"/>
       <call method="setContainer">
         <argument type="service" id=".service_locator.O2p6Lk7.App\Controller\IndicateurImpactController"/>
+      </call>
+    </service>
+    <service id="App\Controller\MapController" class="App\Controller\MapController" public="true" autowire="true" autoconfigure="true">
+      <tag name="controller.service_arguments"/>
+      <tag name="container.service_subscriber"/>
+      <call method="setContainer">
+        <argument type="service" id=".service_locator.O2p6Lk7.App\Controller\MapController"/>
       </call>
     </service>
     <service id="App\Controller\ZonePollueeController" class="App\Controller\ZonePollueeController" public="true" autowire="true" autoconfigure="true">
@@ -407,7 +433,7 @@
     </service>
     <service id="argument_resolver.service" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">
       <tag priority="-50" name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">controller.argument_value_resolver</tag>
-      <argument type="service" id=".service_locator.eYYs.C2"/>
+      <argument type="service" id=".service_locator._hDz_sr"/>
     </service>
     <service id="argument_resolver.default" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">
       <tag priority="-100" name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">controller.argument_value_resolver</tag>
@@ -1685,6 +1711,8 @@
     </service>
     <service id="asset_mapper.repository" class="Symfony\Component\AssetMapper\AssetMapperRepository">
       <argument type="collection">
+        <argument key="C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\ux-map\src/../assets/dist">@symfony/ux-map</argument>
+        <argument key="C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\ux-leaflet-map/assets/dist">@symfony/ux-leaflet-map</argument>
         <argument key="C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\ux-turbo\src\DependencyInjection/../../assets/dist">@symfony/ux-turbo</argument>
         <argument key="C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\stimulus-bundle\src\DependencyInjection/../../assets/dist">@symfony/stimulus-bundle</argument>
         <argument key="assets/"></argument>
@@ -2350,6 +2378,7 @@
           <argument>C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\security-bundle/translations</argument>
           <argument>C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\monolog-bundle\src/translations</argument>
           <argument>C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\maker-bundle/translations</argument>
+          <argument>C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\ux-map/translations</argument>
         </argument>
         <argument key="cache_vary" type="collection">
           <argument key="scanned_directories" type="collection">
@@ -2369,6 +2398,7 @@
             <argument>C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\security-bundle/translations</argument>
             <argument>C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\monolog-bundle\src/translations</argument>
             <argument>C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\maker-bundle/translations</argument>
+            <argument>C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\ux-map/translations</argument>
           </argument>
         </argument>
       </argument>
@@ -3298,7 +3328,7 @@
     </service>
     <service id="argument_resolver.not_tagged_controller" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver">
       <tag name="controller.argument_value_resolver" priority="-200"/>
-      <argument type="service" id=".service_locator.eYYs.C2"/>
+      <argument type="service" id=".service_locator._hDz_sr"/>
     </service>
     <service id="debug.log_processor" class="Symfony\Bridge\Monolog\Processor\DebugProcessor">
       <tag name="kernel.reset" method="reset"/>
@@ -5729,6 +5759,9 @@
         <argument type="service" id="turbo.twig.extension"/>
       </call>
       <call method="addExtension">
+        <argument type="service" id="ux_map.twig_extension"/>
+      </call>
+      <call method="addExtension">
         <argument type="service" id="stimulus.twig_extension"/>
       </call>
       <call method="addGlobal">
@@ -5944,7 +5977,7 @@
       <argument>,</argument>
     </service>
     <service id="twig.runtime_loader" class="Twig\RuntimeLoader\ContainerRuntimeLoader">
-      <argument type="service" id=".service_locator.i0..Ry2"/>
+      <argument type="service" id=".service_locator.F5dOdHD"/>
     </service>
     <service id="twig.error_renderer.html" class="Symfony\Bridge\Twig\ErrorRenderer\TwigErrorRenderer">
       <argument type="service" id="twig"/>
@@ -7062,9 +7095,47 @@
       <argument type="service" id="maker.file_manager"/>
       <argument type="service" id="maker.generator"/>
     </service>
+    <service id="ux_map.renderers" class="Symfony\UX\Map\Renderer\Renderers">
+      <argument type="collection">
+        <argument key="default">%env(resolve:default::UX_MAP_DSN)%</argument>
+      </argument>
+      <factory service="ux_map.renderer_factory" method="fromStrings"/>
+    </service>
+    <service id=".ux_map.ux_icons.renderer" class="Symfony\UX\Map\Icon\UxIconRenderer">
+      <argument>null</argument>
+    </service>
+    <service id="ux_map.renderer_factory.abstract" class="Symfony\UX\Map\Renderer\AbstractRendererFactory" abstract="true">
+      <argument type="service" id="stimulus.helper"/>
+      <argument type="service" id=".ux_map.ux_icons.renderer"/>
+    </service>
+    <service id="ux_map.renderer_factory" class="Symfony\UX\Map\Renderer\Renderer">
+      <argument type="tagged_iterator" tag="ux_map.renderer_factory"/>
+    </service>
+    <service id="ux_map.twig_extension" class="Symfony\UX\Map\Twig\MapExtension">
+      <tag name="twig.extension"/>
+    </service>
+    <service id="ux_map.twig_runtime" class="Symfony\UX\Map\Twig\MapRuntime">
+      <tag name="twig.runtime"/>
+      <tag name="ux.twig_component.twig_renderer" key="ux:map"/>
+      <argument type="service" id="ux_map.renderers"/>
+    </service>
+    <service id="ux_map.renderer_factory.leaflet" class="Symfony\UX\Map\Bridge\Leaflet\Renderer\LeafletRendererFactory">
+      <tag name="ux_map.renderer_factory"/>
+      <argument type="service" id="stimulus.helper"/>
+      <argument type="service" id=".ux_map.ux_icons.renderer"/>
+    </service>
+    <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\Admin6Controller" class="App\Controller\Admin6Controller" autowire="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\Admin6Controller" class="App\Controller\Admin6Controller" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Controller\Admin6Controller" class="App\Controller\Admin6Controller" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\ApiController" class="App\Controller\ApiController" autowire="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\ApiController" class="App\Controller\ApiController" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Controller\ApiController" class="App\Controller\ApiController" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\IndicateurImpactController" class="App\Controller\IndicateurImpactController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\IndicateurImpactController" class="App\Controller\IndicateurImpactController" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Controller\IndicateurImpactController" class="App\Controller\IndicateurImpactController" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\MapController" class="App\Controller\MapController" autowire="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\MapController" class="App\Controller\MapController" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Controller\MapController" class="App\Controller\MapController" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\ZonePollueeController" class="App\Controller\ZonePollueeController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\ZonePollueeController" class="App\Controller\ZonePollueeController" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Controller\ZonePollueeController" class="App\Controller\ZonePollueeController" autowire="true" autoconfigure="true" abstract="true"/>
@@ -7499,6 +7570,19 @@
         <argument key="loader" type="service_closure" id=".errored..service_locator.y4_Zrx..Symfony\Component\Config\Loader\LoaderInterface"/>
       </argument>
     </service>
+    <service id=".service_locator.n_IEkrD" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="indicateurRepository" type="service_closure" id="App\Repository\IndicateurImpactRepository"/>
+        <argument key="zoneRepository" type="service_closure" id="App\Repository\ZonePollueeRepository"/>
+      </argument>
+    </service>
+    <service id=".service_locator.DDaIjT0" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="repository" type="service_closure" id="App\Repository\ZonePollueeRepository"/>
+      </argument>
+    </service>
     <service id=".service_locator.qAlMOrK" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
@@ -7524,10 +7608,10 @@
         <argument key="indicateur" type="service_closure" id=".errored..service_locator.fALByUn.App\Entity\IndicateurImpact"/>
       </argument>
     </service>
-    <service id=".service_locator.DDaIjT0" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.GXvkjJ0" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
-        <argument key="repository" type="service_closure" id="App\Repository\ZonePollueeRepository"/>
+        <argument key="zoneRepository" type="service_closure" id="App\Repository\ZonePollueeRepository"/>
       </argument>
     </service>
     <service id=".service_locator.R2zCFxk" class="Symfony\Component\DependencyInjection\ServiceLocator">
@@ -7543,14 +7627,17 @@
         <argument key="zone" type="service_closure" id=".errored..service_locator.kdIY5SB.App\Entity\ZonePolluee"/>
       </argument>
     </service>
-    <service id=".service_locator.eYYs.C2" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator._hDz_sr" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
+        <argument key="App\Controller\Admin6Controller::dashboard" type="service_closure" id=".service_locator.n_IEkrD"/>
+        <argument key="App\Controller\ApiController::zones" type="service_closure" id=".service_locator.DDaIjT0"/>
         <argument key="App\Controller\IndicateurImpactController::delete" type="service_closure" id=".service_locator.fALByUn"/>
         <argument key="App\Controller\IndicateurImpactController::edit" type="service_closure" id=".service_locator.fALByUn"/>
         <argument key="App\Controller\IndicateurImpactController::index" type="service_closure" id=".service_locator.qAlMOrK"/>
         <argument key="App\Controller\IndicateurImpactController::new" type="service_closure" id=".service_locator.CsMkqUa"/>
         <argument key="App\Controller\IndicateurImpactController::show" type="service_closure" id=".service_locator.cP0vxgj"/>
+        <argument key="App\Controller\MapController::index" type="service_closure" id=".service_locator.GXvkjJ0"/>
         <argument key="App\Controller\ZonePollueeController::delete" type="service_closure" id=".service_locator.kdIY5SB"/>
         <argument key="App\Controller\ZonePollueeController::edit" type="service_closure" id=".service_locator.kdIY5SB"/>
         <argument key="App\Controller\ZonePollueeController::index" type="service_closure" id=".service_locator.DDaIjT0"/>
@@ -7560,11 +7647,14 @@
         <argument key="App\Kernel::registerContainerConfiguration" type="service_closure" id=".service_locator.y4_Zrx."/>
         <argument key="kernel::loadRoutes" type="service_closure" id=".service_locator.y4_Zrx."/>
         <argument key="kernel::registerContainerConfiguration" type="service_closure" id=".service_locator.y4_Zrx."/>
+        <argument key="App\Controller\Admin6Controller:dashboard" type="service_closure" id=".service_locator.n_IEkrD"/>
+        <argument key="App\Controller\ApiController:zones" type="service_closure" id=".service_locator.DDaIjT0"/>
         <argument key="App\Controller\IndicateurImpactController:delete" type="service_closure" id=".service_locator.fALByUn"/>
         <argument key="App\Controller\IndicateurImpactController:edit" type="service_closure" id=".service_locator.fALByUn"/>
         <argument key="App\Controller\IndicateurImpactController:index" type="service_closure" id=".service_locator.qAlMOrK"/>
         <argument key="App\Controller\IndicateurImpactController:new" type="service_closure" id=".service_locator.CsMkqUa"/>
         <argument key="App\Controller\IndicateurImpactController:show" type="service_closure" id=".service_locator.cP0vxgj"/>
+        <argument key="App\Controller\MapController:index" type="service_closure" id=".service_locator.GXvkjJ0"/>
         <argument key="App\Controller\ZonePollueeController:delete" type="service_closure" id=".service_locator.kdIY5SB"/>
         <argument key="App\Controller\ZonePollueeController:edit" type="service_closure" id=".service_locator.kdIY5SB"/>
         <argument key="App\Controller\ZonePollueeController:index" type="service_closure" id=".service_locator.DDaIjT0"/>
@@ -8199,9 +8289,27 @@
         <argument key="web_link.http_header_serializer" type="service_closure" id="web_link.http_header_serializer" on-invalid="ignore"/>
       </argument>
     </service>
+    <service id=".service_locator.O2p6Lk7.App\Controller\Admin6Controller" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\Admin6Controller"/>
+      <argument>App\Controller\Admin6Controller</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.O2p6Lk7" method="withContext"/>
+    </service>
+    <service id=".service_locator.O2p6Lk7.App\Controller\ApiController" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\ApiController"/>
+      <argument>App\Controller\ApiController</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.O2p6Lk7" method="withContext"/>
+    </service>
     <service id=".service_locator.O2p6Lk7.App\Controller\IndicateurImpactController" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator_context" id="App\Controller\IndicateurImpactController"/>
       <argument>App\Controller\IndicateurImpactController</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.O2p6Lk7" method="withContext"/>
+    </service>
+    <service id=".service_locator.O2p6Lk7.App\Controller\MapController" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\MapController"/>
+      <argument>App\Controller\MapController</argument>
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.O2p6Lk7" method="withContext"/>
     </service>
@@ -8385,7 +8493,10 @@
       <call method="allowControllers">
         <argument type="collection">
           <argument>App\Kernel</argument>
+          <argument>App\Controller\Admin6Controller</argument>
+          <argument>App\Controller\ApiController</argument>
           <argument>App\Controller\IndicateurImpactController</argument>
+          <argument>App\Controller\MapController</argument>
           <argument>App\Controller\ZonePollueeController</argument>
           <argument>Doctrine\Bundle\DoctrineBundle\Controller\ProfilerController</argument>
         </argument>
@@ -9609,7 +9720,7 @@
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
-    <service id=".service_locator.i0..Ry2" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.F5dOdHD" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="Symfony\Bridge\Twig\Extension\CsrfRuntime" type="service_closure" id="twig.runtime.security_csrf"/>
@@ -9619,6 +9730,7 @@
         <argument key="Symfony\Bridge\Twig\Extension\ImportMapRuntime" type="service_closure" id="twig.runtime.importmap"/>
         <argument key="Symfony\UX\StimulusBundle\Twig\UxControllersTwigRuntime" type="service_closure" id="stimulus.ux_controllers_twig_runtime"/>
         <argument key="Symfony\UX\Turbo\Twig\TurboRuntime" type="service_closure" id="turbo.twig.runtime"/>
+        <argument key="Symfony\UX\Map\Twig\MapRuntime" type="service_closure" id="ux_map.twig_runtime"/>
       </argument>
     </service>
     <service id="App\Kernel" alias="kernel" public="true"/>
@@ -9790,7 +9902,7 @@
     <service id="Psr\Log\LoggerInterface" alias="monolog.logger"/>
     <service id="container.env_var_processors_locator" alias=".service_locator.w7.f4fT" public="true"/>
     <service id="twig.loader.filesystem" alias="twig.loader.native_filesystem"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.eYYs.C2"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator._hDz_sr"/>
     <service id="doctrine.id_generator_locator" alias=".service_locator.KLVvNIq"/>
     <service id="twig.loader" alias="twig.loader.native_filesystem"/>
     <service id=".Psr\Log\LoggerInterface $request.logger" alias="monolog.logger.request"/>
@@ -9828,9 +9940,10 @@
     <service id=".service_locator.80edgLI" alias="messenger.receiver_locator"/>
     <service id=".service_locator.h8Jkkd2" alias="messenger.retry_strategy_locator"/>
     <service id=".service_locator.bJ.4HC5" alias=".service_locator.w7.f4fT"/>
+    <service id=".service_locator.pqcvo7Z" alias=".service_locator.n_IEkrD"/>
     <service id=".service_locator.qb2QUHz" alias=".service_locator.fALByUn"/>
     <service id=".service_locator.zotn9Hf" alias=".service_locator.kdIY5SB"/>
-    <service id=".service_locator.K9ss2As" alias=".service_locator.eYYs.C2"/>
+    <service id=".service_locator.39Tgyh8" alias=".service_locator._hDz_sr"/>
     <service id=".service_locator.BFrsqsn" alias=".service_locator.F9PKc.7"/>
     <service id=".service_locator.RrMcYOZ" alias=".service_locator.bRLWaGK"/>
     <service id=".service_locator.XtmiKbi" alias=".service_locator.MfxSDRP"/>
@@ -9856,11 +9969,13 @@
     <service id="doctrine.orm.default_metadata_driver" alias=".doctrine.orm.default_metadata_driver"/>
     <service id="security.event_dispatcher.main" alias="debug.security.event_dispatcher.main"/>
     <service id=".service_locator.gFlme_s" alias=".service_locator.y4_Zrx."/>
+    <service id=".service_locator.tjT_1gX" alias=".service_locator.n_IEkrD"/>
+    <service id=".service_locator.23cgvEG" alias=".service_locator.DDaIjT0"/>
     <service id=".service_locator.BF1aaf3" alias=".service_locator.qAlMOrK"/>
     <service id=".service_locator.9e2t_lq" alias=".service_locator.CsMkqUa"/>
     <service id=".service_locator.uHgUNki" alias=".service_locator.cP0vxgj"/>
     <service id=".service_locator.6nfnEqU" alias=".service_locator.fALByUn"/>
-    <service id=".service_locator.23cgvEG" alias=".service_locator.DDaIjT0"/>
+    <service id=".service_locator.NqV.57N" alias=".service_locator.GXvkjJ0"/>
     <service id=".service_locator.FQsTrG_" alias=".service_locator.R2zCFxk"/>
     <service id=".service_locator.XBKFrqb" alias=".service_locator.kdIY5SB"/>
     <service id=".service_locator.Q1z.f9O" alias=".service_locator.O2p6Lk7"/>

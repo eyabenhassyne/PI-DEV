@@ -14,14 +14,41 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/zone-polluee')]
 class ZonePollueeController extends AbstractController
 {
-    // LISTE (READ ALL)
+    // LISTE (READ ALL) with SEARCH, FILTERS and STATS
     #[Route('/', name: 'app_zone_polluee_index', methods: ['GET'])]
-    public function index(ZonePollueeRepository $repository): Response
+    public function index(Request $request, ZonePollueeRepository $repository): Response
     {
-        $zones = $repository->findAll();
+        $search = $request->query->get('search', '');
+        $filter = $request->query->get('filter', '');
+        $sort = $request->query->get('sort', 'date_desc');
+        
+        $zones = $repository->findByFilters($search, $filter, $sort);
+        
+        // Calculate stats
+        $totalZones = count($zones);
+        $hautRisque = 0;
+        $nouvellesZones = 0;
+        $now = new \DateTime();
+        $sevenDaysAgo = (clone $now)->modify('-7 days');
+        
+        foreach ($zones as $zone) {
+            if ($zone->getNiveauPollution() >= 7) {
+                $hautRisque++;
+            }
+            
+            if ($zone->getDateIdentification() > $sevenDaysAgo) {
+                $nouvellesZones++;
+            }
+        }
         
         return $this->render('zone_polluee/index.html.twig', [
             'zones' => $zones,
+            'total_zones' => $totalZones,
+            'haut_risque' => $hautRisque,
+            'nouvelles_zones' => $nouvellesZones,
+            'search' => $search,
+            'current_filter' => $filter,
+            'current_sort' => $sort,
         ]);
     }
 
