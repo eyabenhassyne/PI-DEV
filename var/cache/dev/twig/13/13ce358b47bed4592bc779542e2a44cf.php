@@ -137,6 +137,19 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             max-width: 300px;
         }
+        .directions-panel {
+            position: absolute;
+            bottom: 30px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            max-width: 350px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
         .legend {
             background: white;
             padding: 10px;
@@ -167,6 +180,15 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
         .btn-route:hover {
             background-color: #76c023;
         }
+        .btn-directions {
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+        .btn-directions:hover {
+            background-color: #138496;
+        }
     </style>
 ";
         
@@ -178,7 +200,7 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
         yield from [];
     }
 
-    // line 76
+    // line 98
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -191,7 +213,7 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "body"));
 
-        // line 77
+        // line 99
         yield "<div class=\"d-flex\">
     <!-- Sidebar -->
     <div class=\"sidebar\">
@@ -205,28 +227,28 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
         <div class=\"sidebar-menu\">
             <div class=\"menu-label\">MAIN</div>
             <a href=\"";
-        // line 89
+        // line 111
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("admin_dashboard");
         yield "\" class=\"nav-link\">
                 <i class=\"fas fa-chart-pie\"></i>
                 <span>Dashboard</span>
             </a>
             <a href=\"";
-        // line 93
+        // line 115
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_zone_polluee_index");
         yield "\" class=\"nav-link\">
                 <i class=\"fas fa-map-marker-alt\"></i>
                 <span>Zones Polluées</span>
             </a>
             <a href=\"";
-        // line 97
+        // line 119
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_indicateur_impact_index");
         yield "\" class=\"nav-link\">
                 <i class=\"fas fa-chart-line\"></i>
                 <span>Indicateurs</span>
             </a>
             <a href=\"";
-        // line 101
+        // line 123
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_map");
         yield "\" class=\"nav-link active\">
                 <i class=\"fas fa-map\"></i>
@@ -248,7 +270,7 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
             <nav aria-label=\"breadcrumb\">
                 <ol class=\"breadcrumb mb-0\">
                     <li class=\"breadcrumb-item\"><a href=\"";
-        // line 120
+        // line 142
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("admin_dashboard");
         yield "\">Dashboard</a></li>
                     <li class=\"breadcrumb-item active\">Carte Interactive</li>
@@ -283,8 +305,11 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
                     <button class=\"btn btn-sm btn-green w-100 mb-2\" id=\"calculateBtn\">
                         <i class=\"fas fa-calculator me-2\"></i>Recalculer
                     </button>
-                    <button class=\"btn btn-sm btn-route w-100\" id=\"optimizeRouteBtn\">
+                    <button class=\"btn btn-sm btn-route w-100 mb-2\" id=\"optimizeRouteBtn\">
                         <i class=\"fas fa-route me-2\"></i>Optimiser la route
+                    </button>
+                    <button class=\"btn btn-sm btn-directions w-100\" id=\"getDirectionsBtn\">
+                        <i class=\"fas fa-directions me-2\"></i>Itinéraire routier
                     </button>
                 </div>
 
@@ -298,11 +323,20 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
                     </div>
                 </div>
 
-                <!-- Route Panel -->
+                <!-- Route Panel (Simple Optimizer) -->
                 <div class=\"route-panel\" id=\"routePanel\" style=\"display: none;\">
                     <h6 class=\"mb-3\"><i class=\"fas fa-route me-2 text-success\"></i>Route optimisée</h6>
                     <div id=\"routeContent\"></div>
                     <button class=\"btn btn-sm btn-outline-secondary mt-2 w-100\" id=\"closeRoutePanel\">
+                        <i class=\"fas fa-times me-2\"></i>Fermer
+                    </button>
+                </div>
+
+                <!-- Directions Panel -->
+                <div class=\"directions-panel\" id=\"directionsPanel\" style=\"display: none;\">
+                    <h6 class=\"mb-3\"><i class=\"fas fa-directions me-2 text-primary\"></i>Itinéraire routier</h6>
+                    <div id=\"directionsContent\"></div>
+                    <button class=\"btn btn-sm btn-outline-secondary mt-2 w-100\" id=\"closeDirectionsPanel\">
                         <i class=\"fas fa-times me-2\"></i>Fermer
                     </button>
                 </div>
@@ -323,6 +357,52 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap'
         }).addTo(map);
+
+        // Simple polyline decoder
+        var polyline = {
+            decode: function(str, precision) {
+                var index = 0,
+                    lat = 0,
+                    lng = 0,
+                    coordinates = [],
+                    shift = 0,
+                    result = 0,
+                    byte = null,
+                    latitude_change,
+                    longitude_change,
+                    factor = Math.pow(10, precision || 5);
+
+                while (index < str.length) {
+                    byte = null;
+                    shift = 0;
+                    result = 0;
+
+                    do {
+                        byte = str.charCodeAt(index++) - 63;
+                        result |= (byte & 0x1f) << shift;
+                        shift += 5;
+                    } while (byte >= 0x20);
+
+                    latitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+                    shift = result = 0;
+
+                    do {
+                        byte = str.charCodeAt(index++) - 63;
+                        result |= (byte & 0x1f) << shift;
+                        shift += 5;
+                    } while (byte >= 0x20);
+
+                    longitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+
+                    lat += latitude_change;
+                    lng += longitude_change;
+
+                    coordinates.push([lat / factor, lng / factor]);
+                }
+
+                return coordinates;
+            }
+        };
 
         // Store all markers and zones data
         var allMarkers = [];
@@ -446,7 +526,7 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
             `;
         });
 
-        // Route Optimizer
+        // Simple Route Optimizer
         document.getElementById('optimizeRouteBtn').addEventListener('click', function() {
             let activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
             
@@ -513,6 +593,93 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
             drawRoute(route, startLat, startLng);
         });
 
+        // OpenRouteService Directions - WORKING VERSION
+        document.getElementById('getDirectionsBtn').addEventListener('click', function() {
+            let activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+            
+            let zonesForRoute = allZonesData.filter(z => {
+                if (activeFilter === 'all') return true;
+                if (activeFilter === 'high') return z.niveau >= 7;
+                if (activeFilter === 'medium') return z.niveau >= 4 && z.niveau <= 6;
+                if (activeFilter === 'low') return z.niveau <= 3;
+            });
+            
+            if (zonesForRoute.length < 2) {
+                alert('Sélectionnez au moins 2 zones pour un itinéraire');
+                return;
+            }
+            
+            document.getElementById('directionsContent').innerHTML = '<p class=\"text-center\"><i class=\"fas fa-spinner fa-spin\"></i> Calcul de l\\'itinéraire...</p>';
+            document.getElementById('directionsPanel').style.display = 'block';
+            
+            let start = zonesForRoute[0];
+            let waypoints = zonesForRoute.slice(1).map(z => [z.lng, z.lat]);
+            
+            fetch('https://api.openrouteservice.org/v2/directions/driving-car?api_key=eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFjMDU0MGJiZGQ1YTQxOTM4ZjQ1N2QyZjI3NTEzNTYwIiwiaCI6Im11cm11cjY0In0=', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    coordinates: [[start.lng, start.lat], ...waypoints]
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('API Response:', data);
+                
+                if (!data.routes || !data.routes[0]) {
+                    throw new Error('Aucune route trouvée');
+                }
+                
+                let route = data.routes[0];
+                let distance = route.summary.distance / 1000;
+                let duration = route.summary.duration / 60;
+                
+                let directionsHtml = `
+                    <p><strong>Départ:</strong> \${start.nom}</p>
+                    <p><strong>Distance totale:</strong> \${distance.toFixed(2)} km</p>
+                    <p><strong>Durée estimée:</strong> \${Math.round(duration)} minutes</p>
+                    <p><strong>CO₂ transport:</strong> \${(distance * 0.2).toFixed(2)} kg</p>
+                    <hr>
+                    <h6>Directions:</h6>
+                    <ol style=\"max-height: 200px; overflow-y: auto;\">
+                `;
+                
+                if (route.segments && route.segments[0].steps) {
+                    route.segments[0].steps.forEach(step => {
+                        directionsHtml += `<li>\${step.instruction}</li>`;
+                    });
+                }
+                
+                directionsHtml += `</ol>`;
+                document.getElementById('directionsContent').innerHTML = directionsHtml;
+                
+                // Draw route on map
+                if (route.geometry) {
+                    let decoded = polyline.decode(route.geometry);
+                    let coordinates = decoded.map(c => [c[0], c[1]]);
+                    
+                    if (window.directionsLayer) {
+                        map.removeLayer(window.directionsLayer);
+                    }
+                    
+                    window.directionsLayer = L.polyline(coordinates, {
+                        color: '#007bff',
+                        weight: 5,
+                        opacity: 0.8
+                    }).addTo(map);
+                    
+                    map.fitBounds(L.latLngBounds(coordinates));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('directionsContent').innerHTML = '<p class=\"text-danger\">Erreur: ' + error.message + '</p>';
+            });
+        });
+
+        // Helper function for distance calculation
         function getDistance(lat1, lon1, lat2, lon2) {
             const R = 6371;
             const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -525,6 +692,7 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
             return R * c;
         }
 
+        // Draw simple route
         function drawRoute(route, startLat, startLng) {
             if (window.routeLayer) {
                 map.removeLayer(window.routeLayer);
@@ -554,6 +722,7 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
             map.fitBounds(bounds, { padding: [50, 50] });
         }
 
+        // Close panels
         document.getElementById('closeRoutePanel').addEventListener('click', function() {
             document.getElementById('routePanel').style.display = 'none';
             if (window.routeLayer) {
@@ -561,6 +730,14 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
             }
         });
 
+        document.getElementById('closeDirectionsPanel').addEventListener('click', function() {
+            document.getElementById('directionsPanel').style.display = 'none';
+            if (window.directionsLayer) {
+                map.removeLayer(window.directionsLayer);
+            }
+        });
+
+        // Update stats function
         function updateStats(zones) {
             let total = zones.length;
             let high = zones.filter(z => z.niveau >= 7).length;
@@ -629,7 +806,7 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  252 => 120,  230 => 101,  223 => 97,  216 => 93,  209 => 89,  195 => 77,  182 => 76,  101 => 6,  88 => 5,  65 => 3,  42 => 1,);
+        return array (  274 => 142,  252 => 123,  245 => 119,  238 => 115,  231 => 111,  217 => 99,  204 => 98,  101 => 6,  88 => 5,  65 => 3,  42 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -676,6 +853,19 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             max-width: 300px;
         }
+        .directions-panel {
+            position: absolute;
+            bottom: 30px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            max-width: 350px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
         .legend {
             background: white;
             padding: 10px;
@@ -705,6 +895,15 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
         }
         .btn-route:hover {
             background-color: #76c023;
+        }
+        .btn-directions {
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+        .btn-directions:hover {
+            background-color: #138496;
         }
     </style>
 {% endblock %}
@@ -786,8 +985,11 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
                     <button class=\"btn btn-sm btn-green w-100 mb-2\" id=\"calculateBtn\">
                         <i class=\"fas fa-calculator me-2\"></i>Recalculer
                     </button>
-                    <button class=\"btn btn-sm btn-route w-100\" id=\"optimizeRouteBtn\">
+                    <button class=\"btn btn-sm btn-route w-100 mb-2\" id=\"optimizeRouteBtn\">
                         <i class=\"fas fa-route me-2\"></i>Optimiser la route
+                    </button>
+                    <button class=\"btn btn-sm btn-directions w-100\" id=\"getDirectionsBtn\">
+                        <i class=\"fas fa-directions me-2\"></i>Itinéraire routier
                     </button>
                 </div>
 
@@ -801,11 +1003,20 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
                     </div>
                 </div>
 
-                <!-- Route Panel -->
+                <!-- Route Panel (Simple Optimizer) -->
                 <div class=\"route-panel\" id=\"routePanel\" style=\"display: none;\">
                     <h6 class=\"mb-3\"><i class=\"fas fa-route me-2 text-success\"></i>Route optimisée</h6>
                     <div id=\"routeContent\"></div>
                     <button class=\"btn btn-sm btn-outline-secondary mt-2 w-100\" id=\"closeRoutePanel\">
+                        <i class=\"fas fa-times me-2\"></i>Fermer
+                    </button>
+                </div>
+
+                <!-- Directions Panel -->
+                <div class=\"directions-panel\" id=\"directionsPanel\" style=\"display: none;\">
+                    <h6 class=\"mb-3\"><i class=\"fas fa-directions me-2 text-primary\"></i>Itinéraire routier</h6>
+                    <div id=\"directionsContent\"></div>
+                    <button class=\"btn btn-sm btn-outline-secondary mt-2 w-100\" id=\"closeDirectionsPanel\">
                         <i class=\"fas fa-times me-2\"></i>Fermer
                     </button>
                 </div>
@@ -826,6 +1037,52 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap'
         }).addTo(map);
+
+        // Simple polyline decoder
+        var polyline = {
+            decode: function(str, precision) {
+                var index = 0,
+                    lat = 0,
+                    lng = 0,
+                    coordinates = [],
+                    shift = 0,
+                    result = 0,
+                    byte = null,
+                    latitude_change,
+                    longitude_change,
+                    factor = Math.pow(10, precision || 5);
+
+                while (index < str.length) {
+                    byte = null;
+                    shift = 0;
+                    result = 0;
+
+                    do {
+                        byte = str.charCodeAt(index++) - 63;
+                        result |= (byte & 0x1f) << shift;
+                        shift += 5;
+                    } while (byte >= 0x20);
+
+                    latitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+                    shift = result = 0;
+
+                    do {
+                        byte = str.charCodeAt(index++) - 63;
+                        result |= (byte & 0x1f) << shift;
+                        shift += 5;
+                    } while (byte >= 0x20);
+
+                    longitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+
+                    lat += latitude_change;
+                    lng += longitude_change;
+
+                    coordinates.push([lat / factor, lng / factor]);
+                }
+
+                return coordinates;
+            }
+        };
 
         // Store all markers and zones data
         var allMarkers = [];
@@ -949,7 +1206,7 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
             `;
         });
 
-        // Route Optimizer
+        // Simple Route Optimizer
         document.getElementById('optimizeRouteBtn').addEventListener('click', function() {
             let activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
             
@@ -1016,6 +1273,93 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
             drawRoute(route, startLat, startLng);
         });
 
+        // OpenRouteService Directions - WORKING VERSION
+        document.getElementById('getDirectionsBtn').addEventListener('click', function() {
+            let activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+            
+            let zonesForRoute = allZonesData.filter(z => {
+                if (activeFilter === 'all') return true;
+                if (activeFilter === 'high') return z.niveau >= 7;
+                if (activeFilter === 'medium') return z.niveau >= 4 && z.niveau <= 6;
+                if (activeFilter === 'low') return z.niveau <= 3;
+            });
+            
+            if (zonesForRoute.length < 2) {
+                alert('Sélectionnez au moins 2 zones pour un itinéraire');
+                return;
+            }
+            
+            document.getElementById('directionsContent').innerHTML = '<p class=\"text-center\"><i class=\"fas fa-spinner fa-spin\"></i> Calcul de l\\'itinéraire...</p>';
+            document.getElementById('directionsPanel').style.display = 'block';
+            
+            let start = zonesForRoute[0];
+            let waypoints = zonesForRoute.slice(1).map(z => [z.lng, z.lat]);
+            
+            fetch('https://api.openrouteservice.org/v2/directions/driving-car?api_key=eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFjMDU0MGJiZGQ1YTQxOTM4ZjQ1N2QyZjI3NTEzNTYwIiwiaCI6Im11cm11cjY0In0=', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    coordinates: [[start.lng, start.lat], ...waypoints]
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('API Response:', data);
+                
+                if (!data.routes || !data.routes[0]) {
+                    throw new Error('Aucune route trouvée');
+                }
+                
+                let route = data.routes[0];
+                let distance = route.summary.distance / 1000;
+                let duration = route.summary.duration / 60;
+                
+                let directionsHtml = `
+                    <p><strong>Départ:</strong> \${start.nom}</p>
+                    <p><strong>Distance totale:</strong> \${distance.toFixed(2)} km</p>
+                    <p><strong>Durée estimée:</strong> \${Math.round(duration)} minutes</p>
+                    <p><strong>CO₂ transport:</strong> \${(distance * 0.2).toFixed(2)} kg</p>
+                    <hr>
+                    <h6>Directions:</h6>
+                    <ol style=\"max-height: 200px; overflow-y: auto;\">
+                `;
+                
+                if (route.segments && route.segments[0].steps) {
+                    route.segments[0].steps.forEach(step => {
+                        directionsHtml += `<li>\${step.instruction}</li>`;
+                    });
+                }
+                
+                directionsHtml += `</ol>`;
+                document.getElementById('directionsContent').innerHTML = directionsHtml;
+                
+                // Draw route on map
+                if (route.geometry) {
+                    let decoded = polyline.decode(route.geometry);
+                    let coordinates = decoded.map(c => [c[0], c[1]]);
+                    
+                    if (window.directionsLayer) {
+                        map.removeLayer(window.directionsLayer);
+                    }
+                    
+                    window.directionsLayer = L.polyline(coordinates, {
+                        color: '#007bff',
+                        weight: 5,
+                        opacity: 0.8
+                    }).addTo(map);
+                    
+                    map.fitBounds(L.latLngBounds(coordinates));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('directionsContent').innerHTML = '<p class=\"text-danger\">Erreur: ' + error.message + '</p>';
+            });
+        });
+
+        // Helper function for distance calculation
         function getDistance(lat1, lon1, lat2, lon2) {
             const R = 6371;
             const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -1028,6 +1372,7 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
             return R * c;
         }
 
+        // Draw simple route
         function drawRoute(route, startLat, startLng) {
             if (window.routeLayer) {
                 map.removeLayer(window.routeLayer);
@@ -1057,6 +1402,7 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
             map.fitBounds(bounds, { padding: [50, 50] });
         }
 
+        // Close panels
         document.getElementById('closeRoutePanel').addEventListener('click', function() {
             document.getElementById('routePanel').style.display = 'none';
             if (window.routeLayer) {
@@ -1064,6 +1410,14 @@ class __TwigTemplate_0b347c334b07af218dddc80adbfb8766 extends Template
             }
         });
 
+        document.getElementById('closeDirectionsPanel').addEventListener('click', function() {
+            document.getElementById('directionsPanel').style.display = 'none';
+            if (window.directionsLayer) {
+                map.removeLayer(window.directionsLayer);
+            }
+        });
+
+        // Update stats function
         function updateStats(zones) {
             let total = zones.length;
             let high = zones.filter(z => z.niveau >= 7).length;
