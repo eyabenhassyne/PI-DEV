@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\ZonePolluee;
 use App\Form\ZonePollueeType;
 use App\Repository\ZonePollueeRepository;
+use App\Service\QRCodeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -116,5 +117,52 @@ class ZonePollueeController extends AbstractController
         }
 
         return $this->redirectToRoute('app_zone_polluee_index');
+    }
+
+    // ========== QR CODE METHODS ==========
+
+    /**
+     * Show QR code for a zone - UPDATED with scan tracking
+     */
+    #[Route('/{id}/qr', name: 'app_zone_polluee_qr', methods: ['GET'])]
+    public function showQR(ZonePolluee $zone, QRCodeService $qrService): Response
+    {
+        // Generate QR code with scan tracking
+        $qrPng = $qrService->generateColoredZoneQR($zone, 300);
+        
+        return $this->render('zone_polluee/qr.html.twig', [
+            'zone' => $zone,
+            'qr_png' => $qrPng,
+        ]);
+    }
+
+    /**
+     * Download QR code as PNG
+     */
+    #[Route('/{id}/qr/download/png', name: 'app_zone_polluee_qr_download_png', methods: ['GET'])]
+    public function downloadQRPNG(ZonePolluee $zone, QRCodeService $qrService): Response
+    {
+        return $qrService->createDownloadResponse($zone, 500);
+    }
+
+    /**
+     * Batch generate QR codes for all zones
+     */
+    #[Route('/qr/batch', name: 'app_zone_polluee_qr_batch', methods: ['GET'])]
+    public function batchQR(ZonePollueeRepository $repository, QRCodeService $qrService): Response
+    {
+        $zones = $repository->findAll();
+        $qrCodes = [];
+        
+        foreach ($zones as $zone) {
+            $qrCodes[$zone->getId()] = [
+                'zone' => $zone,
+                'qr' => $qrService->generateColoredZoneQR($zone, 200)
+            ];
+        }
+        
+        return $this->render('zone_polluee/qr_batch.html.twig', [
+            'qrCodes' => $qrCodes
+        ]);
     }
 }

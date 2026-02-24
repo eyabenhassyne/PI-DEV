@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ZonePollueeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ZonePollueeRepository::class)]
@@ -28,6 +30,17 @@ class ZonePolluee
     #[ORM\ManyToOne(targetEntity: IndicateurImpact::class, inversedBy: "zonePolluees")]
     #[ORM\JoinColumn(name: "indicateur_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
     private ?IndicateurImpact $indicateur = null;
+
+    /**
+     * @var Collection<int, QRScan>
+     */
+    #[ORM\OneToMany(targetEntity: QRScan::class, mappedBy: 'zone')]
+    private Collection $qRScans;
+
+    public function __construct()
+    {
+        $this->qRScans = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -86,6 +99,36 @@ class ZonePolluee
     public function setIndicateur(?IndicateurImpact $indicateur): static
     {
         $this->indicateur = $indicateur;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, QRScan>
+     */
+    public function getQRScans(): Collection
+    {
+        return $this->qRScans;
+    }
+
+    public function addQRScan(QRScan $qRScan): static
+    {
+        if (!$this->qRScans->contains($qRScan)) {
+            $this->qRScans->add($qRScan);
+            $qRScan->setZone($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQRScan(QRScan $qRScan): static
+    {
+        if ($this->qRScans->removeElement($qRScan)) {
+            // set the owning side to null (unless already changed)
+            if ($qRScan->getZone() === $this) {
+                $qRScan->setZone(null);
+            }
+        }
+
         return $this;
     }
 }

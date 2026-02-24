@@ -19,61 +19,73 @@ return [
         '/indicateur-impact' => [[['_route' => 'app_indicateur_impact_index', '_controller' => 'App\\Controller\\IndicateurImpactController::index'], null, ['GET' => 0], null, true, false, null]],
         '/indicateur-impact/new' => [[['_route' => 'app_indicateur_impact_new', '_controller' => 'App\\Controller\\IndicateurImpactController::new'], null, ['GET' => 0, 'POST' => 1], null, false, false, null]],
         '/map' => [[['_route' => 'app_map', '_controller' => 'App\\Controller\\MapController::index'], null, null, null, false, false, null]],
+        '/qr-dashboard' => [[['_route' => 'app_qr_dashboard', '_controller' => 'App\\Controller\\QRDashboardController::index'], null, null, null, false, false, null]],
         '/zone-polluee' => [[['_route' => 'app_zone_polluee_index', '_controller' => 'App\\Controller\\ZonePollueeController::index'], null, ['GET' => 0], null, true, false, null]],
         '/zone-polluee/new' => [[['_route' => 'app_zone_polluee_new', '_controller' => 'App\\Controller\\ZonePollueeController::new'], null, ['GET' => 0, 'POST' => 1], null, false, false, null]],
+        '/zone-polluee/qr/batch' => [[['_route' => 'app_zone_polluee_qr_batch', '_controller' => 'App\\Controller\\ZonePollueeController::batchQR'], null, ['GET' => 0], null, false, false, null]],
     ],
     [ // $regexpList
         0 => '{^(?'
+                .'|/qr\\-code/([^/]++)/([\\w\\W]+)(*:35)'
                 .'|/_(?'
-                    .'|error/(\\d+)(?:\\.([^/]++))?(*:38)'
-                    .'|wdt/([^/]++)(*:57)'
+                    .'|error/(\\d+)(?:\\.([^/]++))?(*:73)'
+                    .'|wdt/([^/]++)(*:92)'
                     .'|profiler/(?'
-                        .'|font/([^/\\.]++)\\.woff2(*:98)'
+                        .'|font/([^/\\.]++)\\.woff2(*:133)'
                         .'|([^/]++)(?'
                             .'|/(?'
-                                .'|search/results(*:134)'
-                                .'|router(*:148)'
+                                .'|search/results(*:170)'
+                                .'|router(*:184)'
                                 .'|exception(?'
-                                    .'|(*:168)'
-                                    .'|\\.css(*:181)'
+                                    .'|(*:204)'
+                                    .'|\\.css(*:217)'
                                 .')'
                             .')'
-                            .'|(*:191)'
+                            .'|(*:227)'
                         .')'
                     .')'
                 .')'
                 .'|/indicateur\\-impact/([^/]++)(?'
-                    .'|(*:233)'
+                    .'|(*:269)'
                     .'|/(?'
-                        .'|edit(*:249)'
-                        .'|delete(*:263)'
+                        .'|edit(*:285)'
+                        .'|delete(*:299)'
                     .')'
                 .')'
+                .'|/scan/([^/]++)(*:323)'
                 .'|/zone\\-polluee/([^/]++)(?'
-                    .'|(*:299)'
+                    .'|(*:357)'
                     .'|/(?'
-                        .'|edit(*:315)'
-                        .'|delete(*:329)'
+                        .'|edit(*:373)'
+                        .'|delete(*:387)'
+                        .'|qr(?'
+                            .'|(*:400)'
+                            .'|/download/png(*:421)'
+                        .')'
                     .')'
                 .')'
             .')/?$}sDu',
     ],
     [ // $dynamicRoutes
-        38 => [[['_route' => '_preview_error', '_controller' => 'error_controller::preview', '_format' => 'html'], ['code', '_format'], null, null, false, true, null]],
-        57 => [[['_route' => '_wdt', '_controller' => 'web_profiler.controller.profiler::toolbarAction'], ['token'], null, null, false, true, null]],
-        98 => [[['_route' => '_profiler_font', '_controller' => 'web_profiler.controller.profiler::fontAction'], ['fontName'], null, null, false, false, null]],
-        134 => [[['_route' => '_profiler_search_results', '_controller' => 'web_profiler.controller.profiler::searchResultsAction'], ['token'], null, null, false, false, null]],
-        148 => [[['_route' => '_profiler_router', '_controller' => 'web_profiler.controller.router::panelAction'], ['token'], null, null, false, false, null]],
-        168 => [[['_route' => '_profiler_exception', '_controller' => 'web_profiler.controller.exception_panel::body'], ['token'], null, null, false, false, null]],
-        181 => [[['_route' => '_profiler_exception_css', '_controller' => 'web_profiler.controller.exception_panel::stylesheet'], ['token'], null, null, false, false, null]],
-        191 => [[['_route' => '_profiler', '_controller' => 'web_profiler.controller.profiler::panelAction'], ['token'], null, null, false, true, null]],
-        233 => [[['_route' => 'app_indicateur_impact_show', '_controller' => 'App\\Controller\\IndicateurImpactController::show'], ['id'], ['GET' => 0], null, false, true, null]],
-        249 => [[['_route' => 'app_indicateur_impact_edit', '_controller' => 'App\\Controller\\IndicateurImpactController::edit'], ['id'], ['GET' => 0, 'POST' => 1], null, false, false, null]],
-        263 => [[['_route' => 'app_indicateur_impact_delete', '_controller' => 'App\\Controller\\IndicateurImpactController::delete'], ['id'], ['POST' => 0], null, false, false, null]],
-        299 => [[['_route' => 'app_zone_polluee_show', '_controller' => 'App\\Controller\\ZonePollueeController::show'], ['id'], ['GET' => 0], null, false, true, null]],
-        315 => [[['_route' => 'app_zone_polluee_edit', '_controller' => 'App\\Controller\\ZonePollueeController::edit'], ['id'], ['GET' => 0, 'POST' => 1], null, false, false, null]],
-        329 => [
-            [['_route' => 'app_zone_polluee_delete', '_controller' => 'App\\Controller\\ZonePollueeController::delete'], ['id'], ['POST' => 0], null, false, false, null],
+        35 => [[['_route' => 'qr_code_generate', '_controller' => 'Endroid\\QrCodeBundle\\Controller\\GenerateController'], ['builder', 'data'], null, null, false, true, null]],
+        73 => [[['_route' => '_preview_error', '_controller' => 'error_controller::preview', '_format' => 'html'], ['code', '_format'], null, null, false, true, null]],
+        92 => [[['_route' => '_wdt', '_controller' => 'web_profiler.controller.profiler::toolbarAction'], ['token'], null, null, false, true, null]],
+        133 => [[['_route' => '_profiler_font', '_controller' => 'web_profiler.controller.profiler::fontAction'], ['fontName'], null, null, false, false, null]],
+        170 => [[['_route' => '_profiler_search_results', '_controller' => 'web_profiler.controller.profiler::searchResultsAction'], ['token'], null, null, false, false, null]],
+        184 => [[['_route' => '_profiler_router', '_controller' => 'web_profiler.controller.router::panelAction'], ['token'], null, null, false, false, null]],
+        204 => [[['_route' => '_profiler_exception', '_controller' => 'web_profiler.controller.exception_panel::body'], ['token'], null, null, false, false, null]],
+        217 => [[['_route' => '_profiler_exception_css', '_controller' => 'web_profiler.controller.exception_panel::stylesheet'], ['token'], null, null, false, false, null]],
+        227 => [[['_route' => '_profiler', '_controller' => 'web_profiler.controller.profiler::panelAction'], ['token'], null, null, false, true, null]],
+        269 => [[['_route' => 'app_indicateur_impact_show', '_controller' => 'App\\Controller\\IndicateurImpactController::show'], ['id'], ['GET' => 0], null, false, true, null]],
+        285 => [[['_route' => 'app_indicateur_impact_edit', '_controller' => 'App\\Controller\\IndicateurImpactController::edit'], ['id'], ['GET' => 0, 'POST' => 1], null, false, false, null]],
+        299 => [[['_route' => 'app_indicateur_impact_delete', '_controller' => 'App\\Controller\\IndicateurImpactController::delete'], ['id'], ['POST' => 0], null, false, false, null]],
+        323 => [[['_route' => 'app_qr_scan', '_controller' => 'App\\Controller\\QRScanController::track'], ['id'], null, null, false, true, null]],
+        357 => [[['_route' => 'app_zone_polluee_show', '_controller' => 'App\\Controller\\ZonePollueeController::show'], ['id'], ['GET' => 0], null, false, true, null]],
+        373 => [[['_route' => 'app_zone_polluee_edit', '_controller' => 'App\\Controller\\ZonePollueeController::edit'], ['id'], ['GET' => 0, 'POST' => 1], null, false, false, null]],
+        387 => [[['_route' => 'app_zone_polluee_delete', '_controller' => 'App\\Controller\\ZonePollueeController::delete'], ['id'], ['POST' => 0], null, false, false, null]],
+        400 => [[['_route' => 'app_zone_polluee_qr', '_controller' => 'App\\Controller\\ZonePollueeController::showQR'], ['id'], ['GET' => 0], null, false, false, null]],
+        421 => [
+            [['_route' => 'app_zone_polluee_qr_download_png', '_controller' => 'App\\Controller\\ZonePollueeController::downloadQRPNG'], ['id'], ['GET' => 0], null, false, false, null],
             [null, null, null, null, false, false, 0],
         ],
     ],
