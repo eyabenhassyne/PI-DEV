@@ -42,4 +42,14 @@
       2 => '/dist/images/marker-icon.png',
     ),
   ),
+  'chart.js' => 
+  array (
+    'version' => '3.9.1',
+    'dependencies' => 
+    array (
+    ),
+    'extraFiles' => 
+    array (
+    ),
+  ),
 );

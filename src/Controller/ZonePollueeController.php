@@ -6,6 +6,7 @@ use App\Entity\ZonePolluee;
 use App\Form\ZonePollueeType;
 use App\Repository\ZonePollueeRepository;
 use App\Service\QRCodeService;
+use App\Service\MailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -53,9 +54,13 @@ class ZonePollueeController extends AbstractController
         ]);
     }
 
-    // AJOUTER (CREATE)
+    // AJOUTER (CREATE) - AVEC EMAILS
     #[Route('/new', name: 'app_zone_polluee_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(
+        Request $request, 
+        EntityManagerInterface $entityManager,
+        MailService $mailService
+    ): Response
     {
         $zone = new ZonePolluee();
         $zone->setDateIdentification(new \DateTime());
@@ -67,7 +72,21 @@ class ZonePollueeController extends AbstractController
             $entityManager->persist($zone);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Zone polluée ajoutée avec succès !');
+            // Envoi d'email - VERSION SIMPLIFIÉE
+            try {
+                // Email normal
+                $mailService->sendZoneAlert($zone);
+                
+                // Email critique si niveau >= 7
+                if ($zone->getNiveauPollution() >= 7) {
+                    $mailService->sendCriticalAlert($zone);
+                }
+                
+                $this->addFlash('success', '✅ Zone ajoutée avec succès ! Un email a été envoyé.');
+            } catch (\Exception $e) {
+                $this->addFlash('warning', '⚠️ Zone ajoutée mais email non envoyé: ' . $e->getMessage());
+            }
+
             return $this->redirectToRoute('app_zone_polluee_index');
         }
 
@@ -95,7 +114,7 @@ class ZonePollueeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            $this->addFlash('success', 'Zone polluée modifiée avec succès !');
+            $this->addFlash('success', '✅ Zone modifiée avec succès !');
             return $this->redirectToRoute('app_zone_polluee_index');
         }
 
@@ -113,21 +132,16 @@ class ZonePollueeController extends AbstractController
             $entityManager->remove($zone);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Zone polluée supprimée avec succès !');
+            $this->addFlash('success', '✅ Zone supprimée avec succès !');
         }
 
         return $this->redirectToRoute('app_zone_polluee_index');
     }
 
     // ========== QR CODE METHODS ==========
-
-    /**
-     * Show QR code for a zone - UPDATED with scan tracking
-     */
     #[Route('/{id}/qr', name: 'app_zone_polluee_qr', methods: ['GET'])]
     public function showQR(ZonePolluee $zone, QRCodeService $qrService): Response
     {
-        // Generate QR code with scan tracking
         $qrPng = $qrService->generateColoredZoneQR($zone, 300);
         
         return $this->render('zone_polluee/qr.html.twig', [
@@ -136,18 +150,12 @@ class ZonePollueeController extends AbstractController
         ]);
     }
 
-    /**
-     * Download QR code as PNG
-     */
     #[Route('/{id}/qr/download/png', name: 'app_zone_polluee_qr_download_png', methods: ['GET'])]
     public function downloadQRPNG(ZonePolluee $zone, QRCodeService $qrService): Response
     {
         return $qrService->createDownloadResponse($zone, 500);
     }
 
-    /**
-     * Batch generate QR codes for all zones
-     */
     #[Route('/qr/batch', name: 'app_zone_polluee_qr_batch', methods: ['GET'])]
     public function batchQR(ZonePollueeRepository $repository, QRCodeService $qrService): Response
     {

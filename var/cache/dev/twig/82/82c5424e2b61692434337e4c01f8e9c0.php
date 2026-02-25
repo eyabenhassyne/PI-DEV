@@ -141,6 +141,15 @@ class __TwigTemplate_ef4ffe9b2cd5557c079da9170229180f extends Template
                 <i class=\"fas fa-map\"></i>
                 <span>Carte</span>
             </a>
+
+            <!-- ADD THIS NEW LINK FOR CHATBOT -->
+            <a href=\"";
+        // line 40
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_chatbot");
+        yield "\" class=\"nav-link\">
+                <i class=\"fas fa-robot\"></i>
+                <span>Assistant IA</span>
+            </a>
         </div>
         
         <div class=\"sidebar-footer\">
@@ -158,7 +167,7 @@ class __TwigTemplate_ef4ffe9b2cd5557c079da9170229180f extends Template
             <nav aria-label=\"breadcrumb\">
                 <ol class=\"breadcrumb mb-0\">
                     <li class=\"breadcrumb-item\"><a href=\"";
-        // line 54
+        // line 60
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("admin_dashboard");
         yield "\" class=\"text-decoration-none\">Dashboard</a></li>
                     <li class=\"breadcrumb-item active\">Zones Polluées</li>
@@ -178,13 +187,13 @@ class __TwigTemplate_ef4ffe9b2cd5557c079da9170229180f extends Template
                 <h2 class=\"h3 mb-0\">Zones Polluées</h2>
                 <div>
                     <a href=\"";
-        // line 71
+        // line 77
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_zone_polluee_qr_batch");
         yield "\" class=\"btn btn-outline-custom me-2\">
                         <i class=\"fas fa-qrcode me-2\"></i>Tous les QR
                     </a>
                     <a href=\"";
-        // line 74
+        // line 80
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_zone_polluee_new");
         yield "\" class=\"btn btn-green\">
                         <i class=\"fas fa-plus me-2\"></i>Nouvelle Zone
@@ -194,14 +203,14 @@ class __TwigTemplate_ef4ffe9b2cd5557c079da9170229180f extends Template
 
             <!-- Flash Messages -->
             ";
-        // line 81
+        // line 87
         $context['_parent'] = $context;
-        $context['_seq'] = CoreExtension::ensureTraversable(CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 81, $this->source); })()), "flashes", ["success"], "method", false, false, false, 81));
+        $context['_seq'] = CoreExtension::ensureTraversable(CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 87, $this->source); })()), "flashes", ["success"], "method", false, false, false, 87));
         foreach ($context['_seq'] as $context["_key"] => $context["message"]) {
-            // line 82
+            // line 88
             yield "                <div class=\"alert alert-success alert-dismissible fade show\" role=\"alert\">
                     <i class=\"fas fa-check-circle me-2\"></i>";
-            // line 83
+            // line 89
             yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($context["message"], "html", null, true);
             yield "
                     <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\"></button>
@@ -211,7 +220,7 @@ class __TwigTemplate_ef4ffe9b2cd5557c079da9170229180f extends Template
         $_parent = $context['_parent'];
         unset($context['_seq'], $context['_key'], $context['message'], $context['_parent']);
         $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 87
+        // line 93
         yield "
             <!-- Stats Cards -->
             <div class=\"row g-3 mb-4\">
@@ -224,8 +233,8 @@ class __TwigTemplate_ef4ffe9b2cd5557c079da9170229180f extends Template
                             <div>
                                 <h6 class=\"text-muted mb-1\">Total Zones</h6>
                                 <h3 class=\"mb-0 fw-bold\">";
-        // line 98
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((array_key_exists("total_zones", $context)) ? (Twig\Extension\CoreExtension::default((isset($context["total_zones"]) || array_key_exists("total_zones", $context) ? $context["total_zones"] : (function () { throw new RuntimeError('Variable "total_zones" does not exist.', 98, $this->source); })()), 0)) : (0)), "html", null, true);
+        // line 104
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((array_key_exists("total_zones", $context)) ? (Twig\Extension\CoreExtension::default((isset($context["total_zones"]) || array_key_exists("total_zones", $context) ? $context["total_zones"] : (function () { throw new RuntimeError('Variable "total_zones" does not exist.', 104, $this->source); })()), 0)) : (0)), "html", null, true);
         yield "</h3>
                             </div>
                         </div>
@@ -241,8 +250,8 @@ class __TwigTemplate_ef4ffe9b2cd5557c079da9170229180f extends Template
                             <div>
                                 <h6 class=\"text-muted mb-1\">Haut Risque</h6>
                                 <h3 class=\"mb-0 fw-bold text-danger\">";
-        // line 112
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((array_key_exists("haut_risque", $context)) ? (Twig\Extension\CoreExtension::default((isset($context["haut_risque"]) || array_key_exists("haut_risque", $context) ? $context["haut_risque"] : (function () { throw new RuntimeError('Variable "haut_risque" does not exist.', 112, $this->source); })()), 0)) : (0)), "html", null, true);
+        // line 118
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((array_key_exists("haut_risque", $context)) ? (Twig\Extension\CoreExtension::default((isset($context["haut_risque"]) || array_key_exists("haut_risque", $context) ? $context["haut_risque"] : (function () { throw new RuntimeError('Variable "haut_risque" does not exist.', 118, $this->source); })()), 0)) : (0)), "html", null, true);
         yield "</h3>
                             </div>
                         </div>
@@ -258,8 +267,8 @@ class __TwigTemplate_ef4ffe9b2cd5557c079da9170229180f extends Template
                             <div>
                                 <h6 class=\"text-muted mb-1\">Nouvelles Zones (7j)</h6>
                                 <h3 class=\"mb-0 fw-bold\">";
-        // line 126
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((array_key_exists("nouvelles_zones", $context)) ? (Twig\Extension\CoreExtension::default((isset($context["nouvelles_zones"]) || array_key_exists("nouvelles_zones", $context) ? $context["nouvelles_zones"] : (function () { throw new RuntimeError('Variable "nouvelles_zones" does not exist.', 126, $this->source); })()), 0)) : (0)), "html", null, true);
+        // line 132
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((array_key_exists("nouvelles_zones", $context)) ? (Twig\Extension\CoreExtension::default((isset($context["nouvelles_zones"]) || array_key_exists("nouvelles_zones", $context) ? $context["nouvelles_zones"] : (function () { throw new RuntimeError('Variable "nouvelles_zones" does not exist.', 132, $this->source); })()), 0)) : (0)), "html", null, true);
         yield "</h3>
                             </div>
                         </div>
@@ -278,8 +287,8 @@ class __TwigTemplate_ef4ffe9b2cd5557c079da9170229180f extends Template
                                 <div class=\"position-relative\">
                                     <i class=\"fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary\"></i>
                                     <input type=\"text\" name=\"search\" class=\"form-control ps-5\" placeholder=\"Nom ou GPS...\" value=\"";
-        // line 143
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((array_key_exists("search", $context)) ? (Twig\Extension\CoreExtension::default((isset($context["search"]) || array_key_exists("search", $context) ? $context["search"] : (function () { throw new RuntimeError('Variable "search" does not exist.', 143, $this->source); })()), "")) : ("")), "html", null, true);
+        // line 149
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((array_key_exists("search", $context)) ? (Twig\Extension\CoreExtension::default((isset($context["search"]) || array_key_exists("search", $context) ? $context["search"] : (function () { throw new RuntimeError('Variable "search" does not exist.', 149, $this->source); })()), "")) : ("")), "html", null, true);
         yield "\">
                                 </div>
                             </div>
@@ -290,24 +299,24 @@ class __TwigTemplate_ef4ffe9b2cd5557c079da9170229180f extends Template
                                 <select name=\"filter\" class=\"form-select\">
                                     <option value=\"\">Tous les niveaux</option>
                                     <option value=\"sup_5\" ";
-        // line 152
-        yield ((((isset($context["current_filter"]) || array_key_exists("current_filter", $context) ? $context["current_filter"] : (function () { throw new RuntimeError('Variable "current_filter" does not exist.', 152, $this->source); })()) == "sup_5")) ? ("selected") : (""));
+        // line 158
+        yield ((((isset($context["current_filter"]) || array_key_exists("current_filter", $context) ? $context["current_filter"] : (function () { throw new RuntimeError('Variable "current_filter" does not exist.', 158, $this->source); })()) == "sup_5")) ? ("selected") : (""));
         yield ">Supérieur à 5</option>
                                     <option value=\"inf_5\" ";
-        // line 153
-        yield ((((isset($context["current_filter"]) || array_key_exists("current_filter", $context) ? $context["current_filter"] : (function () { throw new RuntimeError('Variable "current_filter" does not exist.', 153, $this->source); })()) == "inf_5")) ? ("selected") : (""));
+        // line 159
+        yield ((((isset($context["current_filter"]) || array_key_exists("current_filter", $context) ? $context["current_filter"] : (function () { throw new RuntimeError('Variable "current_filter" does not exist.', 159, $this->source); })()) == "inf_5")) ? ("selected") : (""));
         yield ">Inférieur ou égal à 5</option>
                                     <option value=\"critique\" ";
-        // line 154
-        yield ((((isset($context["current_filter"]) || array_key_exists("current_filter", $context) ? $context["current_filter"] : (function () { throw new RuntimeError('Variable "current_filter" does not exist.', 154, $this->source); })()) == "critique")) ? ("selected") : (""));
+        // line 160
+        yield ((((isset($context["current_filter"]) || array_key_exists("current_filter", $context) ? $context["current_filter"] : (function () { throw new RuntimeError('Variable "current_filter" does not exist.', 160, $this->source); })()) == "critique")) ? ("selected") : (""));
         yield ">Critique (≥ 7)</option>
                                     <option value=\"modere\" ";
-        // line 155
-        yield ((((isset($context["current_filter"]) || array_key_exists("current_filter", $context) ? $context["current_filter"] : (function () { throw new RuntimeError('Variable "current_filter" does not exist.', 155, $this->source); })()) == "modere")) ? ("selected") : (""));
+        // line 161
+        yield ((((isset($context["current_filter"]) || array_key_exists("current_filter", $context) ? $context["current_filter"] : (function () { throw new RuntimeError('Variable "current_filter" does not exist.', 161, $this->source); })()) == "modere")) ? ("selected") : (""));
         yield ">Modéré (4-6)</option>
                                     <option value=\"faible\" ";
-        // line 156
-        yield ((((isset($context["current_filter"]) || array_key_exists("current_filter", $context) ? $context["current_filter"] : (function () { throw new RuntimeError('Variable "current_filter" does not exist.', 156, $this->source); })()) == "faible")) ? ("selected") : (""));
+        // line 162
+        yield ((((isset($context["current_filter"]) || array_key_exists("current_filter", $context) ? $context["current_filter"] : (function () { throw new RuntimeError('Variable "current_filter" does not exist.', 162, $this->source); })()) == "faible")) ? ("selected") : (""));
         yield ">Faible (≤ 3)</option>
                                 </select>
                             </div>
@@ -317,28 +326,28 @@ class __TwigTemplate_ef4ffe9b2cd5557c079da9170229180f extends Template
                                 <label class=\"form-label fw-medium\">Trier par</label>
                                 <select name=\"sort\" class=\"form-select\">
                                     <option value=\"date_desc\" ";
-        // line 164
-        yield ((((isset($context["current_sort"]) || array_key_exists("current_sort", $context) ? $context["current_sort"] : (function () { throw new RuntimeError('Variable "current_sort" does not exist.', 164, $this->source); })()) == "date_desc")) ? ("selected") : (""));
+        // line 170
+        yield ((((isset($context["current_sort"]) || array_key_exists("current_sort", $context) ? $context["current_sort"] : (function () { throw new RuntimeError('Variable "current_sort" does not exist.', 170, $this->source); })()) == "date_desc")) ? ("selected") : (""));
         yield ">Plus récent</option>
                                     <option value=\"date_asc\" ";
-        // line 165
-        yield ((((isset($context["current_sort"]) || array_key_exists("current_sort", $context) ? $context["current_sort"] : (function () { throw new RuntimeError('Variable "current_sort" does not exist.', 165, $this->source); })()) == "date_asc")) ? ("selected") : (""));
+        // line 171
+        yield ((((isset($context["current_sort"]) || array_key_exists("current_sort", $context) ? $context["current_sort"] : (function () { throw new RuntimeError('Variable "current_sort" does not exist.', 171, $this->source); })()) == "date_asc")) ? ("selected") : (""));
         yield ">Plus ancien</option>
                                     <option value=\"nom_asc\" ";
-        // line 166
-        yield ((((isset($context["current_sort"]) || array_key_exists("current_sort", $context) ? $context["current_sort"] : (function () { throw new RuntimeError('Variable "current_sort" does not exist.', 166, $this->source); })()) == "nom_asc")) ? ("selected") : (""));
+        // line 172
+        yield ((((isset($context["current_sort"]) || array_key_exists("current_sort", $context) ? $context["current_sort"] : (function () { throw new RuntimeError('Variable "current_sort" does not exist.', 172, $this->source); })()) == "nom_asc")) ? ("selected") : (""));
         yield ">Nom (A-Z)</option>
                                     <option value=\"nom_desc\" ";
-        // line 167
-        yield ((((isset($context["current_sort"]) || array_key_exists("current_sort", $context) ? $context["current_sort"] : (function () { throw new RuntimeError('Variable "current_sort" does not exist.', 167, $this->source); })()) == "nom_desc")) ? ("selected") : (""));
+        // line 173
+        yield ((((isset($context["current_sort"]) || array_key_exists("current_sort", $context) ? $context["current_sort"] : (function () { throw new RuntimeError('Variable "current_sort" does not exist.', 173, $this->source); })()) == "nom_desc")) ? ("selected") : (""));
         yield ">Nom (Z-A)</option>
                                     <option value=\"niveau_desc\" ";
-        // line 168
-        yield ((((isset($context["current_sort"]) || array_key_exists("current_sort", $context) ? $context["current_sort"] : (function () { throw new RuntimeError('Variable "current_sort" does not exist.', 168, $this->source); })()) == "niveau_desc")) ? ("selected") : (""));
+        // line 174
+        yield ((((isset($context["current_sort"]) || array_key_exists("current_sort", $context) ? $context["current_sort"] : (function () { throw new RuntimeError('Variable "current_sort" does not exist.', 174, $this->source); })()) == "niveau_desc")) ? ("selected") : (""));
         yield ">Niveau (plus élevé)</option>
                                     <option value=\"niveau_asc\" ";
-        // line 169
-        yield ((((isset($context["current_sort"]) || array_key_exists("current_sort", $context) ? $context["current_sort"] : (function () { throw new RuntimeError('Variable "current_sort" does not exist.', 169, $this->source); })()) == "niveau_asc")) ? ("selected") : (""));
+        // line 175
+        yield ((((isset($context["current_sort"]) || array_key_exists("current_sort", $context) ? $context["current_sort"] : (function () { throw new RuntimeError('Variable "current_sort" does not exist.', 175, $this->source); })()) == "niveau_asc")) ? ("selected") : (""));
         yield ">Niveau (plus faible)</option>
                                 </select>
                             </div>
@@ -350,7 +359,7 @@ class __TwigTemplate_ef4ffe9b2cd5557c079da9170229180f extends Template
                                         <i class=\"fas fa-filter me-2\"></i>Filtrer
                                     </button>
                                     <a href=\"";
-        // line 179
+        // line 185
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_zone_polluee_index");
         yield "\" class=\"btn btn-outline-custom\">
                                         <i class=\"fas fa-redo\"></i>
@@ -377,79 +386,79 @@ class __TwigTemplate_ef4ffe9b2cd5557c079da9170229180f extends Template
                         </thead>
                         <tbody>
                             ";
-        // line 203
-        if ((array_key_exists("zones", $context) && (Twig\Extension\CoreExtension::length($this->env->getCharset(), (isset($context["zones"]) || array_key_exists("zones", $context) ? $context["zones"] : (function () { throw new RuntimeError('Variable "zones" does not exist.', 203, $this->source); })())) > 0))) {
-            // line 204
+        // line 209
+        if ((array_key_exists("zones", $context) && (Twig\Extension\CoreExtension::length($this->env->getCharset(), (isset($context["zones"]) || array_key_exists("zones", $context) ? $context["zones"] : (function () { throw new RuntimeError('Variable "zones" does not exist.', 209, $this->source); })())) > 0))) {
+            // line 210
             yield "                                ";
             $context['_parent'] = $context;
-            $context['_seq'] = CoreExtension::ensureTraversable((isset($context["zones"]) || array_key_exists("zones", $context) ? $context["zones"] : (function () { throw new RuntimeError('Variable "zones" does not exist.', 204, $this->source); })()));
+            $context['_seq'] = CoreExtension::ensureTraversable((isset($context["zones"]) || array_key_exists("zones", $context) ? $context["zones"] : (function () { throw new RuntimeError('Variable "zones" does not exist.', 210, $this->source); })()));
             foreach ($context['_seq'] as $context["_key"] => $context["zone"]) {
-                // line 205
+                // line 211
                 yield "                                <tr>
                                     <td class=\"fw-bold\">";
-                // line 206
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "nomZone", [], "any", false, false, false, 206), "html", null, true);
+                // line 212
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "nomZone", [], "any", false, false, false, 212), "html", null, true);
                 yield "</td>
                                     <td>";
-                // line 207
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "coordonneesGps", [], "any", false, false, false, 207), "html", null, true);
+                // line 213
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "coordonneesGps", [], "any", false, false, false, 213), "html", null, true);
                 yield "</td>
                                     <td>
                                         ";
-                // line 209
-                if ((CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "niveauPollution", [], "any", false, false, false, 209) <= 3)) {
-                    // line 210
+                // line 215
+                if ((CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "niveauPollution", [], "any", false, false, false, 215) <= 3)) {
+                    // line 216
                     yield "                                            <span class=\"badge bg-success\">";
-                    yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "niveauPollution", [], "any", false, false, false, 210), "html", null, true);
+                    yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "niveauPollution", [], "any", false, false, false, 216), "html", null, true);
                     yield "/10</span>
                                         ";
-                } elseif ((CoreExtension::getAttribute($this->env, $this->source,                 // line 211
-$context["zone"], "niveauPollution", [], "any", false, false, false, 211) <= 6)) {
-                    // line 212
+                } elseif ((CoreExtension::getAttribute($this->env, $this->source,                 // line 217
+$context["zone"], "niveauPollution", [], "any", false, false, false, 217) <= 6)) {
+                    // line 218
                     yield "                                            <span class=\"badge bg-warning text-dark\">";
-                    yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "niveauPollution", [], "any", false, false, false, 212), "html", null, true);
+                    yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "niveauPollution", [], "any", false, false, false, 218), "html", null, true);
                     yield "/10</span>
                                         ";
                 } else {
-                    // line 214
+                    // line 220
                     yield "                                            <span class=\"badge bg-danger\">";
-                    yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "niveauPollution", [], "any", false, false, false, 214), "html", null, true);
+                    yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "niveauPollution", [], "any", false, false, false, 220), "html", null, true);
                     yield "/10</span>
                                         ";
                 }
-                // line 216
+                // line 222
                 yield "                                    </td>
                                     <td>";
-                // line 217
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatDate(CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "dateIdentification", [], "any", false, false, false, 217), "d/m/Y"), "html", null, true);
+                // line 223
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatDate(CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "dateIdentification", [], "any", false, false, false, 223), "d/m/Y"), "html", null, true);
                 yield "</td>
                                     <td>
                                         <div class=\"d-flex gap-2\">
                                             <a href=\"";
-                // line 220
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_zone_polluee_show", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "id", [], "any", false, false, false, 220)]), "html", null, true);
+                // line 226
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_zone_polluee_show", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "id", [], "any", false, false, false, 226)]), "html", null, true);
                 yield "\" class=\"btn btn-sm btn-outline-custom\">
                                                 <i class=\"fas fa-eye\"></i>
                                             </a>
                                             <a href=\"";
-                // line 223
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_zone_polluee_edit", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "id", [], "any", false, false, false, 223)]), "html", null, true);
+                // line 229
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_zone_polluee_edit", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "id", [], "any", false, false, false, 229)]), "html", null, true);
                 yield "\" class=\"btn btn-sm btn-outline-custom\">
                                                 <i class=\"fas fa-edit\"></i>
                                             </a>
                                             <a href=\"";
-                // line 226
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_zone_polluee_qr", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "id", [], "any", false, false, false, 226)]), "html", null, true);
+                // line 232
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_zone_polluee_qr", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "id", [], "any", false, false, false, 232)]), "html", null, true);
                 yield "\" class=\"btn btn-sm btn-outline-custom\">
                                                 <i class=\"fas fa-qrcode\"></i>
                                             </a>
                                             <form method=\"post\" action=\"";
-                // line 229
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_zone_polluee_delete", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "id", [], "any", false, false, false, 229)]), "html", null, true);
+                // line 235
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_zone_polluee_delete", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "id", [], "any", false, false, false, 235)]), "html", null, true);
                 yield "\" style=\"display:inline;\">
                                                 <input type=\"hidden\" name=\"_token\" value=\"";
-                // line 230
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderCsrfToken(("delete" . CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "id", [], "any", false, false, false, 230))), "html", null, true);
+                // line 236
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderCsrfToken(("delete" . CoreExtension::getAttribute($this->env, $this->source, $context["zone"], "id", [], "any", false, false, false, 236))), "html", null, true);
                 yield "\">
                                                 <button type=\"submit\" class=\"btn btn-sm btn-outline-custom text-danger\" onclick=\"return confirm('Supprimer cette zone ?')\">
                                                     <i class=\"fas fa-trash\"></i>
@@ -463,10 +472,10 @@ $context["zone"], "niveauPollution", [], "any", false, false, false, 211) <= 6))
             $_parent = $context['_parent'];
             unset($context['_seq'], $context['_key'], $context['zone'], $context['_parent']);
             $context = array_intersect_key($context, $_parent) + $_parent;
-            // line 239
+            // line 245
             yield "                            ";
         } else {
-            // line 240
+            // line 246
             yield "                                <tr>
                                     <td colspan=\"5\" class=\"text-center py-5\">
                                         <i class=\"fas fa-map-marker-alt fs-1 text-muted mb-3\"></i>
@@ -476,7 +485,7 @@ $context["zone"], "niveauPollution", [], "any", false, false, false, 211) <= 6))
                                 </tr>
                             ";
         }
-        // line 248
+        // line 254
         yield "                        </tbody>
                     </table>
                 </div>
@@ -515,7 +524,7 @@ $context["zone"], "niveauPollution", [], "any", false, false, false, 211) <= 6))
      */
     public function getDebugInfo(): array
     {
-        return array (  480 => 248,  470 => 240,  467 => 239,  452 => 230,  448 => 229,  442 => 226,  436 => 223,  430 => 220,  424 => 217,  421 => 216,  415 => 214,  409 => 212,  407 => 211,  402 => 210,  400 => 209,  395 => 207,  391 => 206,  388 => 205,  383 => 204,  381 => 203,  354 => 179,  341 => 169,  337 => 168,  333 => 167,  329 => 166,  325 => 165,  321 => 164,  310 => 156,  306 => 155,  302 => 154,  298 => 153,  294 => 152,  282 => 143,  262 => 126,  245 => 112,  228 => 98,  215 => 87,  205 => 83,  202 => 82,  198 => 81,  188 => 74,  182 => 71,  162 => 54,  139 => 34,  131 => 29,  123 => 24,  115 => 19,  100 => 6,  87 => 5,  64 => 3,  41 => 1,);
+        return array (  489 => 254,  479 => 246,  476 => 245,  461 => 236,  457 => 235,  451 => 232,  445 => 229,  439 => 226,  433 => 223,  430 => 222,  424 => 220,  418 => 218,  416 => 217,  411 => 216,  409 => 215,  404 => 213,  400 => 212,  397 => 211,  392 => 210,  390 => 209,  363 => 185,  350 => 175,  346 => 174,  342 => 173,  338 => 172,  334 => 171,  330 => 170,  319 => 162,  315 => 161,  311 => 160,  307 => 159,  303 => 158,  291 => 149,  271 => 132,  254 => 118,  237 => 104,  224 => 93,  214 => 89,  211 => 88,  207 => 87,  197 => 80,  191 => 77,  171 => 60,  148 => 40,  139 => 34,  131 => 29,  123 => 24,  115 => 19,  100 => 6,  87 => 5,  64 => 3,  41 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -556,6 +565,12 @@ $context["zone"], "niveauPollution", [], "any", false, false, false, 211) <= 6))
             <a href=\"{{ path('app_map') }}\" class=\"nav-link\">
                 <i class=\"fas fa-map\"></i>
                 <span>Carte</span>
+            </a>
+
+            <!-- ADD THIS NEW LINK FOR CHATBOT -->
+            <a href=\"{{ path('app_chatbot') }}\" class=\"nav-link\">
+                <i class=\"fas fa-robot\"></i>
+                <span>Assistant IA</span>
             </a>
         </div>
         

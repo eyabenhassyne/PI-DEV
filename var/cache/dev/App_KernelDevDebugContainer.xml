@@ -9,8 +9,8 @@
     <parameter key="kernel.runtime_mode.cli">%env(not:default:kernel.runtime_mode.web:)%</parameter>
     <parameter key="kernel.runtime_mode.worker">%env(bool:default::key:worker:default:kernel.runtime_mode:)%</parameter>
     <parameter key="kernel.debug">true</parameter>
-    <parameter key="kernel.build_dir">C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev</parameter>
-    <parameter key="kernel.cache_dir">C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev</parameter>
+    <parameter key="kernel.build_dir">C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev</parameter>
+    <parameter key="kernel.cache_dir">C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev</parameter>
     <parameter key="kernel.logs_dir">C:\Users\Mega-PC\Desktop\mon-projet\var\log</parameter>
     <parameter key="kernel.bundles" type="collection">
       <parameter key="FrameworkBundle">Symfony\Bundle\FrameworkBundle\FrameworkBundle</parameter>
@@ -27,6 +27,7 @@
       <parameter key="MakerBundle">Symfony\Bundle\MakerBundle\MakerBundle</parameter>
       <parameter key="UXMapBundle">Symfony\UX\Map\UXMapBundle</parameter>
       <parameter key="EndroidQrCodeBundle">Endroid\QrCodeBundle\EndroidQrCodeBundle</parameter>
+      <parameter key="ChartjsBundle">Symfony\UX\Chartjs\ChartjsBundle</parameter>
     </parameter>
     <parameter key="kernel.bundles_metadata" type="collection">
       <parameter key="FrameworkBundle" type="collection">
@@ -85,6 +86,10 @@
         <parameter key="path">C:\Users\Mega-PC\Desktop\mon-projet\vendor\endroid\qr-code-bundle\src</parameter>
         <parameter key="namespace">Endroid\QrCodeBundle</parameter>
       </parameter>
+      <parameter key="ChartjsBundle" type="collection">
+        <parameter key="path">C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\ux-chartjs</parameter>
+        <parameter key="namespace">Symfony\UX\Chartjs</parameter>
+      </parameter>
     </parameter>
     <parameter key="kernel.charset">UTF-8</parameter>
     <parameter key="kernel.container_class">App_KernelDevDebugContainer</parameter>
@@ -125,15 +130,15 @@
     <parameter key="translator.logging">false</parameter>
     <parameter key="translator.default_path">C:\Users\Mega-PC\Desktop\mon-projet/translations</parameter>
     <parameter key="debug.error_handler.throw_at">-1</parameter>
-    <parameter key="debug.container.dump">C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/App_KernelDevDebugContainer.xml</parameter>
+    <parameter key="debug.container.dump">C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/App_KernelDevDebugContainer.xml</parameter>
     <parameter key="router.request_context.host">localhost</parameter>
     <parameter key="router.request_context.scheme">http</parameter>
     <parameter key="router.request_context.base_url"></parameter>
     <parameter key="router.resource">kernel::loadRoutes</parameter>
-    <parameter key="router.cache_dir">C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev</parameter>
+    <parameter key="router.cache_dir">C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev</parameter>
     <parameter key="request_listener.http_port">80</parameter>
     <parameter key="request_listener.https_port">443</parameter>
-    <parameter key="serializer.mapping.cache.file">C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/serialization.php</parameter>
+    <parameter key="serializer.mapping.cache.file">C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/serialization.php</parameter>
     <parameter key="cache.prefix.seed">_C:\Users\Mega-PC\Desktop\mon-projet.App_KernelDevDebugContainer</parameter>
     <parameter key="session.metadata.storage_key">_sf2_meta</parameter>
     <parameter key="session.storage.options" type="collection">
@@ -147,11 +152,11 @@
     <parameter key="session.metadata.update_threshold">0</parameter>
     <parameter key="form.type_extension.csrf.enabled">true</parameter>
     <parameter key="form.type_extension.csrf.field_name">_token</parameter>
-    <parameter key="validator.mapping.cache.file">C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/validation.php</parameter>
+    <parameter key="validator.mapping.cache.file">C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/validation.php</parameter>
     <parameter key="validator.translation_domain">validators</parameter>
     <parameter key="profiler_listener.only_exceptions">false</parameter>
     <parameter key="profiler_listener.only_main_requests">false</parameter>
-    <parameter key="profiler.storage.dsn">file:C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/profiler</parameter>
+    <parameter key="profiler.storage.dsn">file:C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/profiler</parameter>
     <parameter key="doctrine.dbal.configuration.class">Doctrine\DBAL\Configuration</parameter>
     <parameter key="doctrine.data_collector.class">Doctrine\Bundle\DoctrineBundle\DataCollector\DoctrineDataCollector</parameter>
     <parameter key="doctrine.dbal.connection.event_manager.class">Symfony\Bridge\Doctrine\ContainerAwareEventManager</parameter>
@@ -218,7 +223,7 @@
     <parameter key="doctrine.orm.auto_generate_proxy_classes">true</parameter>
     <parameter key="doctrine.orm.enable_lazy_ghost_objects">true</parameter>
     <parameter key="doctrine.orm.enable_native_lazy_objects">false</parameter>
-    <parameter key="doctrine.orm.proxy_dir">C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/doctrine/orm/Proxies</parameter>
+    <parameter key="doctrine.orm.proxy_dir">C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/doctrine/orm/Proxies</parameter>
     <parameter key="doctrine.orm.proxy_namespace">Proxies</parameter>
     <parameter key="doctrine.migrations.preferred_em">null</parameter>
     <parameter key="doctrine.migrations.preferred_connection">null</parameter>
@@ -376,6 +381,20 @@
         <argument type="service" id=".service_locator.O2p6Lk7.App\Controller\ApiController"/>
       </call>
     </service>
+    <service id="App\Controller\ChatbotController" class="App\Controller\ChatbotController" public="true" autowire="true" autoconfigure="true">
+      <tag name="controller.service_arguments"/>
+      <tag name="container.service_subscriber"/>
+      <call method="setContainer">
+        <argument type="service" id=".service_locator.O2p6Lk7.App\Controller\ChatbotController"/>
+      </call>
+    </service>
+    <service id="App\Controller\DashboardIntelligentController" class="App\Controller\DashboardIntelligentController" public="true" autowire="true" autoconfigure="true">
+      <tag name="controller.service_arguments"/>
+      <tag name="container.service_subscriber"/>
+      <call method="setContainer">
+        <argument type="service" id=".service_locator.O2p6Lk7.App\Controller\DashboardIntelligentController"/>
+      </call>
+    </service>
     <service id="App\Controller\IndicateurImpactController" class="App\Controller\IndicateurImpactController" public="true" autowire="true" autoconfigure="true">
       <tag name="controller.service_arguments"/>
       <tag name="container.service_subscriber"/>
@@ -429,6 +448,7 @@
       <tag name="doctrine.repository_service"/>
       <argument type="service" id="doctrine"/>
     </service>
+    <service id="App\Service\MailService" class="App\Service\MailService" autowire="true" autoconfigure="true"/>
     <service id="App\Service\QRCodeService" class="App\Service\QRCodeService" autowire="true" autoconfigure="true"/>
     <service id="argument_metadata_factory" class="Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadataFactory"/>
     <service id="argument_resolver.backed_enum_resolver" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\BackedEnumValueResolver">
@@ -457,7 +477,7 @@
     </service>
     <service id="argument_resolver.service" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">
       <tag priority="-50" name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">controller.argument_value_resolver</tag>
-      <argument type="service" id=".service_locator.Irzh.Ev"/>
+      <argument type="service" id=".service_locator.D77tIuB"/>
     </service>
     <service id="argument_resolver.default" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">
       <tag priority="-100" name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">controller.argument_value_resolver</tag>
@@ -540,7 +560,7 @@
       </argument>
     </service>
     <service id="http_cache.store" class="Symfony\Component\HttpKernel\HttpCache\Store">
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/http_cache</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/http_cache</argument>
     </service>
     <service id="url_helper" class="Symfony\Component\HttpFoundation\UrlHelper">
       <argument type="service" id="request_stack"/>
@@ -550,7 +570,7 @@
       <tag name="container.no_preload"/>
       <argument type="tagged_iterator" tag="kernel.cache_warmer"/>
       <argument>true</argument>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/App_KernelDevDebugContainerDeprecations.log</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/App_KernelDevDebugContainerDeprecations.log</argument>
     </service>
     <service id="cache_clearer" class="Symfony\Component\HttpKernel\CacheClearer\ChainCacheClearer">
       <argument type="tagged_iterator" tag="kernel.cache_clearer"/>
@@ -1542,7 +1562,7 @@
       <argument></argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/pools/system</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -1561,7 +1581,7 @@
       <tag name="monolog.logger" channel="cache"/>
       <argument></argument>
       <argument>0</argument>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/pools/app</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/pools/app</argument>
       <argument type="service" id="cache.default_marshaller" on-invalid="ignore"/>
       <call method="setLogger">
         <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
@@ -1730,11 +1750,12 @@
     <service id="asset_mapper.cached_mapped_asset_factory" class="Symfony\Component\AssetMapper\Factory\CachedMappedAssetFactory">
       <tag name="container.decorator" id="asset_mapper.mapped_asset_factory" inner="asset_mapper.cached_mapped_asset_factory.inner"/>
       <argument type="service" id="asset_mapper.cached_mapped_asset_factory.inner"/>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/asset_mapper</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/asset_mapper</argument>
       <argument>true</argument>
     </service>
     <service id="asset_mapper.repository" class="Symfony\Component\AssetMapper\AssetMapperRepository">
       <argument type="collection">
+        <argument key="C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\ux-chartjs\src\DependencyInjection/../../assets/dist">@symfony/ux-chartjs</argument>
         <argument key="C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\ux-map\src/../assets/dist">@symfony/ux-map</argument>
         <argument key="C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\ux-leaflet-map/assets/dist">@symfony/ux-leaflet-map</argument>
         <argument key="C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\ux-turbo\src\DependencyInjection/../../assets/dist">@symfony/ux-turbo</argument>
@@ -2029,6 +2050,12 @@
       <argument type="service" id=".debug.http_client" on-invalid="ignore"/>
       <argument type="service" id="monolog.logger.mailer" on-invalid="ignore"/>
     </service>
+    <service id="mailer.transport_factory.gmail" class="Symfony\Component\Mailer\Bridge\Google\Transport\GmailTransportFactory">
+      <tag name="mailer.transport_factory"/>
+      <argument type="service" id="debug.event_dispatcher"/>
+      <argument type="service" id=".debug.http_client" on-invalid="ignore"/>
+      <argument type="service" id="monolog.logger.mailer" on-invalid="ignore"/>
+    </service>
     <service id="mailer.transport_factory.null" class="Symfony\Component\Mailer\Transport\NullTransportFactory">
       <tag name="mailer.transport_factory"/>
       <argument type="service" id="debug.event_dispatcher"/>
@@ -2096,7 +2123,7 @@
         </argument>
       </argument>
       <argument type="collection">
-        <argument key="cache_dir">C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/translations</argument>
+        <argument key="cache_dir">C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/translations</argument>
         <argument key="debug">true</argument>
         <argument key="resource_files" type="collection">
           <argument key="af" type="collection">
@@ -2404,6 +2431,7 @@
           <argument>C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\maker-bundle/translations</argument>
           <argument>C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\ux-map/translations</argument>
           <argument>C:\Users\Mega-PC\Desktop\mon-projet\vendor\endroid\qr-code-bundle\src/translations</argument>
+          <argument>C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\ux-chartjs/translations</argument>
         </argument>
         <argument key="cache_vary" type="collection">
           <argument key="scanned_directories" type="collection">
@@ -2425,6 +2453,7 @@
             <argument>C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\maker-bundle/translations</argument>
             <argument>C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\ux-map/translations</argument>
             <argument>C:\Users\Mega-PC\Desktop\mon-projet\vendor\endroid\qr-code-bundle\src/translations</argument>
+            <argument>C:\Users\Mega-PC\Desktop\mon-projet\vendor\symfony\ux-chartjs/translations</argument>
           </argument>
         </argument>
       </argument>
@@ -3354,7 +3383,7 @@
     </service>
     <service id="argument_resolver.not_tagged_controller" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver">
       <tag name="controller.argument_value_resolver" priority="-200"/>
-      <argument type="service" id=".service_locator.Irzh.Ev"/>
+      <argument type="service" id=".service_locator.D77tIuB"/>
     </service>
     <service id="debug.log_processor" class="Symfony\Bridge\Monolog\Processor\DebugProcessor">
       <tag name="kernel.reset" method="reset"/>
@@ -3457,7 +3486,7 @@
       <argument type="service" id=".service_locator.bN.V_Nq.router.default"/>
       <argument>kernel::loadRoutes</argument>
       <argument type="collection">
-        <argument key="cache_dir">C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev</argument>
+        <argument key="cache_dir">C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev</argument>
         <argument key="debug">true</argument>
         <argument key="generator_class">Symfony\Component\Routing\Generator\CompiledUrlGenerator</argument>
         <argument key="generator_dumper_class">Symfony\Component\Routing\Generator\Dumper\CompiledUrlGeneratorDumper</argument>
@@ -3636,10 +3665,10 @@
           </service>
         </argument>
       </argument>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/serialization.php</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/serialization.php</argument>
     </service>
     <service id="serializer.mapping.cache.symfony" class="Psr\Cache\CacheItemPoolInterface">
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/serialization.php</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/serialization.php</argument>
       <argument type="service" id="cache.serializer"/>
       <factory class="Symfony\Component\Cache\Adapter\PhpArrayAdapter" method="create"/>
     </service>
@@ -3775,7 +3804,7 @@
       <argument>true</argument>
     </service>
     <service id="session.storage.factory.mock_file" class="Symfony\Component\HttpFoundation\Session\Storage\MockFileSessionStorageFactory">
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/sessions</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/sessions</argument>
       <argument>MOCKSESSID</argument>
       <argument type="service">
         <service class="Symfony\Component\HttpFoundation\Session\Storage\MetadataBag">
@@ -3980,10 +4009,10 @@
     <service id="validator.mapping.cache_warmer" class="Symfony\Bundle\FrameworkBundle\CacheWarmer\ValidatorCacheWarmer">
       <tag name="kernel.cache_warmer"/>
       <argument type="service" id="validator.builder"/>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/validation.php</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/validation.php</argument>
     </service>
     <service id="validator.mapping.cache.adapter" class="Symfony\Component\Cache\Adapter\PhpArrayAdapter" constructor="create">
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/validation.php</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/validation.php</argument>
       <argument type="service" id="cache.validator"/>
     </service>
     <service id="validator.validator_factory" class="Symfony\Component\Validator\ContainerConstraintValidatorFactory">
@@ -4641,7 +4670,7 @@
       </call>
     </service>
     <service id="profiler.storage" class="Symfony\Component\HttpKernel\Profiler\FileProfilerStorage">
-      <argument>file:C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/profiler</argument>
+      <argument>file:C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/profiler</argument>
     </service>
     <service id="profiler_listener" class="Symfony\Component\HttpKernel\EventListener\ProfilerListener">
       <tag name="kernel.event_subscriber"/>
@@ -4706,7 +4735,7 @@
       <tag name="monolog.logger" channel="profiler"/>
       <tag name="data_collector" template="@WebProfiler/Collector/logger.html.twig" id="logger" priority="300"/>
       <argument type="service" id="monolog.logger.profiler" on-invalid="ignore"/>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/App_KernelDevDebugContainer</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/App_KernelDevDebugContainer</argument>
       <argument type="service" id=".virtual_request_stack" on-invalid="ignore"/>
     </service>
     <service id="data_collector.time" class="Symfony\Component\HttpKernel\DataCollector\TimeDataCollector">
@@ -5293,7 +5322,7 @@
         <argument type="service" id=".doctrine.orm.default_metadata_driver"/>
       </call>
       <call method="setProxyDir">
-        <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/doctrine/orm/Proxies</argument>
+        <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/doctrine/orm/Proxies</argument>
       </call>
       <call method="setProxyNamespace">
         <argument>Proxies</argument>
@@ -5713,7 +5742,7 @@
       <argument type="service" id="twig.loader.native_filesystem"/>
       <argument type="collection">
         <argument key="autoescape">name</argument>
-        <argument key="cache">C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/twig</argument>
+        <argument key="cache">C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/twig</argument>
         <argument key="charset">UTF-8</argument>
         <argument key="debug">true</argument>
         <argument key="strict_variables">true</argument>
@@ -5789,6 +5818,9 @@
       </call>
       <call method="addExtension">
         <argument type="service" id="Endroid\QrCodeBundle\Twig\QrCodeExtension"/>
+      </call>
+      <call method="addExtension">
+        <argument type="service" id="chartjs.twig_extension"/>
       </call>
       <call method="addExtension">
         <argument type="service" id="stimulus.twig_extension"/>
@@ -7235,12 +7267,23 @@
         <argument>false</argument>
       </call>
     </service>
+    <service id="chartjs.builder" class="Symfony\UX\Chartjs\Builder\ChartBuilder"/>
+    <service id="chartjs.twig_extension" class="Symfony\UX\Chartjs\Twig\ChartExtension">
+      <tag name="twig.extension"/>
+      <argument type="service" id="stimulus.helper"/>
+    </service>
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\Admin6Controller" class="App\Controller\Admin6Controller" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\Admin6Controller" class="App\Controller\Admin6Controller" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Controller\Admin6Controller" class="App\Controller\Admin6Controller" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\ApiController" class="App\Controller\ApiController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\ApiController" class="App\Controller\ApiController" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Controller\ApiController" class="App\Controller\ApiController" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\ChatbotController" class="App\Controller\ChatbotController" autowire="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\ChatbotController" class="App\Controller\ChatbotController" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Controller\ChatbotController" class="App\Controller\ChatbotController" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\DashboardIntelligentController" class="App\Controller\DashboardIntelligentController" autowire="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\DashboardIntelligentController" class="App\Controller\DashboardIntelligentController" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Controller\DashboardIntelligentController" class="App\Controller\DashboardIntelligentController" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\IndicateurImpactController" class="App\Controller\IndicateurImpactController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\IndicateurImpactController" class="App\Controller\IndicateurImpactController" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Controller\IndicateurImpactController" class="App\Controller\IndicateurImpactController" autowire="true" autoconfigure="true" abstract="true"/>
@@ -7706,6 +7749,19 @@
         <argument key="repository" type="service_closure" id="App\Repository\ZonePollueeRepository"/>
       </argument>
     </service>
+    <service id=".service_locator.OluOONX" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="indicateurRepo" type="service_closure" id="App\Repository\IndicateurImpactRepository"/>
+        <argument key="zoneRepo" type="service_closure" id="App\Repository\ZonePollueeRepository"/>
+      </argument>
+    </service>
+    <service id=".service_locator.i8XBfmZ" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="zoneRepo" type="service_closure" id="App\Repository\ZonePollueeRepository"/>
+      </argument>
+    </service>
     <service id=".service_locator.qAlMOrK" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
@@ -7751,6 +7807,13 @@
         <argument key="repository" type="service_closure" id="App\Repository\ZonePollueeRepository"/>
       </argument>
     </service>
+    <service id=".service_locator.wdczQ9j" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="entityManager" type="service_closure" id="doctrine.orm.default_entity_manager"/>
+        <argument key="mailService" type="service_closure" id="App\Service\MailService"/>
+      </argument>
+    </service>
     <service id=".service_locator.R2zCFxk" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
@@ -7778,11 +7841,14 @@
         <argument key="repository" type="service_closure" id="App\Repository\ZonePollueeRepository"/>
       </argument>
     </service>
-    <service id=".service_locator.Irzh.Ev" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.D77tIuB" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="App\Controller\Admin6Controller::dashboard" type="service_closure" id=".service_locator.n_IEkrD"/>
         <argument key="App\Controller\ApiController::zones" type="service_closure" id=".service_locator.DDaIjT0"/>
+        <argument key="App\Controller\DashboardIntelligentController::ask" type="service_closure" id=".service_locator.OluOONX"/>
+        <argument key="App\Controller\DashboardIntelligentController::compareZones" type="service_closure" id=".service_locator.i8XBfmZ"/>
+        <argument key="App\Controller\DashboardIntelligentController::index" type="service_closure" id=".service_locator.OluOONX"/>
         <argument key="App\Controller\IndicateurImpactController::delete" type="service_closure" id=".service_locator.fALByUn"/>
         <argument key="App\Controller\IndicateurImpactController::edit" type="service_closure" id=".service_locator.fALByUn"/>
         <argument key="App\Controller\IndicateurImpactController::index" type="service_closure" id=".service_locator.qAlMOrK"/>
@@ -7796,7 +7862,7 @@
         <argument key="App\Controller\ZonePollueeController::downloadQRPNG" type="service_closure" id=".service_locator.TwHtLwH"/>
         <argument key="App\Controller\ZonePollueeController::edit" type="service_closure" id=".service_locator.kdIY5SB"/>
         <argument key="App\Controller\ZonePollueeController::index" type="service_closure" id=".service_locator.DDaIjT0"/>
-        <argument key="App\Controller\ZonePollueeController::new" type="service_closure" id=".service_locator.CsMkqUa"/>
+        <argument key="App\Controller\ZonePollueeController::new" type="service_closure" id=".service_locator.wdczQ9j"/>
         <argument key="App\Controller\ZonePollueeController::show" type="service_closure" id=".service_locator.R2zCFxk"/>
         <argument key="App\Controller\ZonePollueeController::showQR" type="service_closure" id=".service_locator.TwHtLwH"/>
         <argument key="App\Kernel::loadRoutes" type="service_closure" id=".service_locator.y4_Zrx."/>
@@ -7805,6 +7871,9 @@
         <argument key="kernel::registerContainerConfiguration" type="service_closure" id=".service_locator.y4_Zrx."/>
         <argument key="App\Controller\Admin6Controller:dashboard" type="service_closure" id=".service_locator.n_IEkrD"/>
         <argument key="App\Controller\ApiController:zones" type="service_closure" id=".service_locator.DDaIjT0"/>
+        <argument key="App\Controller\DashboardIntelligentController:ask" type="service_closure" id=".service_locator.OluOONX"/>
+        <argument key="App\Controller\DashboardIntelligentController:compareZones" type="service_closure" id=".service_locator.i8XBfmZ"/>
+        <argument key="App\Controller\DashboardIntelligentController:index" type="service_closure" id=".service_locator.OluOONX"/>
         <argument key="App\Controller\IndicateurImpactController:delete" type="service_closure" id=".service_locator.fALByUn"/>
         <argument key="App\Controller\IndicateurImpactController:edit" type="service_closure" id=".service_locator.fALByUn"/>
         <argument key="App\Controller\IndicateurImpactController:index" type="service_closure" id=".service_locator.qAlMOrK"/>
@@ -7818,7 +7887,7 @@
         <argument key="App\Controller\ZonePollueeController:downloadQRPNG" type="service_closure" id=".service_locator.TwHtLwH"/>
         <argument key="App\Controller\ZonePollueeController:edit" type="service_closure" id=".service_locator.kdIY5SB"/>
         <argument key="App\Controller\ZonePollueeController:index" type="service_closure" id=".service_locator.DDaIjT0"/>
-        <argument key="App\Controller\ZonePollueeController:new" type="service_closure" id=".service_locator.CsMkqUa"/>
+        <argument key="App\Controller\ZonePollueeController:new" type="service_closure" id=".service_locator.wdczQ9j"/>
         <argument key="App\Controller\ZonePollueeController:show" type="service_closure" id=".service_locator.R2zCFxk"/>
         <argument key="App\Controller\ZonePollueeController:showQR" type="service_closure" id=".service_locator.TwHtLwH"/>
         <argument key="kernel:loadRoutes" type="service_closure" id=".service_locator.y4_Zrx."/>
@@ -8463,6 +8532,18 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.O2p6Lk7" method="withContext"/>
     </service>
+    <service id=".service_locator.O2p6Lk7.App\Controller\ChatbotController" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\ChatbotController"/>
+      <argument>App\Controller\ChatbotController</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.O2p6Lk7" method="withContext"/>
+    </service>
+    <service id=".service_locator.O2p6Lk7.App\Controller\DashboardIntelligentController" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\DashboardIntelligentController"/>
+      <argument>App\Controller\DashboardIntelligentController</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.O2p6Lk7" method="withContext"/>
+    </service>
     <service id=".service_locator.O2p6Lk7.App\Controller\IndicateurImpactController" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator_context" id="App\Controller\IndicateurImpactController"/>
       <argument>App\Controller\IndicateurImpactController</argument>
@@ -8669,6 +8750,8 @@
           <argument>App\Kernel</argument>
           <argument>App\Controller\Admin6Controller</argument>
           <argument>App\Controller\ApiController</argument>
+          <argument>App\Controller\ChatbotController</argument>
+          <argument>App\Controller\DashboardIntelligentController</argument>
           <argument>App\Controller\IndicateurImpactController</argument>
           <argument>App\Controller\MapController</argument>
           <argument>App\Controller\QRDashboardController</argument>
@@ -9811,7 +9894,7 @@
     <service id="cache.app.recorder_inner" class="Symfony\Component\Cache\Adapter\FilesystemAdapter">
       <argument>Ymy-ayDPBo</argument>
       <argument>0</argument>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/pools/app</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/pools/app</argument>
       <argument type="service" id="cache.default_marshaller" on-invalid="ignore"/>
       <call method="setLogger">
         <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
@@ -9821,7 +9904,7 @@
       <argument>M5yNNtz7Sq</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/pools/system</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -9829,7 +9912,7 @@
       <argument>m5An0tpKxV</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/pools/system</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -9837,7 +9920,7 @@
       <argument>yozuDKSHj7</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/pools/system</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -9845,7 +9928,7 @@
       <argument>Zit2B-EdPE</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/pools/system</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -9853,7 +9936,7 @@
       <argument>lObDwz+qXq</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/pools/system</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -9861,14 +9944,14 @@
       <argument>Ut2HIfWNeO</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/pools/system</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
     <service id="cache.messenger.restart_workers_signal.recorder_inner" class="Symfony\Component\Cache\Adapter\FilesystemAdapter">
       <argument>ll0DEye79A</argument>
       <argument>0</argument>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/pools/app</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/pools/app</argument>
       <argument type="service" id="cache.default_marshaller" on-invalid="ignore"/>
       <call method="setLogger">
         <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
@@ -9878,7 +9961,7 @@
       <argument>qOhpY82Tid</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/pools/system</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -9888,7 +9971,7 @@
       <argument>IJv822atli</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/pools/system</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -9896,7 +9979,7 @@
       <argument>JeVYWjv37Z</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:/Users/Mega-PC/Desktop/mon-projet/var/cache/dev/pools/system</argument>
+      <argument>C:\Users\Mega-PC\Desktop\mon-projet\var\cache\dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -10084,9 +10167,10 @@
     <service id="Endroid\QrCode\Builder\BuilderInterface" alias="Endroid\QrCode\Builder\Builder"/>
     <service id="Endroid\QrCode\Builder\BuilderRegistryInterface" alias="Endroid\QrCode\Builder\BuilderRegistry"/>
     <service id="Endroid\QrCode\Builder\BuilderInterface $defaultQrCodeBuilder" alias="endroid_qr_code.default_builder"/>
+    <service id="Symfony\UX\Chartjs\Builder\ChartBuilderInterface" alias="chartjs.builder"/>
     <service id="container.env_var_processors_locator" alias=".service_locator.w7.f4fT" public="true"/>
     <service id="twig.loader.filesystem" alias="twig.loader.native_filesystem"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.Irzh.Ev"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator.D77tIuB"/>
     <service id="doctrine.id_generator_locator" alias=".service_locator.KLVvNIq"/>
     <service id="twig.loader" alias="twig.loader.native_filesystem"/>
     <service id=".Psr\Log\LoggerInterface $request.logger" alias="monolog.logger.request"/>
@@ -10125,12 +10209,13 @@
     <service id=".service_locator.h8Jkkd2" alias="messenger.retry_strategy_locator"/>
     <service id=".service_locator.bJ.4HC5" alias=".service_locator.w7.f4fT"/>
     <service id=".service_locator.pqcvo7Z" alias=".service_locator.n_IEkrD"/>
+    <service id=".service_locator.BJPaAOO" alias=".service_locator.OluOONX"/>
     <service id=".service_locator.qb2QUHz" alias=".service_locator.fALByUn"/>
     <service id=".service_locator.vHMqWPw" alias=".service_locator.ivMCWw3"/>
     <service id=".service_locator.zotn9Hf" alias=".service_locator.kdIY5SB"/>
     <service id=".service_locator.3fWfT2q" alias=".service_locator.TwHtLwH"/>
     <service id=".service_locator.uIrnVJT" alias=".service_locator.dcaf6uT"/>
-    <service id=".service_locator.c82iYIi" alias=".service_locator.Irzh.Ev"/>
+    <service id=".service_locator.ahj5f8B" alias=".service_locator.D77tIuB"/>
     <service id=".service_locator.BFrsqsn" alias=".service_locator.F9PKc.7"/>
     <service id=".service_locator.RrMcYOZ" alias=".service_locator.bRLWaGK"/>
     <service id=".service_locator.XtmiKbi" alias=".service_locator.MfxSDRP"/>
@@ -10158,6 +10243,8 @@
     <service id=".service_locator.gFlme_s" alias=".service_locator.y4_Zrx."/>
     <service id=".service_locator.tjT_1gX" alias=".service_locator.n_IEkrD"/>
     <service id=".service_locator.23cgvEG" alias=".service_locator.DDaIjT0"/>
+    <service id=".service_locator.E64mXlz" alias=".service_locator.OluOONX"/>
+    <service id=".service_locator..zEiRPo" alias=".service_locator.i8XBfmZ"/>
     <service id=".service_locator.BF1aaf3" alias=".service_locator.qAlMOrK"/>
     <service id=".service_locator.9e2t_lq" alias=".service_locator.CsMkqUa"/>
     <service id=".service_locator.uHgUNki" alias=".service_locator.cP0vxgj"/>
@@ -10165,6 +10252,7 @@
     <service id=".service_locator.NqV.57N" alias=".service_locator.GXvkjJ0"/>
     <service id=".service_locator.nNulHID" alias=".service_locator.F1RPxoi"/>
     <service id=".service_locator.t6hd18G" alias=".service_locator.ivMCWw3"/>
+    <service id=".service_locator.QKKdO5l" alias=".service_locator.wdczQ9j"/>
     <service id=".service_locator.FQsTrG_" alias=".service_locator.R2zCFxk"/>
     <service id=".service_locator.XBKFrqb" alias=".service_locator.kdIY5SB"/>
     <service id=".service_locator.hCXigtB" alias=".service_locator.TwHtLwH"/>
