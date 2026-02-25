@@ -36,42 +36,57 @@ final class ParticipationController extends AbstractController
 
     // ParticipationController.php
 
-#[Route('/new', name: 'app_participation_new', methods: ['POST'])] // Khalliha POST barka khater mel Modal
+    #[Route('/new', name: 'app_participation_new', methods: ['GET', 'POST'])]
 public function new(Request $request, EntityManagerInterface $entityManager, EvenementRepository $evenementRepository, NotificationService $notifService): Response 
 {
-    // 1. Nakhou el data mel Modal d-toul (mouch mel form mta3 l-admin)
-    $nomCitoyen = $request->request->get('nomCitoyen');
-    $eventId = $request->query->get('event_id');
+    // 1. Ken el request jaya mel POST (Modal walla Admin Form)
+    if ($request->isMethod('POST')) {
+        $nomCitoyen = $request->request->get('nomCitoyen');
+        // N-choufou el event_id d-y-iji mel request direct (Modal) walla mel Form (Admin)
+        $eventId = $request->request->get('event_id') ?? $request->request->all('participation')['evenement'] ?? null;
 
-    if (!$nomCitoyen || !$eventId) {
-        $this->addFlash('danger', 'Données manquantes !');
-        return $this->redirectToRoute('app_front');
+        if ($nomCitoyen && $eventId) {
+            $evenement = $evenementRepository->find($eventId);
+            if ($evenement) {
+                $participation = new Participation();
+                $participation->setNomCitoyen($nomCitoyen);
+                $participation->setEvenement($evenement);
+                $participation->setDateInscription(new \DateTime());
+
+                $entityManager->persist($participation);
+                $entityManager->flush();
+
+                $notifService->notifyAdmin("Nouvelle Inscription", "Le citoyen $nomCitoyen s'est inscrit à : " . $evenement->getTitle());
+                $this->addFlash('success', 'Confirmation envoyée !');
+                
+                // Yarja3 lel front ken el request jaya mel modal, walla lel index ken mel admin
+                return $request->request->has('event_id') ? $this->redirectToRoute('app_front') : $this->redirectToRoute('app_participation_index');
+            }
+        }
     }
 
-    $evenement = $evenementRepository->find($eventId);
-    if (!$evenement) {
-        throw $this->createNotFoundException('Événement non trouvé');
-    }
-
-    // 2. Création de la participation
+    // 2. Ken el request GET (Admin standard)
     $participation = new Participation();
-    $participation->setNomCitoyen($nomCitoyen);
-    $participation->setEvenement($evenement);
-    $participation->setDateInscription(new \DateTime()); // Ken 3andek date
+    $form = $this->createForm(ParticipationType::class, $participation);
+    $form->handleRequest($request);
 
-    $entityManager->persist($participation);
-    $entityManager->flush();
+    if ($form->isSubmitted() && $form->isValid()) {
+        $entityManager->persist($participation);
+        $entityManager->flush();
+        return $this->redirectToRoute('app_participation_index');
+    }
 
-    // 3. Notification lil Admin - El Bundle y-aba3th mail d-toul lel Mailtrap
-    $notifService->notifyAdmin(
-        "Nouvelle Inscription (Front)", 
-        "Le citoyen " . $nomCitoyen . " s'est inscrit à l'événement: " . $evenement->getTitle()
-    );
+    return $this->render('participation/new.html.twig', [
+        'participation' => $participation,
+        'form' => $form->createView(),
+    ]);
+}
 
-    $this->addFlash('success', 'Merci ! Votre participation est confirmée et l\'admin a été notifié.');
 
-    // 4. Yarja3 d-toul lel Front (User Interface)
-    return $this->redirectToRoute('app_front'); 
+public function __construct()
+{
+    // Dima n-7ottou el date wa9t el création automatique
+    $this->dateInscription = new \DateTime();
 }
 
     #[Route('/{id}/edit', name: 'app_participation_edit', methods: ['GET', 'POST'])]

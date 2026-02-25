@@ -135,4 +135,19 @@ public function meteoDetails(): Response
 {
     return $this->render('front/meteo_details.html.twig');
 }
+
+#[Route('/mes-badges', name: 'app_mes_badges')]
+    public function mesBadges(ParticipationRepository $participationRepository, Request $request): Response
+    {
+        // Njibou el ism mel barre de recherche (url?nom=Ahmed)
+        $nomCitoyen = $request->query->get('nom'); 
+        
+        // Njibou el participations mta3 el ism hatha bedhabt
+        $mesParticipations = $nomCitoyen ? $participationRepository->findBy(['nomCitoyen' => $nomCitoyen]) : [];
+
+        return $this->render('front/mes_badges.html.twig', [
+            'participations' => $mesParticipations,
+            'nom' => $nomCitoyen
+        ]);
+    }
 }

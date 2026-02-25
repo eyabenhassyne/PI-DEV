@@ -126,4 +126,23 @@ final class EvenementController extends AbstractController
 
         return $this->redirectToRoute('app_evenement_index');
     }
+
+    // Faza AI sghira bech ta3ti prédiction
+public function predictAttendance($event, $weatherTemp) {
+    $baseScore = 50; // 3aded e-nes el dima d-ji
+
+    // Ken el blasa fiha "Tunis" walla "Ariana" (Blayes kbar)
+    if (str_contains(strtolower($event->getLieu()), 'tunis')) {
+        $baseScore += 20;
+    }
+
+    // Ken el météo behiya (bin 15 w 25 degrée)
+    if ($weatherTemp >= 15 && $weatherTemp <= 25) {
+        $baseScore += 30;
+    } elseif ($weatherTemp < 10) {
+        $baseScore -= 15; // Bard y-khalli e-nes ma d-jich
+    }
+
+    return $baseScore;
+}
 }

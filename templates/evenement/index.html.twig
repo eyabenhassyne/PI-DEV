@@ -33,8 +33,6 @@
                     </span>
                     <select name="sort" class="form-select border-start-0" onchange="this.form.submit()">
                         <option value="title" {{ app.request.query.get('sort') == 'title' ? 'selected' : '' }}>Titre (A-Z)</option>
-                        <option value="dateHeure" {{ app.request.query.get('sort') == 'dateHeure' ? 'selected' : '' }}>Date</option>
-                        <option value="nomOrganisateur" {{ app.request.query.get('sort') == 'nomOrganisateur' ? 'selected' : '' }}>Organisateur</option>
                     </select>
                 </div>
 
@@ -53,8 +51,10 @@
                 <thead class="table-light">
                     <tr>
                         <th class="py-3">Titre</th>
-                        <th class="py-3">Description</th>
-                        <th class="py-3">Adresse</th> {# --- ZIDNA EL COLONNE HNA --- #}
+                        <th class="py-3">Adresse</th>
+                        <th class="py-3 text-center" style="min-width: 160px;">
+                             <i class="fas fa-robot text-info me-1"></i> Impact IA
+                        </th>
                         <th class="py-3">Date & Heure</th>
                         <th class="py-3">Organisateur</th>
                         <th class="py-3 text-center">Actions</th>
@@ -62,6 +62,9 @@
                 </thead>
                 <tbody>
                 {% for evenement in evenements %}
+                    {% set prediction = (evenement.id * 7 % 45) + 15 %} {# Calcul simple pour simuler l'IA #}
+                    {% set proba = (evenement.id * 13 % 60) + 40 %}   {# Probabilité de succès entre 40% et 100% #}
+                    
                     <tr>
                         <td>
                             <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}" class="text-decoration-none">
@@ -70,15 +73,27 @@
                                 </span>
                             </a>
                         </td>
-                        <td class="text-truncate" style="max-width: 150px;" title="{{ evenement.description }}">
-                            {{ evenement.description }}
-                        </td>
                         
-                        {# --- EL ISLAH HNA: AFFICHAGE ADRESSE (LIEU) --- #}
                         <td>
                             <div class="text-muted small">
                                 <i class="fas fa-map-marker-alt text-success me-1"></i>
                                 {{ evenement.lieu|default('Non spécifiée') }}
+                            </div>
+                        </td>
+
+                        {# --- FAZA AI: PREDICTION AFFLUENCE --- #}
+                        <td class="text-center">
+                            <div class="d-flex flex-column align-items-center">
+                                <span class="badge rounded-pill bg-info text-dark mb-1 shadow-sm" style="font-size: 0.75rem;">
+                                    ~{{ prediction }} pers. attendues
+                                </span>
+                                <div class="progress w-100" style="height: 6px; background-color: #e9ecef;">
+                                    <div class="progress-bar progress-bar-animated progress-bar-striped {{ proba > 70 ? 'bg-success' : 'bg-warning' }}" 
+                                         role="progressbar" style="width: {{ proba }}%" 
+                                         aria-valuenow="{{ proba }}" aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                                <span class="text-muted" style="font-size: 0.65rem;">Succès: {{ proba }}%</span>
                             </div>
                         </td>
 
@@ -88,10 +103,12 @@
                                 {{ evenement.dateHeure ? evenement.dateHeure|date('d/m/Y H:i') : 'N/A' }}
                             </div>
                         </td>
+                        
                         <td class="fw-bold text-dark small">
                             <i class="fas fa-user-circle me-1 text-success opacity-75"></i> 
                             {{ evenement.nomOrganisateur }} 
                         </td>
+                        
                         <td class="text-center">
                             <div class="btn-group shadow-sm bg-white rounded">
                                 <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}" class="btn btn-sm btn-light border-end" title="Voir Participants">

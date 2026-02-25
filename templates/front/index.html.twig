@@ -1,110 +1,88 @@
-{# templates/front/index.html.twig #}
 {% extends 'base_front.html.twig' %}
 
-{% block body %}
+{% block stylesheets %}
 <style>
-    .map-box { height: 220px !important; width: 100% !important; background: #e9ecef; display: block !important; border-bottom: 1px solid #dee2e6; }
-    .leaflet-container { z-index: 1 !important; }
-    .btn-google-maps { background-color: #ffffff; color: #4285F4; border: 1px solid #4285F4; font-size: 11px; padding: 4px 10px; border-radius: 20px; transition: 0.3s; text-decoration: none; display: inline-flex; align-items: center; }
-    .btn-google-maps:hover { background-color: #4285F4; color: white; }
-    .distance-badge { font-size: 11px; font-weight: 600; color: #2f6b4f; background: #e8f5e9; padding: 3px 10px; border-radius: 10px; border: 1px solid #c8e6c9; display: none; }
-    .weather-badge { font-size: 11px; font-weight: 600; color: #0d6efd; background: #f0f7ff; padding: 3px 10px; border-radius: 10px; border: 1px solid #cfe2ff; display: none; margin-right: 5px; align-items: center; }
-    .leaflet-routing-container { display: none !important; }
-    .badge-organisateur { transition: 0.2s; cursor: pointer; text-decoration: none; }
-    .badge-organisateur:hover { transform: scale(1.05); background-color: rgba(47, 107, 79, 0.2) !important; }
+    .map-box { height: 180px !important; width: 100% !important; background: #f8f9fa; border-radius: 12px 12px 0 0; }
+    .event-card { transition: 0.3s; border: none !important; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .event-card:hover { transform: translateY(-5px); }
+    
+    .btn-ajouter-special { background-color: #ffc107; color: #2f6b4f; font-weight: bold; border: none; padding: 10px 25px; }
+    .btn-ajouter-special:hover { background-color: #e0a800; color: #1e4634; }
+
+    /* Jdid: Style mta3 el badges bahtha b3adh-hom */
+    .info-badges-row { display: flex; gap: 8px; align-items: center; }
+    .badge-meteo { background: #f0f7ff; color: #007bff; border: 1px solid #d0e7ff; font-weight: 600; }
 </style>
+{% endblock %}
 
-<div class="container mb-5">
-    <div class="p-5 text-center rounded-4 shadow-sm" style="background-color: #e8f5e9; border: 1px solid #c8e6c9;">
-        <h1 class="display-4 fw-bold text-success mb-3">Actions Écologiques</h1>
-        <p class="lead text-muted mx-auto" style="max-width: 700px;">Participez à nos campagnes et protégez l'environnement avec WasteWiseTN.</p>
-    </div>
-</div>
+{% block body %}
+<div class="container py-4">
 
-<div class="container mb-5">
-    {# AFFICHER LES MESSAGES DE SUCCÈS #}
-    {% for label, messages in app.flashes %}
-        {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show rounded-4 shadow-sm mb-4" role="alert">
-                <i class="fas fa-check-circle me-2"></i> {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
-    {% endfor %}
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold text-dark m-0"><i class="fas fa-leaf text-success me-2"></i>Événements Disponibles</h3>
-        <span class="badge bg-secondary rounded-pill">{{ events|length }} Événements</span>
+    <div class="d-flex justify-content-between align-items-center mb-5 p-4 bg-white rounded-4 shadow-sm">
+        <div>
+            <h2 class="fw-bold text-success m-0"><i class="fas fa-leaf me-2"></i>Actions Écologiques</h2>
+            <p class="text-muted m-0 small">Découvrez et participez aux événements de WasteWiseTN</p>
+        </div>
+        
     </div>
 
     <div class="row g-4">
         {% for event in events %}
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-                    <div id="map-{{ event.id }}" class="map-box" data-adresse="{{ event.lieu|default('Tunisie') }}"></div>
+                <div class="card h-100 event-card rounded-4 overflow-hidden">
+                    
+                    {# Map Div #}
+                    <div id="map-{{ event.id }}" class="map-box" data-adresse="{{ event.lieu|default('Tunis') }}"></div>
                     
                     <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <a href="{{ path('app_mes_actions', {'organisateur': event.nomOrganisateur}) }}" class="badge-organisateur">
-                                <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle px-3 py-2 rounded-pill small">
-                                    <i class="fas fa-user-tie me-1"></i> {{ event.nomOrganisateur }}
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill small">
+                                <i class="fas fa-user-tie me-1"></i> {{ event.nomOrganisateur }}
+                            </span>
+                            
+                            {# --- Hna el Météo w el Distance bahtha b3adh-hom --- #}
+                            <div class="info-badges-row">
+                                <span id="weather-event-{{ event.id }}" class="badge badge-meteo rounded-pill px-2 py-1 small d-none">
+        
                                 </span>
-                            </a>
-
-                            <div class="d-flex align-items-center">
-                                <span id="weather-{{ event.id }}" class="weather-badge">
-                                    <span class="weather-icon"></span> <span class="temp-val">--</span>°C
-                                </span>
-                                <span id="dist-badge-{{ event.id }}" class="distance-badge">
+                                <span id="dist-badge-{{ event.id }}" class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-2 py-1 small" style="display:none;">
                                     <i class="fas fa-route me-1"></i> <span class="dist-val">--</span> km
                                 </span>
                             </div>
                         </div>
 
-                        <h5 class="card-title fw-bold text-dark mb-3 small">{{ event.title }}</h5>
-                        
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <p class="small text-muted m-0">
-                                <i class="fas fa-map-marker-alt text-danger me-1"></i> 
-                                <strong>{{ event.lieu|default('Tunisie') }}</strong>
-                            </p>
-                            <a href="http://maps.google.com/?q={{ (event.lieu ~ ', Tunisie')|url_encode }}" target="_blank" class="btn-google-maps">
-                                <i class="fab fa-google me-1"></i> Navigation
-                            </a>
-                        </div>
+                        <h5 class="fw-bold text-dark mb-2">{{ event.title }}</h5>
+                        <p class="small text-muted mb-4">
+                            <i class="fas fa-map-marker-alt text-danger me-1"></i> {{ event.lieu|default('Tunisie') }}
+                        </p>
 
-                        <div class="d-grid mt-4">
-                            <button type="button" class="btn btn-success rounded-pill shadow-sm py-2" data-bs-toggle="modal" data-bs-target="#modalParticiper{{ event.id }}">
-                                <i class="fas fa-plus-circle me-1"></i> Participer
+                        <div class="d-grid">
+                            <button class="btn btn-success rounded-pill py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#modal-{{ event.id }}">
+                                Participer
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {# MODAL DE PARTICIPATION - APPELLE LE FRONTCONTROLLER #}
-            <div class="modal fade" id="modalParticiper{{ event.id }}" tabindex="-1" aria-hidden="true">
+            {# Modal Participation #}
+            <div class="modal fade" id="modal-{{ event.id }}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content rounded-4 border-0">
-                        <div class="modal-header border-0 pb-0">
-                            <h5 class="fw-bold text-success"><i class="fas fa-leaf me-2"></i>Rejoindre l'action</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        
-                        {# ISLAH: On pointe vers la route 'app_participer_event' du FrontController #}
                         <form action="{{ path('app_participer_event', {'id': event.id}) }}" method="POST">
-                            <div class="modal-body py-4">
-                                <p class="text-muted small mb-4">Confirmez votre participation à l'événement <strong>{{ event.title }}</strong>.</p>
+                            <div class="modal-header border-0">
+                                <h5 class="fw-bold text-success">Rejoindre l'action</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="text-muted small mb-4">Confirmez votre participation à <strong>{{ event.title }}</strong>.</p>
                                 <div class="mb-3">
                                     <label class="form-label small fw-bold">Votre Nom Complet</label>
-                                    <input type="text" name="nomCitoyen" class="form-control rounded-3" placeholder="Saisissez votre nom" required>
+                                    <input type="text" name="nomCitoyen" class="form-control rounded-3" required>
                                 </div>
                             </div>
-                            <div class="modal-footer border-0 pt-0">
-                                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
-                                <button type="submit" class="btn btn-success rounded-pill px-4 shadow-sm">
-                                    <i class="fas fa-check-circle me-1"></i> Confirmer
-                                </button>
+                            <div class="modal-footer border-0">
+                                <button type="submit" class="btn btn-success rounded-pill px-4">Confirmer</button>
                             </div>
                         </form>
                     </div>
@@ -113,70 +91,4 @@
         {% endfor %}
     </div>
 </div>
-
-<script>
-    const API_KEY_WEATHER = "c0c9f9baeabbe30352ac8492954b05bf";
-
-    document.addEventListener('DOMContentLoaded', function() {
-        navigator.geolocation.getCurrentPosition(userPos => {
-            const uLat = userPos.coords.latitude;
-            const uLon = userPos.coords.longitude;
-
-            document.querySelectorAll('.map-box').forEach(mapDiv => {
-                const mapId = mapDiv.id;
-                const eventId = mapId.replace('map-', '');
-                const adresse = mapDiv.getAttribute('data-adresse');
-
-                const map = L.map(mapId, { scrollWheelZoom: false }).setView([uLat, uLon], 10);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-                if (adresse && adresse.trim() !== "") {
-                    fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(adresse + ", Tunisie"))
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.length > 0) {
-                                const eLat = parseFloat(data[0].lat);
-                                const eLon = parseFloat(data[0].lon);
-
-                                fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${eLat}&lon=${eLon}&appid=${API_KEY_WEATHER}&units=metric`)
-                                    .then(wRes => wRes.json())
-                                    .then(wData => {
-                                        const wBadge = document.getElementById('weather-' + eventId);
-                                        if(wBadge && wData.main) {
-                                            const icon = wData.weather[0].icon;
-                                            wBadge.querySelector('.weather-icon').innerHTML = `<img src="https://openweathermap.org/img/wn/${icon}.png" width="22">`;
-                                            wBadge.querySelector('.temp-val').innerText = Math.round(wData.main.temp);
-                                            wBadge.style.display = 'inline-flex';
-                                        }
-                                    });
-
-                                L.Routing.control({
-                                    waypoints: [L.latLng(uLat, uLon), L.latLng(eLat, eLon)],
-                                    lineOptions: { styles: [{ color: '#2f6b4f', weight: 5, opacity: 0.7 }] },
-                                    createMarker: function() { return null; }
-                                }).addTo(map);
-
-                                L.marker([eLat, eLon]).addTo(map).bindPopup(adresse);
-                                
-                                const dist = calcDist(uLat, uLon, eLat, eLon);
-                                const dBadge = document.getElementById('dist-badge-' + eventId);
-                                if(dBadge) {
-                                    dBadge.querySelector('.dist-val').innerText = dist.toFixed(1);
-                                    dBadge.style.display = 'inline-block';
-                                }
-                            }
-                        });
-                }
-            });
-        }, err => { console.warn("GPS non autorisé"); });
-    });
-
-    function calcDist(lat1, lon1, lat2, lon2) {
-        const R = 6371; 
-        const dLat = (lat2-lat1) * Math.PI / 180;
-        const dLon = (lon2-lon1) * Math.PI / 180;
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-        return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
-    }
-</script>
 {% endblock %}
