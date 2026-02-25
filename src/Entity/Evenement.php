@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+// 1. Zidna el import hadha lel controle de saisie
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EvenementRepository::class)]
 class Evenement
@@ -17,22 +19,39 @@ class Evenement
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    // Controle 3la el Titre
+    #[Assert\NotBlank(message: "Le titre de l'événement est obligatoire.")]
+    #[Assert\Length(min: 5, minMessage: "Le titre doit avoir au moins 5 caractères.")]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    // Controle 3la el Description
+    #[Assert\NotBlank(message: "La description est obligatoire.")]
+    #[Assert\Length(min: 10, minMessage: "La description doit avoir au moins 10 caractères.")]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $dateHeure = null;
-
-    #[ORM\Column]
-    private ?int $idOrganisateur = null;
+    // 2. EL ISLAH: Controle 3la el Date (Lezem ya el yom ya el futur)
+    #[Assert\NotBlank(message: "La date est obligatoire.")]
+    #[Assert\GreaterThanOrEqual(
+        value: "today",
+        message: "L'événement ne peut pas être organisé dans le passé."
+    )]
+    private ?\DateTimeInterface $dateHeure = null;
 
     /**
      * @var Collection<int, Participation>
      */
     #[ORM\OneToMany(targetEntity: Participation::class, mappedBy: 'evenement')]
     private Collection $participations;
+
+    #[ORM\Column(length: 255)]
+    // Controle 3la l'organisateur
+    #[Assert\NotBlank(message: "Le nom de l'organisateur est obligatoire.")]
+    private ?string $nomOrganisateur = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $lieu = null;
 
     public function __construct()
     {
@@ -52,7 +71,6 @@ class Evenement
     public function setTitle(string $title): static
     {
         $this->title = $title;
-
         return $this;
     }
 
@@ -64,31 +82,17 @@ class Evenement
     public function setDescription(string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 
-    public function getDateHeure(): ?\DateTime
+    public function getDateHeure(): ?\DateTimeInterface
     {
         return $this->dateHeure;
     }
 
-    public function setDateHeure(\DateTime $dateHeure): static
+    public function setDateHeure(\DateTimeInterface $dateHeure): static
     {
         $this->dateHeure = $dateHeure;
-
-        return $this;
-    }
-
-    public function getIdOrganisateur(): ?int
-    {
-        return $this->idOrganisateur;
-    }
-
-    public function setIdOrganisateur(int $idOrganisateur): static
-    {
-        $this->idOrganisateur = $idOrganisateur;
-
         return $this;
     }
 
@@ -106,25 +110,44 @@ class Evenement
             $this->participations->add($participation);
             $participation->setEvenement($this);
         }
-
         return $this;
     }
 
     public function removeParticipation(Participation $participation): static
     {
         if ($this->participations->removeElement($participation)) {
-            
             if ($participation->getEvenement() === $this) {
                 $participation->setEvenement(null);
             }
         }
-
         return $this;
     }
 
     public function __toString(): string
-{
-    
-    return (string) $this->title; 
-}
+    {
+        return (string) $this->title; 
+    }
+
+    public function getNomOrganisateur(): ?string
+    {
+        return $this->nomOrganisateur;
+    }
+
+    public function setNomOrganisateur(string $nomOrganisateur): static
+    {
+        $this->nomOrganisateur = $nomOrganisateur;
+        return $this;
+    }
+
+    public function getLieu(): ?string
+    {
+        return $this->lieu;
+    }
+
+    public function setLieu(string $lieu): static
+    {
+        $this->lieu = $lieu;
+
+        return $this;
+    }
 }

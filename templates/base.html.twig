@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}DéchetsWise{% endblock %}</title>
+    <title>{% block title %}WasteWiseTN{% endblock %}</title>
 
-    {# 1. CSS Libs (Bootstrap + FontAwesome) #}
+    {# 1. CSS Libs #}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     {# 2. AssetMapper #}
     {{ importmap('app') }}
 
     <style>
-        body { margin: 0; font-family: 'Inter', sans-serif; background: #f4f6f5; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: #f4f6f5; overflow-x: hidden; }
         
         /* Sidebar Navigation */
         .sidebar { 
@@ -23,8 +23,9 @@
             background: #2f6b4f; 
             color: white; 
             padding: 25px 20px; 
-            position: sticky;
+            position: fixed; 
             top: 0;
+            left: 0;
             z-index: 1000;
         }
         .sidebar h3 { font-weight: 700; color: #8bd22f; text-transform: uppercase; letter-spacing: 1px; }
@@ -37,6 +38,7 @@
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
+            text-decoration: none;
         }
         
         .sidebar .nav-link:hover { 
@@ -52,10 +54,13 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        /* Layout */
-        .main-content { padding: 30px; flex: 1; overflow-x: auto; }
+        /* Layout Adjustment */
+        .main-content { 
+            margin-left: 250px; 
+            padding: 30px; 
+            width: calc(100% - 250px);
+        }
         
-        /* Global Template Components (Hero & Card) */
         .hero { 
             background: linear-gradient(90deg, #2f6b4f, #8bd22f); 
             color: white; 
@@ -72,39 +77,42 @@
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05); 
         }
 
-        .btn-vert { background: #8bd22f; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 600; color: #2f6b4f; transition: 0.3s; }
-        .btn-vert:hover { background: #76c023; color: #2f6b4f; transform: scale(1.02); }
-        
-        .btn-outline-custom { border: 1px solid #eee; border-radius: 10px; padding: 8px 15px; background: white; transition: 0.3s; color: #666; }
-        .btn-outline-custom:hover { background: #f8f9fa; border-color: #ddd; }
+        .btn-vert { 
+            background: #8bd22f !important; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            color: #2f6b4f !important; 
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+        }
+        .btn-vert:hover { 
+            background: #76c023 !important; 
+            transform: scale(1.05); 
+        }
     </style>
 </head>
 <body>
     <div class="d-flex">
         <div class="sidebar">
-            <h3 class="mb-5 text-center">DéchetsWise</h3>
-           <nav class="nav flex-column">
-    <a class="nav-link" href="#">
-        <i class="fas fa-home me-3"></i> Dashboard
-    </a>
-
-    {# Islah mta3 el Link Participations #}
-    <a class="nav-link {{ app.request.attributes.get('_route') starts with 'app_participation' ? 'active' : '' }}" 
-       href="{{ path('app_participation_index') }}">
-        <i class="fas fa-handshake me-3"></i> Participations
-    </a>
-
-    {# Islah mta3 el Link Événements #}
-    <a class="nav-link {{ app.request.attributes.get('_route') starts with 'app_evenement' ? 'active' : '' }}" 
-       href="{{ path('app_evenement_index') }}">
-        <i class="fas fa-calendar-alt me-3"></i> Événements
-    </a>
-
-    <a class="nav-link" href="#">
-        <i class="fas fa-trash me-3"></i> Déchets
-    </a>
-</nav> 
-            
+            <h3 class="mb-5 text-center small">WasteWiseTN</h3>
+            <nav class="nav flex-column">
+                <a class="nav-link {{ app.request.attributes.get('_route') == 'app_dashboard' ? 'active' : '' }}" href="{{ path('app_dashboard') }}">
+                    <i class="fas fa-chart-line me-3"></i> Dashboard
+                </a>
+                <a class="nav-link {{ app.request.attributes.get('_route') starts with 'app_participation' ? 'active' : '' }}" href="{{ path('app_participation_index') }}">
+                    <i class="fas fa-handshake me-3"></i> Participations
+                </a>
+                <a class="nav-link {{ app.request.attributes.get('_route') starts with 'app_evenement' ? 'active' : '' }}" href="{{ path('app_evenement_index') }}">
+                    <i class="fas fa-calendar-alt me-3"></i> Événements
+                </a>
+                <a class="nav-link" href="{{ path('app_calendar') }}">
+                    <i class="fas fa-calendar-alt me-2"></i> Calendrier
+                </a>
+                
+            </nav> 
         </div>
 
         <main class="main-content">
@@ -114,6 +122,64 @@
         </main>
     </div>
 
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    {# 3. JS Libs #}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    {# --- EL ISLAH EL JIDID: Script Maps Dynamique (Version Précise) --- #}
+    {% block javascripts %}
+   <script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.map-box').forEach(function(mapDiv) {
+        const mapId = mapDiv.id;
+        let adresse = mapDiv.getAttribute('data-adresse');
+
+        if (!mapId || !adresse) return;
+
+        const map = L.map(mapId, {
+            scrollWheelZoom: false,
+            zoomControl: true
+        }).setView([36.8065, 10.1815], 10);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        if (adresse.trim() !== "" && !adresse.includes("Localisation sur carte")) {
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(adresse + ", Tunisie")}&limit=1`;
+
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const lat = data[0].lat;
+                        const lon = data[0].lon;
+                        
+                        map.setView([lat, lon], 15);
+                        
+                        // --- EL ISLAH HNA: Lien Google Maps b'el coordonées ---
+                        const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+                        
+                        L.marker([lat, lon]).addTo(map)
+                            .bindPopup(`
+                                <div style="text-align: center;">
+                                    <b style="color: #2f6b4f;">${adresse}</b><br>
+                                    <hr style="margin: 5px 0;">
+                                    <a href="${googleMapsUrl}" target="_blank" class="btn btn-sm btn-success text-white" style="font-size: 11px; padding: 4px 10px; border-radius: 8px; text-decoration: none; background-color: #2f6b4f;">
+                                        <i class="fas fa-external-link-alt me-1"></i> Ouvrir Google Maps
+                                    </a>
+                                </div>
+                            `)
+                            .openPopup();
+                    }
+                })
+                .catch(err => console.error("Erreur API Map:", err));
+        }
+
+        setTimeout(() => { map.invalidateSize(); }, 500);
+    });
+});
+</script>
+{% endblock %}
 </body>
 </html>

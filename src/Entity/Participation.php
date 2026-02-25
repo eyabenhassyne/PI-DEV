@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ParticipationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ParticipationRepository::class)]
 class Participation
@@ -14,16 +15,27 @@ class Participation
     #[ORM\Column]
     private ?int $id = null;
 
-    
-
-    #[ORM\Column]
-    private ?int $idCitoyen = null;
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom du citoyen est obligatoire.")]
+    #[Assert\Length(
+        min: 3, 
+        minMessage: "Le nom doit contenir au moins {{ limit }} caractères."
+    )]
+    private ?string $nomCitoyen = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $dateInscription = null;
+    #[Assert\NotBlank(message: "La date d'inscription est obligatoire.")]
+    #[Assert\Type("\DateTimeInterface")]
+    // EL ISLAH HNA: Ma lezmech y-fout el yom (today)
+    #[Assert\LessThanOrEqual(
+        value: "today",
+        message: "La date d'inscription ne peut pas être dans le futur."
+    )]
+    private ?\DateTimeInterface $dateInscription = null;
 
-    #[ORM\ManyToOne(inversedBy: 'participations')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Evenement::class, inversedBy: 'participations')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Assert\NotNull(message: "Veuillez sélectionner un événement.")]
     private ?Evenement $evenement = null;
 
     public function getId(): ?int
@@ -31,31 +43,25 @@ class Participation
         return $this->id;
     }
 
-    
-
-    
-
-    public function getIdCitoyen(): ?int
+    public function getNomCitoyen(): ?string
     {
-        return $this->idCitoyen;
+        return $this->nomCitoyen;
     }
 
-    public function setIdCitoyen(int $idCitoyen): static
+    public function setNomCitoyen(string $nomCitoyen): static
     {
-        $this->idCitoyen = $idCitoyen;
-
+        $this->nomCitoyen = $nomCitoyen;
         return $this;
     }
 
-    public function getDateInscription(): ?\DateTime
+    public function getDateInscription(): ?\DateTimeInterface
     {
         return $this->dateInscription;
     }
 
-    public function setDateInscription(\DateTime $dateInscription): static
+    public function setDateInscription(\DateTimeInterface $dateInscription): static
     {
         $this->dateInscription = $dateInscription;
-
         return $this;
     }
 
@@ -67,7 +73,14 @@ class Participation
     public function setEvenement(?Evenement $evenement): static
     {
         $this->evenement = $evenement;
-
         return $this;
     }
+
+    // src/Entity/Participation.php
+
+public function __construct()
+{
+    // El date d-t-t7at wa7edha automatique f'ay participation jdida
+    $this->dateInscription = new \DateTime();
+}
 }

@@ -1,34 +1,61 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Participation{% endblock %}
+{% block title %}Détails Participation{% endblock %}
 
 {% block body %}
-    <h1>Participation</h1>
+    {# 1. El Banner el khadhra mezyana #}
+    <div class="hero mb-4">
+        <h1 class="display-5 fw-bold">Détails de l'Inscription</h1>
+        <p class="lead">Informations complètes sur la participation du citoyen.</p>
+    </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ participation.id }}</td>
-            </tr>
-            <tr>
-                <th>IdEvenement</th>
-                <td>{{ participation.evenement ? participation.evenement.id : 'N/A' }}</td>
-            </tr>
-            <tr>
-                <th>IdCitoyen</th>
-                <td>{{ participation.idCitoyen }}</td>
-            </tr>
-            <tr>
-                <th>DateInscription</th>
-                <td>{{ participation.dateInscription ? participation.dateInscription|date('Y-m-d') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+    {# 2. El Container el kbir m-nadhem #}
+    <div class="grande-carte shadow-sm p-4 bg-white rounded">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 style="color: #2f6b4f;">
+                <i class="fas fa-info-circle me-2"></i>Récapitulatif
+            </h3>
+            <a href="{{ path('app_participation_index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Retour à la liste
+            </a>
+        </div>
 
-    <a href="{{ path('app_participation_index') }}">back to list</a>
+        <table class="table table-bordered align-middle">
+            <tbody>
+                <tr>
+                    <th class="table-light w-25">Événement</th>
+                    {# ISLAH: Affichi el Titre blaset el ID bech dji m-rigla #}
+                    <td class="fw-bold text-success">
+                        {{ participation.evenement ? participation.evenement.title : 'N/A' }}
+                    </td>
+                </tr>
+                <tr>
+                    <th class="table-light">Nom du Citoyen</th>
+                    {# ISLAH HNA (Ligne 20): Baddelna idCitoyen b nomCitoyen #}
+                    <td>
+                        <i class="fas fa-user-circle me-2 text-muted"></i>
+                        {{ participation.nomCitoyen }}
+                    </td>
+                </tr>
+                <tr>
+                    <th class="table-light">Date d'Inscription</th>
+                    <td>
+                        <i class="far fa-calendar-alt me-2 text-muted"></i>
+                        {{ participation.dateInscription ? participation.dateInscription|date('d/m/Y') : 'N/A' }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
-    <a href="{{ path('app_participation_edit', {'id': participation.id}) }}">edit</a>
-
-    {{ include('participation/_delete_form.html.twig') }}
+        {# 3. Les Actions #}
+        <div class="d-flex gap-2 mt-4 justify-content-end">
+            <a href="{{ path('app_participation_edit', {'id': participation.id}) }}" class="btn btn-warning text-white shadow-sm">
+                <i class="fas fa-edit me-1"></i> Modifier
+            </a>
+            
+            <div class="d-inline-block">
+                {{ include('participation/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
 {% endblock %}

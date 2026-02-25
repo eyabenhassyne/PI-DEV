@@ -1,12 +1,13 @@
+{# templates/evenement/index.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Gestion des Événements{% endblock %}
 
 {% block body %}
-    {# 1. Hero Banner mta3 s7abek #}
+    {# 1. Hero Section #}
     <div class="hero">
         <h1 class="display-5 fw-bold">Gestion des Événements</h1>
-        <p class="lead">Gérez vos campagnes de nettoyage et actions écologiques.</p>
+        <p class="lead">Gérez vos campagnes de nettoyage et actions écologiques sur WasteWiseTN.</p>
     </div>
 
     {# 2. El Grande Carte #}
@@ -16,44 +17,30 @@
                 <i class="fas fa-calendar-check me-2"></i>Liste des Événements
             </h3>
             
-            {# --- BARRE DE RECHERCHE + TRI --- #}
+            {# Barre de Recherche et Tri #}
             <form action="{{ path('app_evenement_index') }}" method="get" class="d-flex gap-2 ms-auto">
-                {# Input Recherche #}
                 <div class="input-group shadow-sm" style="width: 250px;">
                     <span class="input-group-text bg-white border-end-0">
                         <i class="fas fa-search text-muted"></i>
                     </span>
                     <input type="text" name="q" class="form-control border-start-0" 
-                           placeholder="Titre..." value="{{ app.request.query.get('q') }}">
+                           placeholder="Rechercher..." value="{{ app.request.query.get('q') }}">
                 </div>
 
-                {# Dropdown Tri #}
                 <div class="input-group shadow-sm" style="width: 180px;">
                     <span class="input-group-text bg-white border-end-0">
                         <i class="fas fa-sort-alpha-down text-muted"></i>
                     </span>
                     <select name="sort" class="form-select border-start-0" onchange="this.form.submit()">
-                        <option value="id" {{ app.request.query.get('sort') == 'id' ? 'selected' : '' }}>ID</option>
                         <option value="title" {{ app.request.query.get('sort') == 'title' ? 'selected' : '' }}>Titre (A-Z)</option>
                         <option value="dateHeure" {{ app.request.query.get('sort') == 'dateHeure' ? 'selected' : '' }}>Date</option>
+                        <option value="nomOrganisateur" {{ app.request.query.get('sort') == 'nomOrganisateur' ? 'selected' : '' }}>Organisateur</option>
                     </select>
                 </div>
-
-                {# Direction #}
-                <select name="direction" class="form-select shadow-sm" style="width: 90px;" onchange="this.form.submit()">
-                    <option value="ASC" {{ app.request.query.get('direction') == 'ASC' ? 'selected' : '' }}>ASC</option>
-                    <option value="DESC" {{ app.request.query.get('direction') == 'DESC' ? 'selected' : '' }}>DESC</option>
-                </select>
 
                 <button type="submit" class="btn btn-vert px-3">
                     <i class="fas fa-filter"></i>
                 </button>
-                
-                {% if app.request.query.get('q') or app.request.query.get('sort') %}
-                    <a href="{{ path('app_evenement_index') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-sync-alt"></i>
-                    </a>
-                {% endif %}
             </form>
 
             <a href="{{ path('app_evenement_new') }}" class="btn btn-vert shadow-sm">
@@ -61,14 +48,13 @@
             </a>
         </div>
 
-        {# 3. El Table #}
         <div class="table-responsive">
             <table class="table table-hover align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th class="py-3">ID</th>
                         <th class="py-3">Titre</th>
                         <th class="py-3">Description</th>
+                        <th class="py-3">Adresse</th> {# --- ZIDNA EL COLONNE HNA --- #}
                         <th class="py-3">Date & Heure</th>
                         <th class="py-3">Organisateur</th>
                         <th class="py-3 text-center">Actions</th>
@@ -77,22 +63,49 @@
                 <tbody>
                 {% for evenement in evenements %}
                     <tr>
-                        <td class="fw-bold text-muted">#{{ evenement.id }}</td>
-                        <td><span class="badge bg-success bg-opacity-10 text-success">{{ evenement.title }}</span></td>
-                        <td class="text-truncate" style="max-width: 200px;">{{ evenement.description }}</td>
                         <td>
-                            <i class="far fa-clock me-1 text-muted"></i>
-                            {{ evenement.dateHeure ? evenement.dateHeure|date('d/m/Y H:i') : '' }}
+                            <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}" class="text-decoration-none">
+                                <span class="badge bg-success bg-opacity-10 text-success fw-bold p-2" style="cursor: pointer;">
+                                    <i class="fas fa-link me-1 small"></i>{{ evenement.title }}
+                                </span>
+                            </a>
                         </td>
-                        <td><i class="fas fa-user-tie me-1 text-muted"></i> {{ evenement.idOrganisateur }}</td>
+                        <td class="text-truncate" style="max-width: 150px;" title="{{ evenement.description }}">
+                            {{ evenement.description }}
+                        </td>
+                        
+                        {# --- EL ISLAH HNA: AFFICHAGE ADRESSE (LIEU) --- #}
+                        <td>
+                            <div class="text-muted small">
+                                <i class="fas fa-map-marker-alt text-success me-1"></i>
+                                {{ evenement.lieu|default('Non spécifiée') }}
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="small text-nowrap">
+                                <i class="far fa-clock me-1 text-muted"></i>
+                                {{ evenement.dateHeure ? evenement.dateHeure|date('d/m/Y H:i') : 'N/A' }}
+                            </div>
+                        </td>
+                        <td class="fw-bold text-dark small">
+                            <i class="fas fa-user-circle me-1 text-success opacity-75"></i> 
+                            {{ evenement.nomOrganisateur }} 
+                        </td>
                         <td class="text-center">
-                            <div class="btn-group shadow-sm" style="border-radius: 10px; overflow: hidden;">
-                                <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}" class="btn btn-sm btn-white border-end">
-                                    <i class="fas fa-eye text-primary"></i>
+                            <div class="btn-group shadow-sm bg-white rounded">
+                                <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}" class="btn btn-sm btn-light border-end" title="Voir Participants">
+                                    <i class="fas fa-users text-primary"></i>
                                 </a>
-                                <a href="{{ path('app_evenement_edit', {'id': evenement.id}) }}" class="btn btn-sm btn-white">
+                                <a href="{{ path('app_evenement_edit', {'id': evenement.id}) }}" class="btn btn-sm btn-light border-end" title="Modifier">
                                     <i class="fas fa-edit text-warning"></i>
                                 </a>
+                                <form method="post" action="{{ path('app_evenement_delete', {'id': evenement.id}) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer cet événement ?');" style="display:inline-block;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ evenement.id) }}">
+                                    <button class="btn btn-sm btn-light text-danger border-0">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>

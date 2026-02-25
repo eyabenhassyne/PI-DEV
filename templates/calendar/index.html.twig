@@ -1,0 +1,136 @@
+{# templates/calendar/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Planning des Événements{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {# 1. FullCalendar CSS #}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+    <style>
+        .calendar-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            margin-top: 20px;
+        }
+        #calendar {
+            min-height: 700px;
+            background-color: #ffffff;
+            padding: 10px;
+        }
+        
+        /* Tasli7 el assemi mta3 el events */
+        .fc-event-title {
+            font-weight: 600 !important;
+            font-size: 0.9em !important;
+            padding: 2px !important;
+        }
+        .fc-event {
+            cursor: pointer;
+            border-radius: 6px !important;
+            border: none !important;
+            transition: transform 0.2s;
+        }
+        .fc-event:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1);
+        }
+
+        /* Tasli7 el Header mta3 el calendrier bech ma i-jich m-charkeb */
+        .fc-toolbar-title { 
+            color: #2f6b4f !important; 
+            font-weight: 700 !important; 
+            font-size: 1.5rem !important;
+            text-transform: capitalize; 
+        }
+        .fc-button-primary { 
+            background-color: #2f6b4f !important; 
+            border: none !important;
+            box-shadow: none !important;
+        }
+        .fc-button-primary:hover { 
+            background-color: #8bd22f !important; 
+            color: #2f6b4f !important; 
+        }
+        .fc-button-active {
+            background-color: #8bd22f !important;
+            color: #2f6b4f !important;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-4">
+    <div class="calendar-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-success fw-bold m-0">
+                <i class="fas fa-calendar-check me-2"></i>Planning WasteWiseTN
+            </h2>
+            <a href="{{ path('app_evenement_new') }}" class="btn-vert">
+                <i class="fas fa-plus me-2"></i>Ajouter Event
+            </a>
+        </div>
+
+        {# El div elli d-t-it-7att fiha el grille #}
+        <div id="calendar"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {# 2. FullCalendar JS Core & Locales #}
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/fr.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            
+            if (calendarEl) {
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    locale: 'fr',
+                    firstDay: 1, // El jem3a tebda b'el Letneen
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    
+                    // EL ISLAH: Kallem el API mte3ek
+                    events: '/fc-load-events',
+                    
+                    eventColor: '#2f6b4f',
+                    eventTextColor: '#ffffff',
+                    displayEventTime: true,
+                    editable: false,
+                    selectable: true,
+
+                    // Debugging: i-talla3lek alert ken fama mochkla f'el JSON
+                    eventSourceFailure: function(error) {
+                        console.error('Erreur API:', error);
+                        alert('Erreur: Impossible de charger les événements. Vérifiez la console (F12).');
+                    },
+                    
+                    loading: function(isLoading) {
+                        if (isLoading) {
+                            console.log("Chargement en cours...");
+                        }
+                    },
+
+                    eventClick: function(info) {
+                        if (info.event.url) {
+                            window.location.href = info.event.url;
+                            info.jsEvent.preventDefault();
+                        }
+                    }
+                });
+                
+                calendar.render();
+            }
+        });
+    </script>
+{% endblock %}

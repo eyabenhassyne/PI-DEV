@@ -5,63 +5,117 @@ namespace App\Controller;
 use App\Entity\Participation;
 use App\Form\ParticipationType;
 use App\Repository\ParticipationRepository;
+use App\Repository\EvenementRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Service\NotificationService;
 
 #[Route('/participation')]
 final class ParticipationController extends AbstractController
 {
-    // ISLAH: Khallina fonction index wa7da barka fiha el recherche wel tri
     #[Route(name: 'app_participation_index', methods: ['GET'])]
     public function index(Request $request, ParticipationRepository $participationRepository): Response
     {
         $searchTerm = $request->query->get('q');
-        $sortBy = $request->query->get('sort', 'id');
-        $direction = $request->query->get('direction', 'DESC');
-
         $queryBuilder = $participationRepository->createQueryBuilder('p');
 
         if ($searchTerm) {
-            // ISLAH: Nesta3mlou 'p.evenement' (esm el propriété) mouch idEvenement
-            // W nesta3mlou 'p.idCitoyen'
-            $queryBuilder->leftJoin('p.evenement', 'e') // Join bech n-najmou n-lawjou f'el evenement
-                         ->andWhere('p.idCitoyen LIKE :term OR e.id LIKE :term')
-                         ->setParameter('term', '%'.$searchTerm.'%');
+            $queryBuilder->andWhere('p.nomCitoyen LIKE :term')
+                         ->setParameter('term', '%' . $searchTerm . '%');
         }
 
-        // ISLAH: Thabbet ken t-7ebb t-rattib 7asb el 'evenement' (relation) lezmou ykoun 'e.id'
-        if ($sortBy === 'evenement') {
-            $queryBuilder->orderBy('p.evenement', $direction);
-        } else {
-            $queryBuilder->orderBy('p.' . $sortBy, $direction);
-        }
+        $queryBuilder->orderBy('p.dateInscription', 'DESC');
 
         return $this->render('participation/index.html.twig', [
             'participations' => $queryBuilder->getQuery()->getResult(),
         ]);
     }
 
-    #[Route('/new', name: 'app_participation_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    // ParticipationController.php
+
+#[Route('/new', name: 'app_participation_new', methods: ['POST'])] // Khalliha POST barka khater mel Modal
+public function new(Request $request, EntityManagerInterface $entityManager, EvenementRepository $evenementRepository, NotificationService $notifService): Response 
+{
+    // 1. Nakhou el data mel Modal d-toul (mouch mel form mta3 l-admin)
+    $nomCitoyen = $request->request->get('nomCitoyen');
+    $eventId = $request->query->get('event_id');
+
+    if (!$nomCitoyen || !$eventId) {
+        $this->addFlash('danger', 'Données manquantes !');
+        return $this->redirectToRoute('app_front');
+    }
+
+    $evenement = $evenementRepository->find($eventId);
+    if (!$evenement) {
+        throw $this->createNotFoundException('Événement non trouvé');
+    }
+
+    // 2. Création de la participation
+    $participation = new Participation();
+    $participation->setNomCitoyen($nomCitoyen);
+    $participation->setEvenement($evenement);
+    $participation->setDateInscription(new \DateTime()); // Ken 3andek date
+
+    $entityManager->persist($participation);
+    $entityManager->flush();
+
+    // 3. Notification lil Admin - El Bundle y-aba3th mail d-toul lel Mailtrap
+    $notifService->notifyAdmin(
+        "Nouvelle Inscription (Front)", 
+        "Le citoyen " . $nomCitoyen . " s'est inscrit à l'événement: " . $evenement->getTitle()
+    );
+
+    $this->addFlash('success', 'Merci ! Votre participation est confirmée et l\'admin a été notifié.');
+
+    // 4. Yarja3 d-toul lel Front (User Interface)
+    return $this->redirectToRoute('app_front'); 
+}
+
+    #[Route('/{id}/edit', name: 'app_participation_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Participation $participation, EntityManagerInterface $entityManager, NotificationService $notifService): Response
     {
-        $participation = new Participation();
         $form = $this->createForm(ParticipationType::class, $participation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($participation);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_participation_index', [], Response::HTTP_SEE_OTHER);
+            $notifService->notifyAdmin(
+                "Modification Participation", 
+                "La participation de " . $participation->getNomCitoyen() . " a été modifiée."
+            );
+
+            $this->addFlash('success', 'Modification m-rigla!');
+            return $this->redirectToRoute('app_participation_index');
         }
 
-        return $this->render('participation/new.html.twig', [
+        return $this->render('participation/edit.html.twig', [
             'participation' => $participation,
-            'form' => $form,
+            'form' => $form->createView(), 
         ]);
+    }
+
+    #[Route('/{id}', name: 'app_participation_delete', methods: ['POST'])]
+    public function delete(Request $request, Participation $participation, EntityManagerInterface $entityManager, NotificationService $notifService): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$participation->getId(), $request->request->get('_token'))) {
+            $nom = $participation->getNomCitoyen();
+            
+            $entityManager->remove($participation);
+            $entityManager->flush();
+
+            $notifService->notifyAdmin(
+                "Annulation de Participation", 
+                "Le citoyen " . $nom . " s'est retiré de l'événement."
+            );
+
+            $this->addFlash('danger', 'Participation supprimée.');
+        }
+
+        return $this->redirectToRoute('app_participation_index');
     }
 
     #[Route('/{id}', name: 'app_participation_show', methods: ['GET'])]
@@ -70,34 +124,5 @@ final class ParticipationController extends AbstractController
         return $this->render('participation/show.html.twig', [
             'participation' => $participation,
         ]);
-    }
-
-    #[Route('/{id}/edit', name: 'app_participation_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Participation $participation, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(ParticipationType::class, $participation);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_participation_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('participation/edit.html.twig', [
-            'participation' => $participation,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_participation_delete', methods: ['POST'])]
-    public function delete(Request $request, Participation $participation, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$participation->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($participation);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_participation_index', [], Response::HTTP_SEE_OTHER);
     }
 }
