@@ -4,7 +4,7 @@
 /var/
 /vendor/
 node_modules/
-
+/nv
 # OS
 .DS_Store
 Thumbs.db
