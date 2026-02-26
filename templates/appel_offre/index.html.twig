@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Appels d'offre{% endblock %}
+
+{% block body %}
+    <main class="ww-page">
+        <section class="ww-shell">
+            <header class="ww-topbar">
+                <div class="ww-brand">WasteWise <small>BACK OFFICE</small></div>
+                <div class="ww-topbar-actions">
+                    <a
+                        class="ww-btn ww-btn--light ww-btn--icon"
+                        href="{{ path('app_front_dashboard') }}"
+                        title="Retour au dashboard front"
+                        aria-label="Retour au dashboard front"
+                    >🏠</a>
+                    <a class="ww-btn ww-btn--light" href="{{ path('app_back_dashboard') }}">Dashboard</a>
+                    <a class="ww-btn" href="{{ path('app_appel_offre_new') }}">Nouvel appel</a>
+                </div>
+            </header>
+
+            <div class="ww-grid ww-grid-back">
+                <article class="ww-card">
+                    <h2 class="ww-section-title">Liste des appels d'offre</h2>
+                    <form method="get" class="ww-filter-panel">
+                        <h3 class="ww-filter-title">Filtres et tri</h3>
+                        <div class="ww-filter-grid">
+                            <label class="ww-form-field">
+                                <span>Recherche texte</span>
+                                <input
+                                    type="text"
+                                    name="q"
+                                    value="{{ q|default('') }}"
+                                    placeholder="Titre ou description"
+                                >
+                            </label>
+                            <label class="ww-form-field">
+                                <span>Quantite min</span>
+                                <input type="number" step="0.01" name="quantite_min" value="{{ quantite_min|default('') }}" placeholder="Ex: 100">
+                            </label>
+                            <label class="ww-form-field">
+                                <span>Etat offre</span>
+                                <select name="etat">
+                                    <option value="">Tous</option>
+                                    <option value="active" {{ etat == 'active' ? 'selected' : '' }}>Active</option>
+                                    <option value="expiree" {{ etat == 'expiree' ? 'selected' : '' }}>Expiree</option>
+                                </select>
+                            </label>
+                            <label class="ww-form-field">
+                                <span>Trier par</span>
+                                <select name="sort">
+                                    <option value="titre" {{ sort == 'titre' ? 'selected' : '' }}>Titre</option>
+                                    <option value="description" {{ sort == 'description' ? 'selected' : '' }}>Description</option>
+                                    <option value="quantiteDemandee" {{ sort == 'quantiteDemandee' ? 'selected' : '' }}>Quantite demandee</option>
+                                    <option value="dateLimite" {{ sort == 'dateLimite' ? 'selected' : '' }}>Date limite</option>
+                                </select>
+                            </label>
+                            <label class="ww-form-field">
+                                <span>Ordre</span>
+                                <select name="direction">
+                                    <option value="DESC" {{ direction == 'DESC' ? 'selected' : '' }}>Decroissant</option>
+                                    <option value="ASC" {{ direction == 'ASC' ? 'selected' : '' }}>Croissant</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="ww-filter-actions">
+                            <button class="ww-btn" type="submit">Appliquer</button>
+                            <a class="ww-btn ww-btn--light" href="{{ path('app_appel_offre_index') }}">Reinitialiser</a>
+                        </div>
+                    </form>
+                    <table class="ww-table">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Titre</th>
+                                <th>Description</th>
+                                <th>Quantite demandee</th>
+                                <th>Date limite</th>
+                                <th>Etat</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appel_offre in appel_offres %}
+                                <tr>
+                                    <td>{{ appel_offre.id }}</td>
+                                    <td>{{ appel_offre.titre }}</td>
+                                    <td>{{ appel_offre.description }}</td>
+                                    <td>{{ appel_offre.quantiteDemandee }}</td>
+                                    <td>{{ appel_offre.dateLimite ? appel_offre.dateLimite|date('Y-m-d H:i') : '' }}</td>
+                                    <td>
+                                        <span class="ww-pill {{ appel_offre.expired ? 'ww-pill--ko' : 'ww-pill--ok' }}">
+                                            {{ appel_offre.expired ? 'Expiree' : 'Active' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a class="ww-btn ww-btn--light" href="{{ path('app_appel_offre_show', {'id': appel_offre.id}) }}">Voir</a>
+                                        {% if not appel_offre.expired %}
+                                            <a class="ww-btn ww-btn--light" href="{{ path('app_appel_offre_edit', {'id': appel_offre.id}) }}">Modifier</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="7">Aucun appel d'offre trouve.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </article>
+            </div>
+        </section>
+    </main>
+{% endblock %}
