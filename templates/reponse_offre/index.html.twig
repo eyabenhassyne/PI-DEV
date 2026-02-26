@@ -5,6 +5,7 @@
 {% block body %}
     <main class="ww-page">
         <section class="ww-shell">
+            {% if not show_front_topbar %}
             <header class="ww-topbar">
                 <div class="ww-brand">WasteWise <small>BACK OFFICE</small></div>
                 <div class="ww-topbar-actions">
@@ -18,9 +19,9 @@
                         <a class="ww-btn ww-btn--light" href="{{ path('app_back_dashboard') }}">Dashboard admin</a>
                         <a class="ww-btn ww-btn--light" href="{{ path('app_reponse_offre_stats') }}">Statistiques</a>
                     {% endif %}
-                    <a class="ww-btn" href="{{ path('app_reponse_offre_new') }}">Nouvelle reponse</a>
                 </div>
             </header>
+            {% endif %}
 
             <div class="ww-grid ww-grid-back">
                 <article class="ww-card">

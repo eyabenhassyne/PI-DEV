@@ -13,7 +13,13 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class DashboardController extends AbstractController
 {
-    #[Route('/', name: 'app_front_dashboard', methods: ['GET'])]
+    #[Route('/', name: 'app_home', methods: ['GET'])]
+    public function home(): Response
+    {
+        return $this->render('home/index.html.twig');
+    }
+
+    #[Route('/offres', name: 'app_front_dashboard', methods: ['GET'])]
     public function front(ReponseOffreRepository $reponseOffreRepository): Response
     {
         $recentReponses = $reponseOffreRepository->findBy([], ['id' => 'DESC'], 6);

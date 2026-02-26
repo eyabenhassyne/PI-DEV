@@ -5,6 +5,7 @@
 {% block body %}
     <main class="ww-page">
         <section class="ww-shell">
+            {% if not show_front_topbar %}
             <header class="ww-topbar">
                 <div class="ww-brand">WasteWise <small>BACK OFFICE</small></div>
                 <div class="ww-topbar-actions">
@@ -14,6 +15,7 @@
                     {% endif %}
                 </div>
             </header>
+            {% endif %}
 
             <div class="ww-grid ww-grid-back">
                 <article class="ww-card">

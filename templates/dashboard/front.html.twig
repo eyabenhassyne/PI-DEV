@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}WasteWise TN - Dashboard{% endblock %}
+{% block title %}Dashboard{% endblock %}
 
 {% block body %}
     <main class="ww-home ww-home--front">
@@ -20,6 +20,7 @@
                 <a class="ww-topbar-link" href="{{ path('app_appel_offre_index') }}">Appels d'offre</a>
                 <a class="ww-topbar-link" href="{{ path('app_reponse_offre_index') }}">Reponses</a>
                 <a class="ww-topbar-link" href="{{ path('app_back_dashboard') }}">Back Office</a>
+                <a class="ww-topbar-link" href="{{ path('app_home') }}">Home</a>
             </nav>
 
             <div class="ww-topbar-user">
@@ -29,7 +30,7 @@
 
         <section class="ww-home-main ww-home-main--front">
             <header class="ww-home-header">
-                <h1>WasteWise TN - Dashboard</h1>
+                <h1>Dashboard Des Offres </h1>
             </header>
 
             <article class="ww-home-hero">

@@ -10,7 +10,24 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body class="{% block body_class %}{% endblock %}">
+    {% set current_route = app.request.attributes.get('_route') %}
+    {% set front_topbar_routes = [
+        'app_appel_offre_index',
+        'app_appel_offre_new',
+        'app_appel_offre_show',
+        'app_appel_offre_edit',
+        'app_reponse_offre_index',
+        'app_reponse_offre_new',
+        'app_reponse_offre_show',
+        'app_reponse_offre_edit'
+    ] %}
+    {% set show_front_topbar = current_route in front_topbar_routes and app.request.query.get('from') != 'moderation' %}
+
+    <body class="{% block body_class %}{% endblock %}{% if show_front_topbar %} ww-body--with-front-topbar{% endif %}">
+        {% if show_front_topbar %}
+            {% include 'components/front_topbar.html.twig' with { current_route: current_route } %}
+        {% endif %}
+
         {% for label, messages in app.flashes %}
             {% for message in messages %}
                 <div class="ww-flash ww-flash--{{ label }}">{{ message }}</div>
@@ -18,19 +35,7 @@
         {% endfor %}
         {% block body %}{% endblock %}
 
-        {% set current_route = app.request.attributes.get('_route') %}
-        {% set front_routes = [
-            'app_front_dashboard',
-            'app_appel_offre_index',
-            'app_appel_offre_new',
-            'app_appel_offre_show',
-            'app_appel_offre_edit',
-            'app_reponse_offre_index',
-            'app_reponse_offre_new',
-            'app_reponse_offre_show',
-            'app_reponse_offre_edit'
-        ] %}
-        {% if current_route in front_routes and app.request.query.get('from') != 'moderation' %}
+        {% if show_front_topbar %}
             {% include 'components/chatbase_widget.html.twig' %}
         {% endif %}
     </body>
