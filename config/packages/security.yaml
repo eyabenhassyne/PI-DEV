@@ -27,21 +27,40 @@ security:
         - App\Security\GithubAuthenticator
         - App\Security\FaceLoginAuthenticator
 
+      # ✅ 2FA Scheb
+      two_factor:
+        auth_form_path: 2fa_login
+        check_path: 2fa_login_check
+        post_only: true
+        enable_csrf: true
+        csrf_parameter: _csrf_token
+        csrf_token_id: two_factor
+
       logout:
         path: app_logout
         target: app_login
+        invalidate_session: true
 
   access_control:
-    # 🔓 PUBLIC ROUTES (auth / OAuth)
-    - { path: ^/connect/github, roles: PUBLIC_ACCESS }
-    - { path: ^/connect/github/check, roles: PUBLIC_ACCESS }
-    - { path: ^/connect/google, roles: PUBLIC_ACCESS }
-    - { path: ^/connect/google/check, roles: PUBLIC_ACCESS }
-    - { path: ^/connect/facebook, roles: PUBLIC_ACCESS }
-    - { path: ^/connect/facebook/check, roles: PUBLIC_ACCESS }
+    # ✅ IMPORTANT: 2FA doit être en premier
+    - { path: ^/2fa, roles: IS_AUTHENTICATED_2FA_IN_PROGRESS }
+
+    # ✅ setup 2FA (connecté)
+    - { path: ^/profile/2fa, roles: ROLE_USER }
+
+    # 🔓 PUBLIC ROUTES
     - { path: ^/login, roles: PUBLIC_ACCESS }
     - { path: ^/register, roles: PUBLIC_ACCESS }
-    - { path: ^/logout, roles: PUBLIC_ACCESS }
+
+    # ✅ Mot de passe oublié
+    - { path: ^/forgot-password, roles: PUBLIC_ACCESS }
+    - { path: ^/reset-password, roles: PUBLIC_ACCESS }
+
+    # ✅ OAuth (start + check)
+    - { path: ^/connect/github, roles: PUBLIC_ACCESS }
+    - { path: ^/connect/google, roles: PUBLIC_ACCESS }
+    - { path: ^/connect/facebook, roles: PUBLIC_ACCESS }
+    - { path: ^/connect/.+/check$, roles: PUBLIC_ACCESS }
 
     # ✅ Face login public
     - { path: ^/face-login, roles: PUBLIC_ACCESS }

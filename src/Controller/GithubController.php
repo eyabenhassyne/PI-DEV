@@ -24,8 +24,8 @@ class GithubController extends AbstractController
     }
 
     #[Route('/connect/github/check', name: 'connect_github_check')]
-    public function check(): Response
+    public function check(): void
     {
-        return new Response('GitHub check');
+       
     }
 }

@@ -7,13 +7,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Scheb\TwoFactorBundle\Model\Google\TwoFactorInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'uniq_user_email', columns: ['email'])]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+#[ORM\HasLifecycleCallbacks]
+class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface
 {
     public const TYPE_CITIZEN   = 'CITIZEN';
     public const TYPE_VALORIZER = 'VALORIZER';
@@ -46,31 +48,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private string $type = self::TYPE_CITIZEN;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private \DateTimeImmutable $createdAt;
+    private ?\DateTimeImmutable $createdAt = null;
 
-    // ======================================
-    // ✅ NEW: Activation / Désactivation
-    // ======================================
+    // ✅ Activation / Désactivation
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $isActive = true;
 
-    /**
-     * ✅ Reconnaissance faciale (embedding/vecteur)
-     * Stock JSON : [0.12, -0.03, ...]
-     */
+    // ✅ Face embedding
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $faceEmbedding = null;
 
-    /**
-     * ✅ Date du dernier enrôlement du visage
-     */
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $faceUpdatedAt = null;
 
-    // ======================================
-    // ✅ RELATIONS
-    // ======================================
+    // ✅ Dernière activité
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $lastSeenAt = null;
 
+    // =========================
+    // ✅ 2FA Google Authenticator (Scheb)
+    // =========================
+
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: true)]
+    private ?string $googleAuthenticatorSecret = null;
+
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private bool $isTwoFactorEnabled = false;
+
+    // ✅ Relations
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Dechet::class, orphanRemoval: true)]
     private Collection $dechets;
 
@@ -81,8 +86,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->dechets = new ArrayCollection();
         $this->validatedDechets = new ArrayCollection();
-        $this->createdAt = new \DateTimeImmutable();
         $this->isActive = true;
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        if ($this->createdAt === null) {
+            $this->createdAt = new \DateTimeImmutable();
+        }
     }
 
     public function __toString(): string
@@ -90,9 +103,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) ($this->email ?? '');
     }
 
-    // ======================================
+    // =========================
     // ✅ Security
-    // ======================================
+    // =========================
 
     public function getId(): ?int
     {
@@ -115,7 +128,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) ($this->email ?? '');
     }
 
-    // compat ancien code
+    // compat ancien code (Symfony < 5.3)
     public function getUsername(): string
     {
         return $this->getUserIdentifier();
@@ -128,11 +141,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // toujours ROLE_USER
         $roles[] = 'ROLE_USER';
 
-        // ajouter rôle basé sur le type
+        // rôle basé sur type
         $roles[] = match ($this->type) {
-            self::TYPE_ADMIN => 'ROLE_ADMIN',
+            self::TYPE_ADMIN     => 'ROLE_ADMIN',
             self::TYPE_VALORIZER => 'ROLE_VALORIZER',
-            default => 'ROLE_CITIZEN',
+            default              => 'ROLE_CITIZEN',
         };
 
         return array_values(array_unique($roles));
@@ -161,33 +174,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // rien
     }
 
-    // ======================================
-    // ✅ NEW: isActive (activer/désactiver)
-    // ======================================
-
-    public function isActive(): bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): self
-    {
-        $this->isActive = $isActive;
-        return $this;
-    }
-
-    // ======================================
+    // =========================
     // ✅ Profil
-    // ======================================
+    // =========================
 
     public function getNom(): ?string
     {
         return $this->nom;
     }
 
-    public function setNom(string $nom): self
+    public function setNom(?string $nom): self
     {
-        $this->nom = trim($nom);
+        $this->nom = $nom !== null ? trim($nom) : null;
         return $this;
     }
 
@@ -196,9 +194,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->prenom;
     }
 
-    public function setPrenom(string $prenom): self
+    public function setPrenom(?string $prenom): self
     {
-        $this->prenom = trim($prenom);
+        $this->prenom = $prenom !== null ? trim($prenom) : null;
         return $this;
     }
 
@@ -227,7 +225,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getCreatedAt(): \DateTimeImmutable
     {
-        return $this->createdAt;
+        return $this->createdAt ?? new \DateTimeImmutable();
     }
 
     public function setCreatedAt(\DateTimeImmutable $createdAt): self
@@ -236,21 +234,45 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // ======================================
-    // ✅ Face Embedding (Reconnaissance faciale)
-    // ======================================
+    // =========================
+    // ✅ isActive
+    // =========================
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
+        return $this;
+    }
+
+    // =========================
+    // ✅ Last seen
+    // =========================
+
+    public function getLastSeenAt(): ?\DateTimeImmutable
+    {
+        return $this->lastSeenAt;
+    }
+
+    public function setLastSeenAt(?\DateTimeImmutable $lastSeenAt): self
+    {
+        $this->lastSeenAt = $lastSeenAt;
+        return $this;
+    }
+
+    // =========================
+    // ✅ Face Embedding
+    // =========================
 
     public function getFaceEmbedding(): ?array
     {
         return $this->faceEmbedding;
     }
 
-    /**
-     * Stocke un embedding propre:
-     * - cast float
-     * - retire NaN/INF
-     * - met à jour faceUpdatedAt
-     */
     public function setFaceEmbedding(?array $faceEmbedding): self
     {
         if ($faceEmbedding === null) {
@@ -268,7 +290,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $clean[] = $f;
         }
 
-        // si trop court => on refuse / on vide
         if (count($clean) < 64) {
             $this->faceEmbedding = null;
             $this->faceUpdatedAt = null;
@@ -304,9 +325,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // ======================================
+    // =========================
     // ✅ Relations Dechet
-    // ======================================
+    // =========================
 
     /** @return Collection<int, Dechet> */
     public function getDechets(): Collection
@@ -355,6 +376,76 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $dechet->setValidatedBy(null);
             }
         }
+        return $this;
+    }
+
+    // =========================
+    // ✅ Helpers rôle (affichage)
+    // =========================
+
+    public static function getRoleLabels(): array
+    {
+        return [
+            'ROLE_ADMIN'     => 'Admin',
+            'ROLE_VALORIZER' => 'Valorisateur',
+            'ROLE_CITIZEN'   => 'Citoyen',
+            'ROLE_USER'      => 'Utilisateur',
+        ];
+    }
+
+    public function getPrimaryRole(): string
+    {
+        return match ($this->type) {
+            self::TYPE_ADMIN     => 'Admin',
+            self::TYPE_VALORIZER => 'Valorisateur',
+            default              => 'Citoyen',
+        };
+    }
+
+    public function getRoleLabel(): string
+    {
+        return $this->getPrimaryRole();
+    }
+
+    // =========================
+    // ✅ 2FA Google Authenticator (Scheb)
+    // =========================
+
+    public function isGoogleAuthenticatorEnabled(): bool
+    {
+        // ✅ obligatoire pour citoyen/valorisateur uniquement
+        if (!in_array($this->type, [self::TYPE_CITIZEN, self::TYPE_VALORIZER], true)) {
+            return false;
+        }
+
+        // ✅ activé seulement si flag ON + secret présent
+        return $this->isTwoFactorEnabled && !empty($this->googleAuthenticatorSecret);
+    }
+
+    public function getGoogleAuthenticatorUsername(): string
+    {
+        return $this->getEmail() ?? '';
+    }
+
+    public function getGoogleAuthenticatorSecret(): ?string
+    {
+        return $this->googleAuthenticatorSecret;
+    }
+
+    public function setGoogleAuthenticatorSecret(?string $secret): self
+    {
+        $this->googleAuthenticatorSecret = $secret;
+        return $this;
+    }
+
+    public function isTwoFactorEnabled(): bool
+    {
+        return $this->isTwoFactorEnabled;
+    }
+
+    public function setIsTwoFactorEnabled(bool $enabled): self
+    {
+        $this->isTwoFactorEnabled = $enabled;
         return $this;
     }
 }

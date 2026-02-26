@@ -16,46 +16,60 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class RegistrationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('email', EmailType::class, [
-                'constraints' => [
-                    new NotBlank(message: 'Veuillez saisir un email.'),
-                    new Email(message: 'Email invalide.'),
-                ],
-            ])
             ->add('nom', TextType::class, [
+                'label' => 'Nom',
+                'empty_data' => '',
                 'constraints' => [
                     new NotBlank(message: 'Veuillez saisir votre nom.'),
                     new Length(min: 2, max: 120),
                 ],
             ])
             ->add('prenom', TextType::class, [
+                'label' => 'Prénom',
+                'empty_data' => '',
                 'constraints' => [
                     new NotBlank(message: 'Veuillez saisir votre prénom.'),
                     new Length(min: 2, max: 120),
                 ],
             ])
-            ->add('telephone', TextType::class, [
-                'required' => false,
+            ->add('email', EmailType::class, [
+                'label' => 'Email',
                 'constraints' => [
-                    new Length(min: 8, max: 30),
+                    new NotBlank(message: 'Veuillez saisir un email.'),
+                    new Email(message: 'Email invalide.'),
                 ],
             ])
-           ->add('type', ChoiceType::class, [
-    'choices' => [
-        'Citoyen'      => User::TYPE_CITIZEN,
-        'Valorisateur' => User::TYPE_VALORIZER,
-        'Admin'        => User::TYPE_ADMIN,   // ✅ ajouté
-    ],
-    'data' => User::TYPE_CITIZEN,
-])
-
+            ->add('telephone', TextType::class, [
+                'label' => 'Téléphone',
+                'required' => false,
+                'empty_data' => '',
+                'constraints' => [
+                    // accepte vide, sinon valide format/longueur
+                    new Regex([
+                        'pattern' => '/^$|^[0-9+\s\-]{8,30}$/',
+                        'message' => 'Téléphone invalide (8 à 30 caractères, chiffres + espaces + + -).',
+                    ]),
+                ],
+            ])
+            ->add('type', ChoiceType::class, [
+                'label' => 'Rôle',
+                'choices' => [
+                    'Citoyen'      => User::TYPE_CITIZEN,
+                    'Valorisateur' => User::TYPE_VALORIZER,
+                ],
+                'expanded' => true,   // radio buttons
+                'multiple' => false,
+                'data' => User::TYPE_CITIZEN,
+            ])
             ->add('agreeTerms', CheckboxType::class, [
+                'label' => "J'accepte les conditions",
                 'mapped' => false,
                 'constraints' => [
                     new IsTrue(message: 'Vous devez accepter les conditions.'),

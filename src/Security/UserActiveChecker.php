@@ -1,5 +1,4 @@
 <?php
-// src/Security/UserActiveChecker.php
 
 namespace App\Security;
 
@@ -18,7 +17,7 @@ class UserActiveChecker implements UserCheckerInterface
 
         if (!$user->isActive()) {
             throw new CustomUserMessageAccountStatusException(
-                "Votre compte est désactivé. Contactez l'administration."
+                "🚫 Votre compte est désactivé par l'administrateur. Veuillez contacter le support."
             );
         }
     }

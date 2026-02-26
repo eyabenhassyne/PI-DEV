@@ -60,9 +60,9 @@
             <th>Email</th>
             <th>Nom complet</th>
             <th>Téléphone</th>
-            <th>Type</th>
+            {# ❌ Type supprimé #}
             <th>Statut</th>
-            <th>Rôles</th>
+            <th>Rôle</th>
             <th>Créé le</th>
             <th class="text-end" style="width:240px;">Actions</th>
           </tr>
@@ -70,6 +70,9 @@
 
         <tbody>
         {% for user in users %}
+          {% set isAdmin = (user.type == 'ADMIN') %}
+          {% set online = user.lastSeenAt and user.lastSeenAt > date('-5 minutes') %}
+
           <tr>
             <td>
               <div class="fw-semibold">{{ user.email }}</div>
@@ -79,22 +82,8 @@
             <td>{{ user.prenom }} {{ user.nom }}</td>
             <td>{{ user.telephone ?: '—' }}</td>
 
+            {# ✅ Statut + switch + badge online #}
             <td>
-              {% set t = user.type|default('') %}
-              {% if t == 'ADMIN' %}
-                <span class="badge bg-danger"><i class="bi bi-shield-lock"></i> ADMIN</span>
-              {% elseif t == 'VALORIZER' %}
-                <span class="badge bg-success"><i class="bi bi-recycle"></i> VALORISATEUR</span>
-              {% elseif t == 'CITIZEN' or t == 'CITOYEN' %}
-                <span class="badge bg-primary"><i class="bi bi-person"></i> CITOYEN</span>
-              {% else %}
-                <span class="badge bg-secondary">{{ t ?: '—' }}</span>
-              {% endif %}
-            </td>
-
-            {# ✅ NEW: Statut Actif / Désactivé + switch #}
-            <td>
-              {% set isAdmin = (user.type == 'ADMIN') %}
               <div class="d-flex align-items-center gap-2">
                 <div class="form-check form-switch m-0">
                   <input
@@ -102,18 +91,37 @@
                     type="checkbox"
                     role="switch"
                     data-id="{{ user.id }}"
+                    data-token="{{ csrf_token('toggle_user_' ~ user.id) }}"
                     {% if user.isActive %}checked{% endif %}
                     {% if isAdmin %}disabled{% endif %}
                   >
                 </div>
 
-                {% if user.isActive %}
-                  <span class="badge bg-success-subtle text-success border">
-                    <i class="bi bi-check-circle"></i> Actif
+                <span class="badge border js-status-badge"
+                      data-id="{{ user.id }}"
+                      data-active="{{ user.isActive ? '1' : '0' }}"
+                      style="cursor:default;">
+                  {% if user.isActive %}
+                    <span class="text-success">
+                      <i class="bi bi-check-circle"></i> Actif
+                    </span>
+                  {% else %}
+                    <span class="text-danger">
+                      <i class="bi bi-x-circle"></i> Désactivé
+                    </span>
+                  {% endif %}
+                </span>
+              </div>
+
+              {# ✅ Badge En ligne / Hors ligne #}
+              <div class="mt-1 small js-online-wrap" data-id="{{ user.id }}">
+                {% if online %}
+                  <span class="badge bg-success js-online-badge" data-online="1">
+                    <i class="bi bi-circle-fill me-1"></i> En ligne
                   </span>
                 {% else %}
-                  <span class="badge bg-danger-subtle text-danger border">
-                    <i class="bi bi-x-circle"></i> Désactivé
+                  <span class="badge bg-secondary js-online-badge" data-online="0">
+                    <i class="bi bi-circle me-1"></i> Hors ligne
                   </span>
                 {% endif %}
               </div>
@@ -123,15 +131,14 @@
               {% endif %}
             </td>
 
+            {# ✅ Rôle (un seul) #}
             <td>
-              {% if user.roles %}
-                <div class="d-flex flex-wrap gap-1">
-                  {% for r in user.roles %}
-                    <span class="badge bg-light text-dark border">{{ r }}</span>
-                  {% endfor %}
-                </div>
+              {% if user.type == 'ADMIN' %}
+                <span class="badge bg-danger"><i class="bi bi-shield-lock"></i> Admin</span>
+              {% elseif user.type == 'VALORIZER' %}
+                <span class="badge bg-success"><i class="bi bi-recycle"></i> Valorisateur</span>
               {% else %}
-                —
+                <span class="badge bg-primary"><i class="bi bi-person"></i> Citoyen</span>
               {% endif %}
             </td>
 
@@ -159,8 +166,7 @@
           </tr>
         {% else %}
           <tr>
-            {# ✅ maintenant il faut 8 colonnes #}
-            <td colspan="8" class="text-center py-4 text-muted">
+            <td colspan="7" class="text-center py-4 text-muted">
               <i class="bi bi-info-circle"></i> Aucun utilisateur trouvé
             </td>
           </tr>
@@ -171,39 +177,63 @@
   </div>
 </div>
 
-{# ✅ JS: activer/désactiver via POST #}
+{# ✅ JS AJAX toggle actif/désactivé + CSRF PAR USER + accepte JSON #}
 <script>
-document.querySelectorAll('.js-toggle-active').forEach((el) => {
-  el.addEventListener('change', async () => {
-    const id = el.dataset.id;
-    const active = el.checked;
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.js-toggle-active').forEach((el) => {
+    el.addEventListener('change', async () => {
+      const id = el.dataset.id;
+      const token = el.dataset.token;
+      const oldChecked = !el.checked;
 
-    try {
-      const body = new URLSearchParams();
-      body.append('active', active ? '1' : '0');
+      try {
+        const res = await fetch(`/admin/user/${id}/toggle-active`, {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': token,
+            'Accept': 'application/json'
+          }
+        });
 
-      const res = await fetch(`{{ path('admin_user_toggle_active', {id: 0}) }}`.replace('/0/', `/${id}/`), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-          'X-Requested-With': 'XMLHttpRequest',
-          'X-CSRF-TOKEN': '{{ csrf_token("toggle_active") }}'
-        },
-        body
-      });
+        const ct = res.headers.get('content-type') || '';
+        if (!ct.includes('application/json')) {
+          const text = await res.text();
+          console.log(text);
+          throw new Error("Réponse non JSON (voir console).");
+        }
 
-      const data = await res.json();
-      if (!res.ok || !data.ok) {
-        throw new Error(data.message || 'Erreur');
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          throw new Error(data.message || 'Erreur');
+        }
+
+        // ✅ Mise à jour du badge Actif/Désactivé sans reload
+        const badge = document.querySelector(`.js-status-badge[data-id="${id}"]`);
+        if (badge) {
+          if (data.active) {
+            badge.innerHTML = `<span class="text-success"><i class="bi bi-check-circle"></i> Actif</span>`;
+            badge.dataset.active = '1';
+          } else {
+            badge.innerHTML = `<span class="text-danger"><i class="bi bi-x-circle"></i> Désactivé</span>`;
+            badge.dataset.active = '0';
+          }
+        }
+
+        // ✅ Optionnel: si on désactive, on force "Hors ligne" visuellement
+        const onlineWrap = document.querySelector(`.js-online-wrap[data-id="${id}"] .js-online-badge`);
+        if (onlineWrap && data.active === false) {
+          onlineWrap.className = "badge bg-secondary js-online-badge";
+          onlineWrap.dataset.online = "0";
+          onlineWrap.innerHTML = `<i class="bi bi-circle me-1"></i> Hors ligne`;
+        }
+
+      } catch (e) {
+        alert(e.message || 'Erreur');
+        el.checked = oldChecked; // rollback switch
       }
-
-      // Optionnel: tu peux rafraîchir la page si tu veux actualiser le badge
-      // location.reload();
-
-    } catch (e) {
-      alert(e.message || 'Erreur');
-      el.checked = !active; // rollback UI
-    }
+    });
   });
 });
 </script>
