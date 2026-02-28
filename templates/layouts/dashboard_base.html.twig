@@ -19,6 +19,14 @@
         transition: all 0.3s ease;
     }
 
+    .sidebar-brand-logo {
+        width: 190px;
+        max-width: 100%;
+        height: auto;
+        display: block;
+        object-fit: contain;
+    }
+
     @media (max-width: 768px) {
         .sidebar {
             position: fixed;
@@ -45,8 +53,8 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h3>
-                <i class="fa-solid fa-leaf me-2"></i> WasteWise
+            <h3 class="mb-0">
+                <img src="{{ asset('static/images/logo.png') }}" alt="WasteWise Logo" class="sidebar-brand-logo">
             </h3>
         </div>
 

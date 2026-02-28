@@ -267,6 +267,20 @@ class ValorisateurController extends AbstractController
 
             $declaration->setStatut(DeclarationDechet::STATUT_APPROUVEE);
             $declaration->setPointsAttribues($points);
+            $declaration->setDateConfirmation(new \DateTimeImmutable());
+
+            $actorName = 'Valorisateur';
+            $actor = $this->getUser();
+            if ($actor instanceof User) {
+                $declaration->setValorisateurConfirmateur($actor);
+                $actorName = trim((string) ($actor->getPrenom().' '.$actor->getNom())) ?: (string) $actor->getEmail();
+            }
+
+            $declaration->addHistoriqueStatut(
+                DeclarationDechet::STATUT_APPROUVEE,
+                $actorName,
+                'Declaration confirmee par valorisateur'
+            );
 
             $ecoPointsService->addPoints($citoyen, $points, 'Declaration approuvee par valorisateur', false);
 

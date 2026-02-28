@@ -378,10 +378,10 @@ class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/declarations', name: 'admin_declarations')]
-    public function declarations(): Response
+    #[Route('/admin/declarations/legacy', name: 'admin_declarations_legacy')]
+    public function declarationsLegacy(): Response
     {
-        return $this->render('admin/declarations.html.twig');
+        return $this->redirectToRoute('admin_declarations');
     }
 
     #[Route('/admin/utilisateurs', name: 'admin_utilisateurs')]

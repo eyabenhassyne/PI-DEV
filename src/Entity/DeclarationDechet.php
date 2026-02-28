@@ -60,6 +60,19 @@ class DeclarationDechet
     #[ORM\JoinColumn(nullable: true)]
     private ?User $citoyen = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $valorisateurConfirmateur = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTime $dateConfirmation = null;
+
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $statutHistorique = [];
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTime $deletedAt = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -217,6 +230,87 @@ class DeclarationDechet
     public function setCitoyen(?User $citoyen): static
     {
         $this->citoyen = $citoyen;
+
+        return $this;
+    }
+
+    public function getValorisateurConfirmateur(): ?User
+    {
+        return $this->valorisateurConfirmateur;
+    }
+
+    public function setValorisateurConfirmateur(?User $valorisateurConfirmateur): static
+    {
+        $this->valorisateurConfirmateur = $valorisateurConfirmateur;
+
+        return $this;
+    }
+
+    public function getDateConfirmation(): ?\DateTime
+    {
+        return $this->dateConfirmation;
+    }
+
+    public function setDateConfirmation(?\DateTimeInterface $dateConfirmation): static
+    {
+        if ($dateConfirmation instanceof \DateTimeImmutable) {
+            $dateConfirmation = \DateTime::createFromImmutable($dateConfirmation);
+        }
+
+        $this->dateConfirmation = $dateConfirmation instanceof \DateTime ? $dateConfirmation : null;
+
+        return $this;
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getStatutHistorique(): array
+    {
+        return $this->statutHistorique ?? [];
+    }
+
+    /**
+     * @param array<int, array<string, mixed>>|null $statutHistorique
+     */
+    public function setStatutHistorique(?array $statutHistorique): static
+    {
+        $this->statutHistorique = $statutHistorique ?? [];
+
+        return $this;
+    }
+
+    public function addHistoriqueStatut(
+        string $statut,
+        ?string $acteur = null,
+        ?string $note = null,
+        ?\DateTimeInterface $date = null
+    ): static {
+        $events = $this->getStatutHistorique();
+        $eventDate = $date ?? new \DateTimeImmutable();
+        $events[] = [
+            'statut' => $statut,
+            'acteur' => $acteur,
+            'note' => $note,
+            'date' => $eventDate->format(DATE_ATOM),
+        ];
+        $this->statutHistorique = $events;
+
+        return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTimeInterface $deletedAt): static
+    {
+        if ($deletedAt instanceof \DateTimeImmutable) {
+            $deletedAt = \DateTime::createFromImmutable($deletedAt);
+        }
+
+        $this->deletedAt = $deletedAt instanceof \DateTime ? $deletedAt : null;
 
         return $this;
     }

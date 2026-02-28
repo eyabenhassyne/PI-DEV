@@ -93,9 +93,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(mappedBy: 'utilisateur', targetEntity: Wallet::class)]
     private ?Wallet $wallet = null;
 
+    #[ORM\OneToMany(mappedBy: 'partenaire', targetEntity: BonAchat::class)]
+    private Collection $bonsAchat;
+
+    #[ORM\OneToMany(mappedBy: 'partenaire', targetEntity: BadgePartenaire::class)]
+    private Collection $badgesPartenaire;
+
     public function __construct()
     {
         $this->declarations = new ArrayCollection();
+        $this->bonsAchat = new ArrayCollection();
+        $this->badgesPartenaire = new ArrayCollection();
         $this->dateInscription = new \DateTime();
     }
 
@@ -437,6 +445,64 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setWallet(?Wallet $wallet): static
     {
         $this->wallet = $wallet;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, BonAchat>
+     */
+    public function getBonsAchat(): Collection
+    {
+        return $this->bonsAchat;
+    }
+
+    public function addBonAchat(BonAchat $bonAchat): static
+    {
+        if (!$this->bonsAchat->contains($bonAchat)) {
+            $this->bonsAchat->add($bonAchat);
+            $bonAchat->setPartenaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBonAchat(BonAchat $bonAchat): static
+    {
+        if ($this->bonsAchat->removeElement($bonAchat)) {
+            if ($bonAchat->getPartenaire() === $this) {
+                $bonAchat->setPartenaire(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, BadgePartenaire>
+     */
+    public function getBadgesPartenaire(): Collection
+    {
+        return $this->badgesPartenaire;
+    }
+
+    public function addBadgePartenaire(BadgePartenaire $badgePartenaire): static
+    {
+        if (!$this->badgesPartenaire->contains($badgePartenaire)) {
+            $this->badgesPartenaire->add($badgePartenaire);
+            $badgePartenaire->setPartenaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBadgePartenaire(BadgePartenaire $badgePartenaire): static
+    {
+        if ($this->badgesPartenaire->removeElement($badgePartenaire)) {
+            if ($badgePartenaire->getPartenaire() === $this) {
+                $badgePartenaire->setPartenaire(null);
+            }
+        }
 
         return $this;
     }

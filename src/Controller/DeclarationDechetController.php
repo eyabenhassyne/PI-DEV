@@ -71,6 +71,20 @@ class DeclarationDechetController extends AbstractController
             $declaration->setPointsAttribues(0);
             $declaration->setCreatedAt(new \DateTime());
             $declaration->setCitoyen($this->resolveDeclarationAuthor($userRepository));
+            $declaration->setValorisateurConfirmateur(null);
+            $declaration->setDateConfirmation(null);
+            $declaration->setDeletedAt(null);
+            $declaration->setStatutHistorique([]);
+
+            $citoyen = $declaration->getCitoyen();
+            $actor = $citoyen instanceof User
+                ? (trim((string) ($citoyen->getPrenom().' '.$citoyen->getNom())) ?: (string) $citoyen->getEmail())
+                : 'Citoyen';
+            $declaration->addHistoriqueStatut(
+                DeclarationDechet::STATUT_EN_ATTENTE,
+                $actor,
+                'Declaration creee'
+            );
 
             if (null !== $scoreIaFromRequest && is_numeric($scoreIaFromRequest)) {
                 $declaration->setScoreIa((float) $scoreIaFromRequest);
