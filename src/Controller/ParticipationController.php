@@ -34,15 +34,15 @@ final class ParticipationController extends AbstractController
         ]);
     }
 
-    // ParticipationController.php
+    
 
     #[Route('/new', name: 'app_participation_new', methods: ['GET', 'POST'])]
 public function new(Request $request, EntityManagerInterface $entityManager, EvenementRepository $evenementRepository, NotificationService $notifService): Response 
 {
-    // 1. Ken el request jaya mel POST (Modal walla Admin Form)
+    
     if ($request->isMethod('POST')) {
         $nomCitoyen = $request->request->get('nomCitoyen');
-        // N-choufou el event_id d-y-iji mel request direct (Modal) walla mel Form (Admin)
+        
         $eventId = $request->request->get('event_id') ?? $request->request->all('participation')['evenement'] ?? null;
 
         if ($nomCitoyen && $eventId) {
@@ -59,13 +59,13 @@ public function new(Request $request, EntityManagerInterface $entityManager, Eve
                 $notifService->notifyAdmin("Nouvelle Inscription", "Le citoyen $nomCitoyen s'est inscrit à : " . $evenement->getTitle());
                 $this->addFlash('success', 'Confirmation envoyée !');
                 
-                // Yarja3 lel front ken el request jaya mel modal, walla lel index ken mel admin
+                
                 return $request->request->has('event_id') ? $this->redirectToRoute('app_front') : $this->redirectToRoute('app_participation_index');
             }
         }
     }
 
-    // 2. Ken el request GET (Admin standard)
+   
     $participation = new Participation();
     $form = $this->createForm(ParticipationType::class, $participation);
     $form->handleRequest($request);
@@ -85,7 +85,7 @@ public function new(Request $request, EntityManagerInterface $entityManager, Eve
 
 public function __construct()
 {
-    // Dima n-7ottou el date wa9t el création automatique
+    
     $this->dateInscription = new \DateTime();
 }
 
@@ -103,7 +103,7 @@ public function __construct()
                 "La participation de " . $participation->getNomCitoyen() . " a été modifiée."
             );
 
-            $this->addFlash('success', 'Modification m-rigla!');
+            $this->addFlash('success', 'Modification avec succées!');
             return $this->redirectToRoute('app_participation_index');
         }
 

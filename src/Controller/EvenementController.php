@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Evenement;
 use App\Form\EvenementType;
 use App\Repository\EvenementRepository;
-use App\Service\NotificationService; // 1. Matensech t-zid hédhi!
+use App\Service\NotificationService; 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -57,7 +57,7 @@ final class EvenementController extends AbstractController
             $entityManager->persist($evenement);
             $entityManager->flush();
 
-            // --- BUNDLE NOTIFICATION: Alert Admin ---
+            
             $notifService->notifyAdmin(
                 "Nouveau Événement", 
                 "L'organisateur a ajouté l'événement : " . $evenement->getTitle()
@@ -90,7 +90,7 @@ final class EvenementController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            // --- BUNDLE NOTIFICATION: Alert Admin ---
+            
             $notifService->notifyAdmin(
                 "Modification Événement", 
                 "L'événement ID " . $evenement->getId() . " a été modifié."
@@ -110,12 +110,12 @@ final class EvenementController extends AbstractController
     public function delete(Request $request, Evenement $evenement, EntityManagerInterface $entityManager, NotificationService $notifService): Response
     {
         if ($this->isCsrfTokenValid('delete'.$evenement->getId(), $request->request->get('_token'))) {
-            $eventTitle = $evenement->getTitle(); // N-khabiw el title 9bal el removal
+            $eventTitle = $evenement->getTitle(); 
             
             $entityManager->remove($evenement);
             $entityManager->flush();
 
-            // --- BUNDLE NOTIFICATION: Alert Admin ---
+            
             $notifService->notifyAdmin(
                 "Suppression Événement", 
                 "L'événement intitulé '" . $eventTitle . "' a été supprimé."
@@ -127,20 +127,20 @@ final class EvenementController extends AbstractController
         return $this->redirectToRoute('app_evenement_index');
     }
 
-    // Faza AI sghira bech ta3ti prédiction
+    
 public function predictAttendance($event, $weatherTemp) {
-    $baseScore = 50; // 3aded e-nes el dima d-ji
+    $baseScore = 50; 
 
-    // Ken el blasa fiha "Tunis" walla "Ariana" (Blayes kbar)
+    
     if (str_contains(strtolower($event->getLieu()), 'tunis')) {
         $baseScore += 20;
     }
 
-    // Ken el météo behiya (bin 15 w 25 degrée)
+    
     if ($weatherTemp >= 15 && $weatherTemp <= 25) {
         $baseScore += 30;
     } elseif ($weatherTemp < 10) {
-        $baseScore -= 15; // Bard y-khalli e-nes ma d-jich
+        $baseScore -= 15; 
     }
 
     return $baseScore;

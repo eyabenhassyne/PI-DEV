@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-// 1. Zidna el import hadha lel controle de saisie
+
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EvenementRepository::class)]
@@ -19,19 +19,19 @@ class Evenement
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    // Controle 3la el Titre
+    
     #[Assert\NotBlank(message: "Le titre de l'événement est obligatoire.")]
     #[Assert\Length(min: 5, minMessage: "Le titre doit avoir au moins 5 caractères.")]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    // Controle 3la el Description
+    
     #[Assert\NotBlank(message: "La description est obligatoire.")]
     #[Assert\Length(min: 10, minMessage: "La description doit avoir au moins 10 caractères.")]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    // 2. EL ISLAH: Controle 3la el Date (Lezem ya el yom ya el futur)
+   
     #[Assert\NotBlank(message: "La date est obligatoire.")]
     #[Assert\GreaterThanOrEqual(
         value: "today",
@@ -46,7 +46,7 @@ class Evenement
     private Collection $participations;
 
     #[ORM\Column(length: 255)]
-    // Controle 3la l'organisateur
+   
     #[Assert\NotBlank(message: "Le nom de l'organisateur est obligatoire.")]
     private ?string $nomOrganisateur = null;
 

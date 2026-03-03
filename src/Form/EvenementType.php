@@ -4,7 +4,7 @@ namespace App\Form;
 
 use App\Entity\Evenement;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType; // Badelna l'import bech n-zidu el waqt
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType; 
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -30,7 +30,7 @@ class EvenementType extends AbstractType
                     'placeholder' => 'Détails sur l\'action écologique...'
                 ]
             ])
-            // --- EL ISLAH HNA: ZIDNA EL LIEU (ADRESSE) ---
+            
             ->add('lieu', TextType::class, [
                 'label' => 'Adresse / Lieu',
                 'attr' => [
@@ -38,13 +38,13 @@ class EvenementType extends AbstractType
                     'placeholder' => 'Ex: La Marsa, Tunis'
                 ]
             ])
-            // --- EL ISLAH HNA: DateTimeType bech l'admin yakhtar el waqt zeda ---
+            
             ->add('dateHeure', DateTimeType::class, [
                 'label' => 'Date et Heure',
                 'widget' => 'single_text',
                 'attr' => [
                     'class' => 'form-control',
-                    'min' => (new \DateTime())->format('Y-m-d\TH:i') // Blocki el passé m3a el waqt
+                    'min' => (new \DateTime())->format('Y-m-d\TH:i') 
                 ]
             ])
             ->add('nomOrganisateur', TextType::class, [

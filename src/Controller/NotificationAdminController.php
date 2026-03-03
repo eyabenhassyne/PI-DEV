@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Repository\NotificationRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route; // Thabbet f'el import hetha
+use Symfony\Component\Routing\Annotation\Route; 
 
 class NotificationAdminController extends AbstractController
 {

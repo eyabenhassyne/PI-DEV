@@ -11,18 +11,18 @@ use Symfony\Component\HttpFoundation\Request;
 
 final class CalendarController extends AbstractController
 {
-    #[Route('/calendar', name: 'app_calendar', methods: ['GET'])]
-    public function index(): Response
-    {
+     #[Route('/calendar', name: 'app_calendar', methods: ['GET'])]
+     public function index(): Response
+     {
+    
         return $this->render('calendar/index.html.twig');
-    }
+     }
 
     #[Route('/fc-load-events', name: 'fc_load_events', methods: ['GET'])]
     public function loadEvents(EvenementRepository $repo, Request $request): JsonResponse
     {
         try {
-            // FullCalendar i-be3eth ?start=...&end=... 
-            // Hna n-khalliw el code i-rajja3 el kol ken mahomsh mawjoudin
+            
             $events = $repo->findAll();
             $data = [];
 

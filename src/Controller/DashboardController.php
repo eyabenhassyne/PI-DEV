@@ -14,11 +14,11 @@ final class DashboardController extends AbstractController
     public function index(EvenementRepository $evRepo, ParticipationRepository $partRepo): Response
     {
         return $this->render('dashboard/index.html.twig', [
-            // 1. Les Statistiques (Cards)
+            
             'totalEvents' => $evRepo->count([]), 
             'totalParticipations' => $partRepo->count([]),
             
-            // 2. El Lista mta3 el événements (Tableau)
+            
             'evenements' => $evRepo->findAll(),
         ]);
     }

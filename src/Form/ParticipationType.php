@@ -43,7 +43,7 @@ class ParticipationType extends AbstractType
                 'attr' => [
                     'class' => 'form-select bg-light', // bg-light bech i-ben differant chwaya
                 ],
-                // EL ISLAH HNA: Ma n-zidouch placeholder ken l'événement deja m-ekhtar
+                
                 'placeholder' => '--- Sélection de l\'action ---',
             ])
         ;

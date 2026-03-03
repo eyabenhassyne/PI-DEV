@@ -26,7 +26,7 @@ class Participation
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotBlank(message: "La date d'inscription est obligatoire.")]
     #[Assert\Type("\DateTimeInterface")]
-    // EL ISLAH HNA: Ma lezmech y-fout el yom (today)
+    
     #[Assert\LessThanOrEqual(
         value: "today",
         message: "La date d'inscription ne peut pas être dans le futur."
@@ -76,11 +76,11 @@ class Participation
         return $this;
     }
 
-    // src/Entity/Participation.php
+    
 
 public function __construct()
 {
-    // El date d-t-t7at wa7edha automatique f'ay participation jdida
+    
     $this->dateInscription = new \DateTime();
 }
 }

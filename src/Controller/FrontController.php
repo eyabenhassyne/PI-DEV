@@ -12,26 +12,45 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Service\NotificationService; // 1. Zidna el Service mta3 el Bundle
+use App\Service\NotificationService;
 
 final class FrontController extends AbstractController
 {
-    /**
-     * 1. ÉVÉNEMENTS DISPONIBLES (Page d'accueil du Citoyen)
-     */
     #[Route('/front', name: 'app_front')]
     public function index(EvenementRepository $evenementRepository): Response
     {
         $events = $evenementRepository->findBy([], ['dateHeure' => 'DESC']);
-
         return $this->render('front/index.html.twig', [
             'events' => $events,
         ]);
     }
 
     /**
-     * 2. PARTICIPER (Logic m-separé 3al Admin)
+     * ISLAH: Path jdid b'ism jdid bech ma3adech yghallat m3a el Admin
      */
+    #[Route('/organisateur/proposer-action', name: 'app_front_evenement_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $evenement = new Evenement(); 
+        $form = $this->createForm(EvenementType::class, $evenement);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($evenement);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Événement ajouté avec succès !');
+            
+            return $this->redirectToRoute('app_organisateur_index', [
+                'org' => $evenement->getNomOrganisateur()
+            ]);
+        }
+
+        return $this->render('front/evenement_new.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
     #[Route('/participer/{id}', name: 'app_participer_event', methods: ['POST'])]
     public function participer(int $id, Request $request, EvenementRepository $repo, EntityManagerInterface $em, NotificationService $notifService): Response
     {
@@ -47,8 +66,6 @@ final class FrontController extends AbstractController
             $em->persist($participation);
             $em->flush();
 
-            // --- ISLAH: BUNDLE NOTIFICATION ---
-            // L-Admin d-ouslou alerte f'el Mailtrap d-toul mel Front!
             $notifService->notifyAdmin(
                 "Nouvelle Inscription Front", 
                 "Le citoyen " . $nomCitoyen . " s'est inscrit à l'action: " . $event->getTitle()
@@ -59,13 +76,9 @@ final class FrontController extends AbstractController
             $this->addFlash('danger', 'Erreur lors de l\'inscription.');
         }
 
-        // Dima yarja3 lel Front mte3ou
         return $this->redirectToRoute('app_front');
     }
 
-    /**
-     * 3. MES ACTIONS (Recherche Citoyen)
-     */
     #[Route('/mes-actions', name: 'app_mes_actions')]
     public function mesActions(ParticipationRepository $participationRepository, Request $request): Response
     {
@@ -78,9 +91,6 @@ final class FrontController extends AbstractController
         ]);
     }
 
-    /**
-     * 4. ESPACE ORGANISATEUR (Gestion)
-     */
     #[Route('/organisateur/mes-actions', name: 'app_organisateur_index')]
     public function organisateurIndex(EvenementRepository $repo, Request $request): Response
     {
@@ -102,7 +112,7 @@ final class FrontController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
             $this->addFlash('success', 'Votre action a été modifiée !');
-            return $this->redirectToRoute('app_organisateur_index');
+            return $this->redirectToRoute('app_organisateur_index', ['org' => $evenement->getNomOrganisateur()]);
         }
 
         return $this->render('front/organisateur_edit.html.twig', [
@@ -122,32 +132,41 @@ final class FrontController extends AbstractController
     #[Route('/organisateur/supprimer/{id}', name: 'app_organisateur_delete', methods: ['POST'])]
     public function delete(Request $request, Evenement $evenement, EntityManagerInterface $entityManager): Response
     {
+        $nomOrg = $evenement->getNomOrganisateur();
         if ($this->isCsrfTokenValid('delete'.$evenement->getId(), $request->request->get('_token'))) {
             $entityManager->remove($evenement);
             $entityManager->flush();
             $this->addFlash('success', 'Événement supprimé !');
         }
-        return $this->redirectToRoute('app_organisateur_index');
+        return $this->redirectToRoute('app_organisateur_index', ['org' => $nomOrg]);
     }
 
     #[Route('/meteo-details', name: 'app_meteo_details')]
-public function meteoDetails(): Response
-{
-    return $this->render('front/meteo_details.html.twig');
-}
+    public function meteoDetails(): Response
+    {
+        return $this->render('front/meteo_details.html.twig');
+    }
 
-#[Route('/mes-badges', name: 'app_mes_badges')]
+    #[Route('/mes-badges', name: 'app_mes_badges')]
     public function mesBadges(ParticipationRepository $participationRepository, Request $request): Response
     {
-        // Njibou el ism mel barre de recherche (url?nom=Ahmed)
         $nomCitoyen = $request->query->get('nom'); 
-        
-        // Njibou el participations mta3 el ism hatha bedhabt
         $mesParticipations = $nomCitoyen ? $participationRepository->findBy(['nomCitoyen' => $nomCitoyen]) : [];
 
         return $this->render('front/mes_badges.html.twig', [
             'participations' => $mesParticipations,
             'nom' => $nomCitoyen
         ]);
+    }
+
+    #[Route('/mes-actions/annuler/{id}', name: 'app_participation_annuler', methods: ['POST', 'GET'])]
+    public function annulerParticipation(Participation $participation, EntityManagerInterface $entityManager): Response
+    {
+        $nom = $participation->getNomCitoyen();
+        $entityManager->remove($participation);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Votre participation a été annulée avec succès.');
+        return $this->redirectToRoute('app_mes_actions', ['nom' => $nom]);
     }
 }

@@ -22,7 +22,7 @@ class CalendarSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            // Nesta3mlou el constanta mta3 el bundle s7i7a
+            
             'calendar.set_data' => 'onCalendarSetData', 
         ];
     }
@@ -33,18 +33,17 @@ class CalendarSubscriber implements EventSubscriberInterface
         $end = $calendar->getEnd();
         $filters = $calendar->getFilters();
 
-        // Njibou el événements mel base
+        
         $evenements = $this->evenementRepository->findAll();
 
         foreach ($evenements as $ev) {
-            // --- EL ISLAH HNA: Thabbet f'esma el getters ---
-            // Nasta3mlou getTitle() w getDateHeure() kima f'el Entity mte3ek
+            
             $eventCalendar = new Event(
-                $ev->getTitle(), // Mouch getTitre()
-                $ev->getDateHeure() // Mouch getDateDebut()
+                $ev->getTitle(), 
+                $ev->getDateHeure() 
             );
 
-            // Ken ma 3andekch dateFin, FullCalendar yesta3mel dateHeure + 1h b'el default
+            
             if (method_exists($ev, 'getDateFin') && $ev->getDateFin()) {
                 $eventCalendar->setEnd($ev->getDateFin());
             }
@@ -55,7 +54,7 @@ class CalendarSubscriber implements EventSubscriberInterface
                 'textColor' => 'white',
             ]);
             
-            // Link lel détails
+            
             $eventCalendar->addOption('url', $this->router->generate('app_evenement_show', [
                 'id' => $ev->getId(),
             ]));

@@ -17,10 +17,8 @@
                 <input type="text" name="nom" class="form-control border-success-subtle" 
                        placeholder="Entrez votre nom pour voir vos participations..." value="{{ nom }}">
                 <button type="submit" class="btn btn-success rounded-end-pill px-4">Vérifier</button> 
-                
             </div>
         </form>
-
 
         <div class="table-responsive">
             <table class="table table-hover align-middle">
@@ -29,6 +27,7 @@
                         <th>Événement</th>
                         <th>Votre Nom</th>
                         <th class="text-center">Statut</th>
+                        <th class="text-center">Action</th> {# Nouvelle Colonne #}
                     </tr>
                 </thead>
                 <tbody>
@@ -39,10 +38,18 @@
                         <td class="text-center">
                             <span class="badge bg-info bg-opacity-10 text-info border border-info-subtle px-3">Inscrit</span>
                         </td>
+                        <td class="text-center">
+                            {# Bouton Annuler avec confirmation JS #}
+                            <a href="{{ path('app_participation_annuler', {'id': p.id}) }}" 
+                               class="btn btn-outline-danger btn-sm rounded-pill px-3"
+                               onclick="return confirm('Voulez-vous vraiment annuler votre participation à cet événement ?')">
+                                <i class="fas fa-times me-1"></i> Annuler
+                            </a>
+                        </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="3" class="text-center py-5 text-muted">
+                        <td colspan="4" class="text-center py-5 text-muted">
                             {% if nom %}
                                 Aucune participation trouvée pour "{{ nom }}".
                             {% else %}
