@@ -21,7 +21,9 @@
         'app_reponse_offre_show',
         'app_reponse_offre_edit'
     ] %}
+    {% set chatbase_routes = front_topbar_routes|merge(['app_front_dashboard']) %}
     {% set show_front_topbar = current_route in front_topbar_routes and app.request.query.get('from') != 'moderation' %}
+    {% set show_chatbase_widget = current_route in chatbase_routes and app.request.query.get('from') != 'moderation' %}
 
     <body class="{% block body_class %}{% endblock %}{% if show_front_topbar %} ww-body--with-front-topbar{% endif %}">
         {% if show_front_topbar %}
@@ -35,7 +37,7 @@
         {% endfor %}
         {% block body %}{% endblock %}
 
-        {% if show_front_topbar %}
+        {% if show_chatbase_widget %}
             {% include 'components/chatbase_widget.html.twig' %}
         {% endif %}
     </body>
