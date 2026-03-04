@@ -1,0 +1,8 @@
+parameters:
+    level: 2
+    paths:
+        - src
+    ignoreErrors:
+        - '#has invalid type CalendarBundle\\Event\\CalendarEvent#'
+        - '#Attribute class Symfony\\Component\\Routing\\Annotation\\Route does not exist#'
+        - '#Call to method addEvent\(\) on an unknown class CalendarBundle\\Event\\CalendarEvent#'

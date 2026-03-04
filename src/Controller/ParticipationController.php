@@ -11,7 +11,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Service\NotificationService;
 
 #[Route('/participation')]
 final class ParticipationController extends AbstractController
@@ -34,63 +33,50 @@ final class ParticipationController extends AbstractController
         ]);
     }
 
-    
-
     #[Route('/new', name: 'app_participation_new', methods: ['GET', 'POST'])]
-public function new(Request $request, EntityManagerInterface $entityManager, EvenementRepository $evenementRepository, NotificationService $notifService): Response 
-{
-    
-    if ($request->isMethod('POST')) {
-        $nomCitoyen = $request->request->get('nomCitoyen');
-        
-        $eventId = $request->request->get('event_id') ?? $request->request->all('participation')['evenement'] ?? null;
+    public function new(Request $request, EntityManagerInterface $entityManager, EvenementRepository $evenementRepository): Response 
+    {
+        if ($request->isMethod('POST')) {
+            $nomCitoyen = $request->request->get('nomCitoyen');
+            $eventId = $request->request->get('event_id') ?? $request->request->all('participation')['evenement'] ?? null;
 
-        if ($nomCitoyen && $eventId) {
-            $evenement = $evenementRepository->find($eventId);
-            if ($evenement) {
-                $participation = new Participation();
-                $participation->setNomCitoyen($nomCitoyen);
-                $participation->setEvenement($evenement);
-                $participation->setDateInscription(new \DateTime());
+            if ($nomCitoyen && $eventId) {
+                $evenement = $evenementRepository->find($eventId);
+                if ($evenement) {
+                    $participation = new Participation();
+                    $participation->setNomCitoyen($nomCitoyen);
+                    $participation->setEvenement($evenement);
+                    $participation->setDateInscription(new \DateTime());
 
-                $entityManager->persist($participation);
-                $entityManager->flush();
+                    $entityManager->persist($participation);
+                    $entityManager->flush();
 
-                $notifService->notifyAdmin("Nouvelle Inscription", "Le citoyen $nomCitoyen s'est inscrit à : " . $evenement->getTitle());
-                $this->addFlash('success', 'Confirmation envoyée !');
-                
-                
-                return $request->request->has('event_id') ? $this->redirectToRoute('app_front') : $this->redirectToRoute('app_participation_index');
+                    // Na77ina el notifyAdmin houni
+                    $this->addFlash('success', 'Inscription réussie !');
+                    
+                    return $request->request->has('event_id') ? $this->redirectToRoute('app_front') : $this->redirectToRoute('app_participation_index');
+                }
             }
         }
+
+        $participation = new Participation();
+        $form = $this->createForm(ParticipationType::class, $participation);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($participation);
+            $entityManager->flush();
+            return $this->redirectToRoute('app_participation_index');
+        }
+
+        return $this->render('participation/new.html.twig', [
+            'participation' => $participation,
+            'form' => $form->createView(),
+        ]);
     }
-
-   
-    $participation = new Participation();
-    $form = $this->createForm(ParticipationType::class, $participation);
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        $entityManager->persist($participation);
-        $entityManager->flush();
-        return $this->redirectToRoute('app_participation_index');
-    }
-
-    return $this->render('participation/new.html.twig', [
-        'participation' => $participation,
-        'form' => $form->createView(),
-    ]);
-}
-
-
-public function __construct()
-{
-    
-    $this->dateInscription = new \DateTime();
-}
 
     #[Route('/{id}/edit', name: 'app_participation_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Participation $participation, EntityManagerInterface $entityManager, NotificationService $notifService): Response
+    public function edit(Request $request, Participation $participation, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(ParticipationType::class, $participation);
         $form->handleRequest($request);
@@ -98,12 +84,8 @@ public function __construct()
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            $notifService->notifyAdmin(
-                "Modification Participation", 
-                "La participation de " . $participation->getNomCitoyen() . " a été modifiée."
-            );
-
-            $this->addFlash('success', 'Modification avec succées!');
+            // Na77ina el notifyAdmin houni
+            $this->addFlash('success', 'Modification avec succès !');
             return $this->redirectToRoute('app_participation_index');
         }
 
@@ -114,19 +96,13 @@ public function __construct()
     }
 
     #[Route('/{id}', name: 'app_participation_delete', methods: ['POST'])]
-    public function delete(Request $request, Participation $participation, EntityManagerInterface $entityManager, NotificationService $notifService): Response
+    public function delete(Request $request, Participation $participation, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$participation->getId(), $request->request->get('_token'))) {
-            $nom = $participation->getNomCitoyen();
-            
             $entityManager->remove($participation);
             $entityManager->flush();
 
-            $notifService->notifyAdmin(
-                "Annulation de Participation", 
-                "Le citoyen " . $nom . " s'est retiré de l'événement."
-            );
-
+            // Na77ina el notifyAdmin houni
             $this->addFlash('danger', 'Participation supprimée.');
         }
 

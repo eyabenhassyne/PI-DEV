@@ -12,7 +12,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Service\NotificationService;
 
 final class FrontController extends AbstractController
 {
@@ -25,9 +24,6 @@ final class FrontController extends AbstractController
         ]);
     }
 
-    /**
-     * ISLAH: Path jdid b'ism jdid bech ma3adech yghallat m3a el Admin
-     */
     #[Route('/organisateur/proposer-action', name: 'app_front_evenement_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -52,7 +48,7 @@ final class FrontController extends AbstractController
     }
 
     #[Route('/participer/{id}', name: 'app_participer_event', methods: ['POST'])]
-    public function participer(int $id, Request $request, EvenementRepository $repo, EntityManagerInterface $em, NotificationService $notifService): Response
+    public function participer(int $id, Request $request, EvenementRepository $repo, EntityManagerInterface $em): Response
     {
         $event = $repo->find($id);
         $nomCitoyen = $request->request->get('nomCitoyen');
@@ -66,11 +62,7 @@ final class FrontController extends AbstractController
             $em->persist($participation);
             $em->flush();
 
-            $notifService->notifyAdmin(
-                "Nouvelle Inscription Front", 
-                "Le citoyen " . $nomCitoyen . " s'est inscrit à l'action: " . $event->getTitle()
-            );
-
+            // Na77ina el notifyAdmin houni bech n-na77ou el machakel mta3 el Mailer
             $this->addFlash('success', 'Félicitations ! Votre participation est confirmée.');
         } else {
             $this->addFlash('danger', 'Erreur lors de l\'inscription.');

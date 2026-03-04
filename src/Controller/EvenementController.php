@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Evenement;
 use App\Form\EvenementType;
 use App\Repository\EvenementRepository;
-use App\Service\NotificationService; 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,7 +46,7 @@ final class EvenementController extends AbstractController
     }
 
     #[Route('/new', name: 'app_evenement_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, NotificationService $notifService): Response
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $evenement = new Evenement();
         $form = $this->createForm(EvenementType::class, $evenement);
@@ -56,12 +55,6 @@ final class EvenementController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($evenement);
             $entityManager->flush();
-
-            
-            $notifService->notifyAdmin(
-                "Nouveau Événement", 
-                "L'organisateur a ajouté l'événement : " . $evenement->getTitle()
-            );
 
             $this->addFlash('success', 'Événement créé avec succès !');
             return $this->redirectToRoute('app_evenement_index');
@@ -73,7 +66,7 @@ final class EvenementController extends AbstractController
         ]);
     }
 
-     #[Route('/{id}', name: 'app_evenement_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_evenement_show', methods: ['GET'])]
     public function show(Evenement $evenement): Response
     {
         return $this->render('evenement/show.html.twig', [
@@ -82,19 +75,13 @@ final class EvenementController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_evenement_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Evenement $evenement, EntityManagerInterface $entityManager, NotificationService $notifService): Response
+    public function edit(Request $request, Evenement $evenement, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(EvenementType::class, $evenement);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
-            
-            $notifService->notifyAdmin(
-                "Modification Événement", 
-                "L'événement ID " . $evenement->getId() . " a été modifié."
-            );
 
             $this->addFlash('success', 'Modification réussie !');
             return $this->redirectToRoute('app_evenement_index');
@@ -107,19 +94,11 @@ final class EvenementController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'app_evenement_delete', methods: ['POST'])]
-    public function delete(Request $request, Evenement $evenement, EntityManagerInterface $entityManager, NotificationService $notifService): Response
+    public function delete(Request $request, Evenement $evenement, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$evenement->getId(), $request->request->get('_token'))) {
-            $eventTitle = $evenement->getTitle(); 
-            
             $entityManager->remove($evenement);
             $entityManager->flush();
-
-            
-            $notifService->notifyAdmin(
-                "Suppression Événement", 
-                "L'événement intitulé '" . $eventTitle . "' a été supprimé."
-            );
 
             $this->addFlash('danger', 'Événement supprimé !');
         }
@@ -127,22 +106,19 @@ final class EvenementController extends AbstractController
         return $this->redirectToRoute('app_evenement_index');
     }
 
-    
-public function predictAttendance($event, $weatherTemp) {
-    $baseScore = 50; 
+    public function predictAttendance($event, $weatherTemp) {
+        $baseScore = 50; 
 
-    
-    if (str_contains(strtolower($event->getLieu()), 'tunis')) {
-        $baseScore += 20;
+        if (str_contains(strtolower($event->getLieu()), 'tunis')) {
+            $baseScore += 20;
+        }
+
+        if ($weatherTemp >= 15 && $weatherTemp <= 25) {
+            $baseScore += 30;
+        } elseif ($weatherTemp < 10) {
+            $baseScore -= 15; 
+        }
+
+        return $baseScore;
     }
-
-    
-    if ($weatherTemp >= 15 && $weatherTemp <= 25) {
-        $baseScore += 30;
-    } elseif ($weatherTemp < 10) {
-        $baseScore -= 15; 
-    }
-
-    return $baseScore;
-}
 }

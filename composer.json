@@ -27,7 +27,9 @@
         "twig/twig": "^2.12|^3.0"
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.66"
+        "phpstan/phpstan": "*",
+        "symfony/maker-bundle": "^1.66",
+        "symfony/test-pack": "*"
     },
     "config": {
         "allow-plugins": {
