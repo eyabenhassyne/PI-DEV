@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\AppelOffreRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -18,21 +19,21 @@ class AppelOffre
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le titre est obligatoire.')]
-    private ?string $titre = null;
+    private string $titre = '';
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'La description est obligatoire.')]
-    private ?string $description = null;
+    private string $description = '';
 
     #[ORM\Column]
     #[Assert\NotNull(message: 'La quantite demandee est obligatoire.')]
     #[Assert\Positive(message: 'La quantite demandee doit etre positive.')]
-    private ?float $quantiteDemandee = null;
+    private float $quantiteDemandee = 0.0;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     #[Assert\NotNull(message: 'La date limite est obligatoire.')]
     #[Assert\GreaterThan('now', message: 'La date limite doit etre dans le futur.')]
-    private ?\DateTime $dateLimite = null;
+    private \DateTimeImmutable $dateLimite;
 
     #[ORM\ManyToOne(inversedBy: 'appelOffres')]
     #[ORM\JoinColumn(nullable: false)]
@@ -45,7 +46,7 @@ class AppelOffre
     #[ORM\OneToMany(
         targetEntity: ReponseOffre::class,
         mappedBy: 'appelOffre',
-        cascade: ['remove'],
+        cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
     private Collection $reponseOffres;
@@ -53,6 +54,7 @@ class AppelOffre
     public function __construct()
     {
         $this->reponseOffres = new ArrayCollection();
+        $this->dateLimite = new \DateTimeImmutable('+1 day');
     }
 
     public function getId(): ?int
@@ -60,7 +62,7 @@ class AppelOffre
         return $this->id;
     }
 
-    public function getTitre(): ?string
+    public function getTitre(): string
     {
         return $this->titre;
     }
@@ -72,7 +74,7 @@ class AppelOffre
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -84,7 +86,7 @@ class AppelOffre
         return $this;
     }
 
-    public function getQuantiteDemandee(): ?float
+    public function getQuantiteDemandee(): float
     {
         return $this->quantiteDemandee;
     }
@@ -96,28 +98,25 @@ class AppelOffre
         return $this;
     }
 
-    public function getDateLimite(): ?\DateTime
+    public function getDateLimite(): \DateTimeImmutable
     {
         return $this->dateLimite;
     }
 
-    public function setDateLimite(\DateTime $dateLimite): static
+    public function defineDateLimite(\DateTimeInterface $dateLimite): static
     {
-        $this->dateLimite = $dateLimite;
+        $this->dateLimite = $dateLimite instanceof \DateTimeImmutable
+            ? $dateLimite
+            : \DateTimeImmutable::createFromMutable($dateLimite);
 
         return $this;
     }
 
     public function isExpired(?\DateTimeInterface $referenceDate = null): bool
     {
-        $limit = $this->getDateLimite();
-        if (!$limit) {
-            return false;
-        }
-
         $now = $referenceDate ?? new \DateTimeImmutable();
 
-        return $limit < $now;
+        return $this->dateLimite < $now;
     }
 
     public function getValorisateur(): ?Valorisateur

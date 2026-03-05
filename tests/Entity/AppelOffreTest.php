@@ -35,7 +35,7 @@ final class AppelOffreTest extends TestCase
     public function testDateLimiteMustBeInFuture(): void
     {
         $appelOffre = $this->createValidAppelOffre();
-        $appelOffre->setDateLimite(new \DateTime('-1 day'));
+        $appelOffre->defineDateLimite(new \DateTimeImmutable('-1 day'));
 
         $violations = $this->createValidator()->validate($appelOffre);
 
@@ -79,7 +79,7 @@ final class AppelOffreTest extends TestCase
         $appelOffre->setTitre('Collecte plastique');
         $appelOffre->setDescription('Collecte de dechets plastiques pour traitement.');
         $appelOffre->setQuantiteDemandee(120.5);
-        $appelOffre->setDateLimite(new \DateTime('+5 days'));
+        $appelOffre->defineDateLimite(new \DateTimeImmutable('+5 days'));
         $appelOffre->setValorisateur(new Valorisateur());
 
         return $appelOffre;

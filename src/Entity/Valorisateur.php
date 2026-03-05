@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Embeddable\EmailAddress;
 use App\Repository\ValorisateurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,11 +16,11 @@ class Valorisateur
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $nomSocieté = null;
+    #[ORM\Column(name: 'nom_societe', length: 255)]
+    private string $nomSociete = '';
 
-    #[ORM\Column(length: 255)]
-    private ?string $email = null;
+    #[ORM\Embedded(class: EmailAddress::class, columnPrefix: false)]
+    private EmailAddress $emailAddress;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $telephone = null;
@@ -36,6 +37,7 @@ class Valorisateur
     public function __construct()
     {
         $this->appelOffres = new ArrayCollection();
+        $this->emailAddress = new EmailAddress();
     }
 
     public function getId(): ?int
@@ -43,26 +45,26 @@ class Valorisateur
         return $this->id;
     }
 
-    public function getNomSocieté(): ?string
+    public function getNomSociete(): string
     {
-        return $this->nomSocieté;
+        return $this->nomSociete;
     }
 
-    public function setNomSocieté(string $nomSocieté): static
+    public function setNomSociete(string $nomSociete): static
     {
-        $this->nomSocieté = $nomSocieté;
+        $this->nomSociete = $nomSociete;
 
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
-        return $this->email;
+        return $this->emailAddress->getValue();
     }
 
     public function setEmail(string $email): static
     {
-        $this->email = $email;
+        $this->emailAddress->setValue($email);
 
         return $this;
     }
@@ -112,7 +114,6 @@ class Valorisateur
     public function removeAppelOffre(AppelOffre $appelOffre): static
     {
         if ($this->appelOffres->removeElement($appelOffre)) {
-            // set the owning side to null (unless already changed)
             if ($appelOffre->getValorisateur() === $this) {
                 $appelOffre->setValorisateur(null);
             }

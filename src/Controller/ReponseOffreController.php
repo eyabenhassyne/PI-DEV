@@ -88,7 +88,6 @@ final class ReponseOffreController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $reponseOffre = new ReponseOffre();
-        $reponseOffre->setDateSoumis(new \DateTime());
         $reponseOffre->setStatut(ReponseOffre::STATUT_EN_ATTENTE);
 
         $form = $this->createForm(ReponseOffreType::class, $reponseOffre);
@@ -263,7 +262,7 @@ final class ReponseOffreController extends AbstractController
             $recipientEmail = trim((string) ($citoyen?->getEmail() ?? ''));
             $citoyenNom = trim((string) ($citoyen?->getPrenom() ?? '').' '.(string) ($citoyen?->getNom() ?? ''));
             $appelTitre = (string) ($reponseOffre->getAppelOffre()?->getTitre() ?? 'Appel d\'offre');
-            $quantite = (float) ($reponseOffre->getQuantiteProposee() ?? 0);
+            $quantite = $reponseOffre->getQuantiteProposee();
             $notifyEmail = trim($notifyTo);
 
             if ($recipientEmail === '' && $notifyEmail !== '') {
@@ -343,7 +342,7 @@ final class ReponseOffreController extends AbstractController
     {
         $offre = $reponse->getAppelOffre();
         $demandee = $offre?->getQuantiteDemandee() ?? 0.0;
-        $proposee = $reponse->getQuantiteProposee() ?? 0.0;
+        $proposee = $reponse->getQuantiteProposee();
 
         $quantiteScore = 0;
         if ($demandee > 0) {
@@ -351,11 +350,11 @@ final class ReponseOffreController extends AbstractController
             $quantiteScore = (int) round($ratio * 60);
         }
 
-        $soumis = $reponse->getDateSoumis() ?? new \DateTime();
-        $days = max(0, (int) $soumis->diff(new \DateTime())->format('%a'));
+        $soumis = $reponse->getDateSoumis();
+        $days = max(0, (int) $soumis->diff(new \DateTimeImmutable())->format('%a'));
         $freshnessScore = max(0, 20 - min(20, $days));
 
-        $status = $reponse->getStatut() ?? '';
+        $status = $reponse->getStatut();
         $statusScore = $reponse->isEnAttente() ? 20 : (str_starts_with($status, 'val') ? 10 : 5);
 
         return max(0, min(100, $quantiteScore + $freshnessScore + $statusScore));

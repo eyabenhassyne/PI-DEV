@@ -18,8 +18,10 @@ class AppelOffreType extends AbstractType
             ->add('titre')
             ->add('description')
             ->add('quantiteDemandee')
-            ->add('dateLimite', DateTimeType::class, [
+            ->add('dateLimiteInput', DateTimeType::class, [
                 'widget' => 'single_text',
+                'input' => 'datetime_immutable',
+                'mapped' => false,
             ])
             ->add('valorisateur', EntityType::class, [
                 'class' => Valorisateur::class,
@@ -27,7 +29,7 @@ class AppelOffreType extends AbstractType
                     return sprintf(
                         'Valorisateur #%d (%s)',
                         $valorisateur->getId() ?? 0,
-                        $valorisateur->getEmail() ?? 'email inconnu'
+                        $valorisateur->getEmail() !== '' ? $valorisateur->getEmail() : 'email inconnu'
                     );
                 },
             ])

@@ -8,6 +8,7 @@ use App\Repository\AppelOffreRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -49,7 +50,17 @@ final class AppelOffreController extends AbstractController
     {
         $appelOffre = new AppelOffre();
         $form = $this->createForm(AppelOffreType::class, $appelOffre);
+        $form->get('dateLimiteInput')->setData($appelOffre->getDateLimite());
         $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $dateLimite = $form->get('dateLimiteInput')->getData();
+            if ($dateLimite instanceof \DateTimeInterface) {
+                $appelOffre->defineDateLimite($dateLimite);
+            } else {
+                $form->get('dateLimiteInput')->addError(new FormError('La date limite est obligatoire.'));
+            }
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($appelOffre);
@@ -82,7 +93,17 @@ final class AppelOffreController extends AbstractController
         }
 
         $form = $this->createForm(AppelOffreType::class, $appelOffre);
+        $form->get('dateLimiteInput')->setData($appelOffre->getDateLimite());
         $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $dateLimite = $form->get('dateLimiteInput')->getData();
+            if ($dateLimite instanceof \DateTimeInterface) {
+                $appelOffre->defineDateLimite($dateLimite);
+            } else {
+                $form->get('dateLimiteInput')->addError(new FormError('La date limite est obligatoire.'));
+            }
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();

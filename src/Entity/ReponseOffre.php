@@ -22,14 +22,14 @@ class ReponseOffre
     #[ORM\Column]
     #[Assert\NotNull(message: 'La quantite proposee est obligatoire.')]
     #[Assert\Positive(message: 'La quantite proposee doit etre positive.')]
-    private ?float $quantiteProposee = null;
+    private float $quantiteProposee = 0.0;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     #[Assert\NotNull(message: 'La date de reponse est obligatoire.')]
-    private ?\DateTime $dateSoumis = null;
+    private \DateTimeImmutable $dateSoumis;
 
     #[ORM\Column(length: 30)]
-    private ?string $statut = null;
+    private string $statut = self::STATUT_EN_ATTENTE;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Assert\NotBlank(message: 'Le message est obligatoire.')]
@@ -49,12 +49,17 @@ class ReponseOffre
     #[Assert\NotNull(message: 'Le citoyen est obligatoire.')]
     private ?Citoyen $citoyen = null;
 
+    public function __construct()
+    {
+        $this->dateSoumis = new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getQuantiteProposee(): ?float
+    public function getQuantiteProposee(): float
     {
         return $this->quantiteProposee;
     }
@@ -66,19 +71,21 @@ class ReponseOffre
         return $this;
     }
 
-    public function getDateSoumis(): ?\DateTime
+    public function getDateSoumis(): \DateTimeImmutable
     {
         return $this->dateSoumis;
     }
 
-    public function setDateSoumis(\DateTime $dateSoumis): static
+    protected function setDateSoumis(\DateTimeInterface $dateSoumis): static
     {
-        $this->dateSoumis = $dateSoumis;
+        $this->dateSoumis = $dateSoumis instanceof \DateTimeImmutable
+            ? $dateSoumis
+            : \DateTimeImmutable::createFromMutable($dateSoumis);
 
         return $this;
     }
 
-    public function getStatut(): ?string
+    public function getStatut(): string
     {
         return $this->statut;
     }

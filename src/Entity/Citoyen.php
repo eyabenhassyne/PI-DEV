@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Embeddable\EmailAddress;
 use App\Repository\CitoyenRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -16,13 +17,13 @@ class Citoyen
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    private ?string $nom = null;
+    private string $nom = '';
 
     #[ORM\Column(length: 100)]
-    private ?string $prenom = null;
+    private string $prenom = '';
 
-    #[ORM\Column(length: 255)]
-    private ?string $email = null;
+    #[ORM\Embedded(class: EmailAddress::class, columnPrefix: false)]
+    private EmailAddress $emailAddress;
 
     #[ORM\Column(length: 30, nullable: true)]
     private ?string $telephone = null;
@@ -36,6 +37,7 @@ class Citoyen
     public function __construct()
     {
         $this->reponseOffres = new ArrayCollection();
+        $this->emailAddress = new EmailAddress();
     }
 
     public function getId(): ?int
@@ -43,7 +45,7 @@ class Citoyen
         return $this->id;
     }
 
-    public function getNom(): ?string
+    public function getNom(): string
     {
         return $this->nom;
     }
@@ -55,7 +57,7 @@ class Citoyen
         return $this;
     }
 
-    public function getPrenom(): ?string
+    public function getPrenom(): string
     {
         return $this->prenom;
     }
@@ -67,14 +69,14 @@ class Citoyen
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
-        return $this->email;
+        return $this->emailAddress->getValue();
     }
 
     public function setEmail(string $email): static
     {
-        $this->email = $email;
+        $this->emailAddress->setValue($email);
 
         return $this;
     }

@@ -8,7 +8,6 @@ use App\Entity\ReponseOffre;
 use App\Repository\AppelOffreRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -19,9 +18,6 @@ class ReponseOffreType extends AbstractType
     {
         $builder
             ->add('quantiteProposee')
-            ->add('dateSoumis', DateTimeType::class, [
-                'widget' => 'single_text',
-            ])
             ->add('message', TextareaType::class, [
                 'required' => false,
             ])
@@ -38,9 +34,9 @@ class ReponseOffreType extends AbstractType
                 'class' => Citoyen::class,
                 'choice_label' => static fn (Citoyen $citoyen): string => sprintf(
                     '%s %s (%s)',
-                    $citoyen->getPrenom() ?? '',
-                    $citoyen->getNom() ?? '',
-                    $citoyen->getEmail() ?? 'email inconnu'
+                    $citoyen->getPrenom(),
+                    $citoyen->getNom(),
+                    $citoyen->getEmail() !== '' ? $citoyen->getEmail() : 'email inconnu'
                 ),
             ])
         ;

@@ -22,7 +22,7 @@ final class DashboardController extends AbstractController
     #[Route('/offres', name: 'app_front_dashboard', methods: ['GET'])]
     public function front(ReponseOffreRepository $reponseOffreRepository): Response
     {
-        $recentReponses = $reponseOffreRepository->findBy([], ['id' => 'DESC'], 6);
+        $recentReponses = $reponseOffreRepository->findRecentWithRelations(6);
 
         $declarations = array_map(
             fn (ReponseOffre $reponse): array => [
@@ -62,44 +62,28 @@ final class DashboardController extends AbstractController
         $in7Days = $now->modify('+7 days');
         $startLast7 = $now->modify('-7 days');
         $startPrev7 = $now->modify('-14 days');
+        $epoch = new \DateTimeImmutable('1970-01-01 00:00:00');
 
-        $allAppels = $appelOffreRepository->findAll();
         $recentAppels = $appelOffreRepository->findBy([], ['id' => 'DESC'], 5);
-        $recentReponses = $reponseOffreRepository->findBy([], ['id' => 'DESC'], 5);
-        $allReponses = $reponseOffreRepository->findAll();
+        $recentReponses = $reponseOffreRepository->findRecentWithRelations(5);
+        $statusDistributionAll = $reponseOffreRepository->getStatusDistributionBetween($epoch, $now);
 
-        $totalAppels = count($allAppels);
-        $offresExpirees = array_reduce(
-            $allAppels,
-            fn (int $total, AppelOffre $appel): int => $total + ($appel->isExpired($now) ? 1 : 0),
-            0
-        );
+        $totalAppels = $appelOffreRepository->count([]);
+        $offresExpirees = $appelOffreRepository->countExpired();
         $offresActives = max(0, $totalAppels - $offresExpirees);
-        $offresExpirentBientot = array_reduce(
-            $allAppels,
-            function (int $total, AppelOffre $appel) use ($now, $in7Days): int {
-                $dateLimite = $appel->getDateLimite();
+        $offresExpirentBientot = $appelOffreRepository->countUrgentActive($now, $in7Days);
 
-                if (!$dateLimite || $appel->isExpired($now)) {
-                    return $total;
-                }
-
-                return $total + (($dateLimite <= $in7Days) ? 1 : 0);
-            },
-            0
-        );
-
-        $totalReponses = count($allReponses);
-        $totalEnAttente = $this->countByStatuses($allReponses, ['en attente', 'en_attente', 'pending']);
-        $totalValidees = $this->countByStatuses($allReponses, ['valide', 'validee']);
-        $totalRefusees = $this->countByStatuses($allReponses, ['refuse', 'refusee', 'rejete', 'rejetee']);
+        $totalEnAttente = $statusDistributionAll['en_attente'];
+        $totalValidees = $statusDistributionAll['valide'];
+        $totalRefusees = $statusDistributionAll['refuse'];
+        $totalReponses = $totalEnAttente + $totalValidees + $totalRefusees + $statusDistributionAll['autre'];
 
         $tauxValidation = $totalReponses > 0
             ? (int) round(($totalValidees / $totalReponses) * 100)
             : 0;
 
-        $reponsesLast7 = $this->countSubmittedBetween($allReponses, $startLast7, $now);
-        $reponsesPrev7 = $this->countSubmittedBetween($allReponses, $startPrev7, $startLast7);
+        $reponsesLast7 = $reponseOffreRepository->countCreatedBetween($startLast7, $now);
+        $reponsesPrev7 = $reponseOffreRepository->countCreatedBetween($startPrev7, $startLast7);
         $trendReponsesPct = $reponsesPrev7 > 0
             ? (int) round((($reponsesLast7 - $reponsesPrev7) / $reponsesPrev7) * 100)
             : ($reponsesLast7 > 0 ? 100 : 0);
@@ -164,47 +148,6 @@ final class DashboardController extends AbstractController
             ],
             'alert_center' => $alertCenter,
         ]);
-    }
-
-    /**
-     * @param array<int, ReponseOffre> $reponses
-     */
-    private function countSubmittedBetween(array $reponses, \DateTimeImmutable $from, \DateTimeImmutable $to): int
-    {
-        return array_reduce(
-            $reponses,
-            function (int $total, ReponseOffre $reponse) use ($from, $to): int {
-                $date = $reponse->getDateSoumis();
-                if (!$date) {
-                    return $total;
-                }
-
-                return $total + (($date >= $from && $date <= $to) ? 1 : 0);
-            },
-            0
-        );
-    }
-
-    /**
-     * @param array<int, ReponseOffre> $reponses
-     * @param array<int, string> $statuses
-     */
-    private function countByStatuses(array $reponses, array $statuses): int
-    {
-        $normalizedStatuses = array_map(
-            fn (string $status): string => strtolower(trim(str_replace('_', ' ', $status))),
-            $statuses
-        );
-
-        return array_reduce(
-            $reponses,
-            function (int $total, ReponseOffre $reponse) use ($normalizedStatuses): int {
-                $status = strtolower(trim(str_replace('_', ' ', $reponse->getStatut() ?? '')));
-
-                return $total + (in_array($status, $normalizedStatuses, true) ? 1 : 0);
-            },
-            0
-        );
     }
 
     private function normalizeStatus(?string $status): string

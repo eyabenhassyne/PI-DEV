@@ -11,6 +11,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ReponseOffreRepository extends ServiceEntityRepository
 {
+    private const MAX_LIST_RESULTS = 200;
+
     private const SORT_FIELDS = [
         'quantiteProposee' => 'r.quantiteProposee',
         'dateSoumis' => 'r.dateSoumis',
@@ -33,6 +35,10 @@ class ReponseOffreRepository extends ServiceEntityRepository
         $sortDirection = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
 
         $qb = $this->createQueryBuilder('r')
+            ->leftJoin('r.appelOffre', 'a')
+            ->addSelect('a')
+            ->leftJoin('r.citoyen', 'c')
+            ->addSelect('c')
             ->orderBy($sortField, $sortDirection);
 
         $normalizedQuery = trim((string) $query);
@@ -64,7 +70,51 @@ class ReponseOffreRepository extends ServiceEntityRepository
                 ->setParameter('quantiteMin', (float) $filters['quantite_min']);
         }
 
+        // Keep list queries bounded to avoid full-table scans and ORDER BY on unbounded result sets.
+        $qb->setMaxResults(self::MAX_LIST_RESULTS);
+
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return ReponseOffre[]
+     */
+    public function findRecentWithRelations(int $limit = 6): array
+    {
+        $rows = $this->createQueryBuilder('r')
+            ->select('r.id AS id')
+            ->orderBy('r.id', 'DESC')
+            ->setMaxResults(max(1, $limit))
+            ->getQuery()
+            ->getArrayResult();
+
+        $ids = array_map(
+            static fn (array $row): int => (int) ($row['id'] ?? 0),
+            $rows
+        );
+        $ids = array_values(array_filter($ids, static fn (int $id): bool => $id > 0));
+
+        if ($ids === []) {
+            return [];
+        }
+
+        $items = $this->createQueryBuilder('r')
+            ->leftJoin('r.appelOffre', 'a')
+            ->addSelect('a')
+            ->leftJoin('r.citoyen', 'c')
+            ->addSelect('c')
+            ->andWhere('r.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+
+        usort(
+            $items,
+            static fn (ReponseOffre $left, ReponseOffre $right): int =>
+                ($right->getId() ?? 0) <=> ($left->getId() ?? 0)
+        );
+
+        return $items;
     }
 
     public function countPendingOlderThan(\DateTimeInterface $before): int
@@ -201,19 +251,18 @@ class ReponseOffreRepository extends ServiceEntityRepository
      */
     public function getTopOffersByResponsesBetween(\DateTimeInterface $start, \DateTimeInterface $end, int $limit = 6): array
     {
-        $rows = $this->getEntityManager()->getConnection()->executeQuery(
-            'SELECT a.titre, COUNT(r.id) AS total
-             FROM reponse_offre r
-             INNER JOIN appel_offre a ON a.id = r.appel_offre_id
-             WHERE r.date_soumis BETWEEN :start AND :end
-             GROUP BY a.id, a.titre
-             ORDER BY total DESC, a.id ASC
-             LIMIT '.$limit,
-            [
-                'start' => $start->format('Y-m-d H:i:s'),
-                'end' => $end->format('Y-m-d H:i:s'),
-            ]
-        )->fetchAllAssociative();
+        $rows = $this->createQueryBuilder('r')
+            ->select('a.titre AS titre, COUNT(r.id) AS total')
+            ->innerJoin('r.appelOffre', 'a')
+            ->andWhere('r.dateSoumis BETWEEN :start AND :end')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->groupBy('a.id, a.titre')
+            ->orderBy('total', 'DESC')
+            ->addOrderBy('a.id', 'ASC')
+            ->setMaxResults(max(1, $limit))
+            ->getQuery()
+            ->getArrayResult();
 
         return array_map(
             static fn (array $row): array => [
