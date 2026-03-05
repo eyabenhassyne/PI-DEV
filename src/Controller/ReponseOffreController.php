@@ -144,7 +144,7 @@ final class ReponseOffreController extends AbstractController
         $totalResponses = array_sum($dailyCounts);
         $totalQty = array_sum($dailyQuantities);
         $acceptanceRate = $totalResponses > 0
-            ? round((($statusDistribution['valide'] ?? 0) / $totalResponses) * 100, 1)
+            ? round(($statusDistribution['valide'] / $totalResponses) * 100, 1)
             : 0.0;
         $avgQty = $totalResponses > 0
             ? round($totalQty / $totalResponses, 2)
@@ -171,10 +171,10 @@ final class ReponseOffreController extends AbstractController
                 'quantity_series' => $dailyQuantities,
                 'status_labels' => ['Validees', 'En attente', 'Refusees', 'Autres'],
                 'status_values' => [
-                    (int) ($statusDistribution['valide'] ?? 0),
-                    (int) ($statusDistribution['en_attente'] ?? 0),
-                    (int) ($statusDistribution['refuse'] ?? 0),
-                    (int) ($statusDistribution['autre'] ?? 0),
+                    $statusDistribution['valide'],
+                    $statusDistribution['en_attente'],
+                    $statusDistribution['refuse'],
+                    $statusDistribution['autre'],
                 ],
                 'top_offer_labels' => array_map(static fn (array $item): string => $item['titre'], $topOffers),
                 'top_offer_values' => array_map(static fn (array $item): int => $item['total'], $topOffers),

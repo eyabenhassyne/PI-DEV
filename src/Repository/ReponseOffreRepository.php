@@ -24,6 +24,7 @@ class ReponseOffreRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param array{statut?:string|null, quantite_min?:float|null} $filters
      * @return ReponseOffre[]
      */
     public function searchAndSort(?string $query, string $sort, string $direction, array $filters = []): array
@@ -41,7 +42,7 @@ class ReponseOffreRepository extends ServiceEntityRepository
                 ->setParameter('query', '%'.$normalizedQuery.'%');
         }
 
-        if (isset($filters['statut']) && $filters['statut'] !== null) {
+        if (isset($filters['statut'])) {
             $normalizedStatus = mb_strtolower(trim(str_replace('_', ' ', (string) $filters['statut'])));
 
             if ($normalizedStatus === 'valide') {
@@ -57,7 +58,7 @@ class ReponseOffreRepository extends ServiceEntityRepository
                 ->setParameter('statutFilter', $statusValues);
         }
 
-        if (isset($filters['quantite_min']) && $filters['quantite_min'] !== null) {
+        if (isset($filters['quantite_min'])) {
             $qb
                 ->andWhere('r.quantiteProposee >= :quantiteMin')
                 ->setParameter('quantiteMin', (float) $filters['quantite_min']);

@@ -166,6 +166,9 @@ final class DashboardController extends AbstractController
         ]);
     }
 
+    /**
+     * @param array<int, ReponseOffre> $reponses
+     */
     private function countSubmittedBetween(array $reponses, \DateTimeImmutable $from, \DateTimeImmutable $to): int
     {
         return array_reduce(
@@ -182,6 +185,10 @@ final class DashboardController extends AbstractController
         );
     }
 
+    /**
+     * @param array<int, ReponseOffre> $reponses
+     * @param array<int, string> $statuses
+     */
     private function countByStatuses(array $reponses, array $statuses): int
     {
         $normalizedStatuses = array_map(

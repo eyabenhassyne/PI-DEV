@@ -24,6 +24,7 @@ class AppelOffreRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param array{quantite_min?:float|null, etat?:'active'|'expiree'|null} $filters
      * @return AppelOffre[]
      */
     public function searchAndSort(?string $query, string $sort, string $direction, array $filters = []): array
@@ -41,7 +42,7 @@ class AppelOffreRepository extends ServiceEntityRepository
                 ->setParameter('query', '%'.$normalizedQuery.'%');
         }
 
-        if (isset($filters['quantite_min']) && $filters['quantite_min'] !== null) {
+        if (isset($filters['quantite_min'])) {
             $qb
                 ->andWhere('a.quantiteDemandee >= :quantiteMin')
                 ->setParameter('quantiteMin', (float) $filters['quantite_min']);
